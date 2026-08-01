@@ -1,0 +1,719 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+/* ══════════════════════════════════════════
+   VARIABLES
+══════════════════════════════════════════ */
+:root {
+    --red:        #ff0844;
+    --red-hover:  #ff3366;
+    --red-dark:   #cc0033;
+    --red-glow:   rgba(255, 8, 68, 0.50);
+    --red-soft:   rgba(255, 8, 68, 0.10);
+    --red-mid:    rgba(255, 8, 68, 0.22);
+    --cyan:       #00d9ff;
+    --cyan-glow:  rgba(0, 217, 255, 0.35);
+    --bg-0: #030308;
+    --bg-1: #07070f;
+    --bg-2: #0c0c18;
+    --bg-3: #111120;
+    --border:     rgba(255, 255, 255, 0.055);
+    --border-red: rgba(255, 8, 68, 0.18);
+    --text-primary:   #eae8f2;
+    --text-secondary: #8484a8;
+    --text-muted:     #3c3c58;
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition:  all 0.38s var(--ease-smooth);
+}
+
+/* ══════════════════════════════════════════
+   RESET Y BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+.pagina-pago {
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-0);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+.pagina-pago::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9000;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.pagina-pago::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 15% 25%, rgba(255,8,68,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(0,217,255,0.04) 0%, transparent 50%);
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--red), var(--cyan)); border-radius: 3px; }
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+.header-pago {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(3,3,8,0.92);
+    backdrop-filter: blur(30px);
+    border-bottom: 1px solid var(--border-red);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+}
+
+.contenedor-header {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    color: #fff;
+}
+
+.logo-header i {
+    color: var(--red);
+    filter: drop-shadow(0 0 8px var(--red-glow));
+}
+
+/* Pasos del proceso (reutilizados de entrega) */
+.header-pago .indicador-pasos-compra {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.header-pago .paso-proceso {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.header-pago .circulo-numero-paso {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.header-pago .paso-proceso.activo .circulo-numero-paso {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    box-shadow: 0 0 14px var(--red-glow);
+}
+
+.header-pago .paso-proceso.completado .circulo-numero-paso {
+    background: rgba(255, 8, 68, 0.15);
+    border-color: var(--red);
+    color: var(--red);
+}
+
+.header-pago .etiqueta-nombre-paso {
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+}
+
+.header-pago .paso-proceso.activo .etiqueta-nombre-paso { color: var(--red); }
+.header-pago .paso-proceso.completado .etiqueta-nombre-paso { color: var(--text-secondary); }
+
+.header-pago .linea-separadora-paso {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 4px;
+    margin-bottom: 14px;
+}
+
+.header-pago .linea-separadora-paso.completada { background: var(--border-red); }
+
+/* ══════════════════════════════════════════
+   BOTÓN VOLVER
+══════════════════════════════════════════ */
+.contenedor-volver {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.2rem 2rem 0;
+}
+
+.boton-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid var(--border-red);
+    border-radius: 8px;
+    color: var(--red);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.boton-volver:hover {
+    background: var(--red-soft);
+    border-color: var(--red);
+    box-shadow: 0 0 18px var(--red-glow);
+    transform: translateX(-4px);
+}
+
+/* ══════════════════════════════════════════
+   LAYOUT PRINCIPAL
+══════════════════════════════════════════ */
+.contenedor-pago {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 2rem 2rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+/* ══════════════════════════════════════════
+   SECCIÓN MÉTODOS
+══════════════════════════════════════════ */
+.seccion-metodos {
+    background: var(--bg-1);
+    border: 1px solid var(--border-red);
+    border-radius: 18px;
+    padding: 36px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.seccion-metodos::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,8,68,0.03), transparent);
+    pointer-events: none;
+}
+
+.seccion-metodos::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), var(--cyan), transparent);
+}
+
+.titulo-principal {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+.titulo-principal span { color: var(--red); }
+
+/* ══════════════════════════════════════════
+   OPCIONES DE PAGO
+══════════════════════════════════════════ */
+.opciones-pago {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+.opcion-pago {
+    padding: 18px 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.opcion-pago::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red), var(--cyan));
+    transition: width 0.4s var(--ease-smooth);
+}
+
+.opcion-pago:hover {
+    border-color: var(--border-red);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(255,8,68,0.16);
+}
+
+.opcion-pago:hover::before { width: 100%; }
+
+.opcion-pago.seleccionada {
+    border-color: var(--red);
+    background: linear-gradient(135deg, rgba(255,8,68,0.12), var(--bg-2));
+    box-shadow: 0 0 0 1px rgba(255,8,68,0.25), 0 8px 24px rgba(255,8,68,0.18);
+}
+
+.opcion-pago.seleccionada::before { width: 100%; }
+
+.icono-pago {
+    font-size: 2.6rem;
+    margin-bottom: 8px;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+}
+
+.nombre-pago {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+
+.descripcion-pago {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* ══════════════════════════════════════════
+   FORMULARIOS DE PAGO
+══════════════════════════════════════════ */
+.formulario-pago {
+    display: none;
+    animation: slide-in-form 0.3s var(--ease-smooth);
+    position: relative;
+    z-index: 1;
+}
+
+.formulario-pago.activo { display: block; }
+
+@keyframes slide-in-form {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.titulo-form {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 2.5px;
+    color: var(--red);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-red);
+}
+
+.grupo-campo {
+    margin-bottom: 18px;
+}
+
+.grupo-campo label {
+    display: block;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 7px;
+}
+
+.requerido { color: var(--red); }
+
+.grupo-campo input,
+.grupo-campo select {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    outline: none;
+}
+
+.grupo-campo input:focus,
+.grupo-campo select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-soft), 0 4px 16px rgba(255,8,68,0.12);
+    background: rgba(255,8,68,0.02);
+}
+
+.grupo-campo input::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.grupo-campo select {
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.grupo-campo select option {
+    background: var(--bg-2);
+    color: var(--text-primary);
+}
+
+.fila-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+/* Info pago móvil (Nequi, Daviplata, Transferencia) */
+.info-pago-movil {
+    background: var(--bg-2);
+    border: 1px solid var(--border-red);
+    border-radius: 12px;
+    padding: 20px;
+    line-height: 1.9;
+}
+
+.info-pago-movil p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin: 3px 0;
+}
+
+.info-pago-movil strong {
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════
+   BOTÓN CONFIRMAR Y PAGAR — PREMIUM
+══════════════════════════════════════════ */
+.boton-pagar {
+    width: 100%;
+    padding: 18px 32px;
+    background: linear-gradient(135deg, var(--red), #cc0636, #800020);
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease infinite;
+    border: none;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 28px;
+    box-shadow: 0 6px 30px var(--red-glow), 0 0 0 1px rgba(255,8,68,0.2);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.boton-pagar::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.20), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.boton-pagar:hover::before { transform: translateX(100%); }
+
+.boton-pagar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+}
+
+.boton-pagar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px var(--red-glow), 0 0 60px rgba(255,8,68,0.2), 0 0 0 1px var(--red);
+}
+
+.boton-pagar:active {
+    transform: translateY(-1px);
+}
+
+.boton-pagar span {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ══════════════════════════════════════════
+   PANEL RESUMEN — PREMIUM
+══════════════════════════════════════════ */
+.resumen-pago {
+    background: linear-gradient(160deg, rgba(12,12,24,0.98), rgba(7,7,15,0.95));
+    border: 1px solid var(--border-red);
+    border-radius: 18px;
+    padding: 28px 24px;
+    backdrop-filter: blur(10px);
+    height: fit-content;
+    position: sticky;
+    top: 80px;
+    box-shadow:
+        0 4px 30px rgba(0,0,0,0.4),
+        0 0 60px rgba(255,8,68,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+    overflow: hidden;
+}
+
+.resumen-pago::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--red), var(--cyan), transparent);
+    z-index: 1;
+}
+
+.resumen-pago::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -50%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,8,68,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.titulo-resumen-pago {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-red);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.titulo-resumen-pago::before {
+    content: '🛒';
+    font-size: 1.1rem;
+}
+
+.titulo-resumen-pago::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--red);
+    border-radius: 2px;
+}
+
+/* ── Items del resumen ── */
+.producto-item-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.producto-item-resumen:last-child {
+    border-bottom: none;
+}
+
+.producto-item-resumen:hover {
+    background: rgba(255,255,255,0.015);
+    margin: 0 -8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 8px;
+}
+
+.producto-nombre-resumen {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    flex: 1;
+    line-height: 1.4;
+}
+
+.producto-precio-resumen {
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+/* ── Línea divisoria ── */
+.linea-divisoria-pago {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-red), transparent);
+    margin: 16px 0;
+}
+
+/* ── Filas de subtotal / IVA ── */
+.fila-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.fila-subtotal span:first-child {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.fila-subtotal span:last-child {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+/* ── Total grande ── */
+.fila-total-pago {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0 4px;
+    position: relative;
+}
+
+.fila-total-pago span:first-child {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    color: #fff;
+}
+
+.fila-total-pago span:last-child {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.6rem;
+    color: var(--red);
+    text-shadow: 0 0 20px var(--red-glow);
+}
+
+/* ── Icono de seguridad ── */
+.seguridad-pago {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(34,197,94,0.05);
+    border: 1px solid rgba(34,197,94,0.12);
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #22c55e;
+}
+
+.seguridad-pago i {
+    font-size: 0.85rem;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .contenedor-pago { grid-template-columns: 1fr; }
+    .resumen-pago { position: static; }
+}
+
+@media (max-width: 768px) {
+    .header-pago { padding: 0 1.5rem; }
+    .contenedor-volver,
+    .contenedor-pago { padding: 0 1.5rem; }
+    .opciones-pago { grid-template-columns: 1fr 1fr; }
+    .fila-campos { grid-template-columns: 1fr; }
+    .seccion-metodos { padding: 24px 18px; }
+    .titulo-principal { font-size: 1.6rem; }
+    .header-pago .indicador-pasos-compra { display: none; }
+}
+
+@media (max-width: 480px) {
+    .opciones-pago { grid-template-columns: 1fr; }
+    .icono-pago { font-size: 2rem; }
+}

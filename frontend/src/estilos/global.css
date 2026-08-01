@@ -1,0 +1,12 @@
+/* =====================================================
+   ESTILOS GLOBALES CDL REACT
+   Solo inicio.css se importa globalmente.
+   Los demás CSS se importan directamente en cada
+   componente para evitar conflictos de body/form/etc.
+   ===================================================== */
+@import './inicio.css';
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}

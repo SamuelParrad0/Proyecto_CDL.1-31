@@ -1,0 +1,4387 @@
+{
+  "info": {
+    "_postman_id": "5c6e7c90-b4b5-4d55-9a33-845f75c3bd7e",
+    "name": "CDL - Postman AppMovil",
+    "description": "Se desarrolló una colección de Postman completa y estructurada, integrando todos los endpoints necesarios para garantizar la comunicación entre el frontend y el backend de la aplicación móvil. La colección se encuentra organizada por roles (**ADMIN** y **USER**) y por módulos, permitiendo realizar pruebas, consultas y operaciones sobre cada una de las funcionalidades del sistema.\n\n### Módulo User\n\nEste módulo permite gestionar toda la información relacionada con los usuarios. Incluye endpoints para el registro de nuevos usuarios, inicio de sesión, autenticación mediante token, consulta de perfiles, actualización de datos personales, cambio de contraseña y administración de cuentas. El administrador puede visualizar todos los usuarios registrados, consultar información específica, modificar datos, activar o desactivar cuentas y controlar los roles.\n\n### Módulo Paquetes\n\nContiene todos los endpoints relacionados con los paquetes ofrecidos por la empresa. Permite crear nuevos paquetes, registrar nombre, descripción, precio e imágenes . El administrador puede modificar información existente, desactivar paquetes, consultar paquetes específicos y visualizar el listado completo. Los usuarios pueden explorar los paquetes disponibles, visualizar sus características y solicitarlos.\n\n### Módulo Catálogos\n\nPermite administrar las categorías y clasificaciones utilizadas dentro de la plataforma. Incluye funciones para crear categorías, editar nombres o descripciones y consultar catálogos disponibles. Esta información es utilizada para organizar correctamente los productos y paquetes, facilitando la navegación y búsqueda de los clientes.\n\n### Módulo Productos\n\nIntegra todas las operaciones necesarias para la gestión de productos. El administrador puede registrar nuevos productos con información como nombre, descripción, precio, imágenes, categoría disponible. También puede editar la información, actualizar cantidades, activar o desactivar productos. Los usuarios tienen acceso al listado de productos, filtros de búsqueda, visualización detallada y selección para agregarlos al carrito.\n\n### Módulo Pedidos\n\nIncluye toda la gestión de compras realizadas por los usuarios. Permite crear pedidos, registrar la dirección de entrega, calcular el valor total y almacenar la fecha de compra. El administrador puede cambiar el estado del pedido entre \"Pendiente\", \"¡Manos a la obra!\", \"Viajando hacia ti\" y \"¡Ya contigo!\", además de consultar el historial de pedidos y generar reportes. Los usuarios pueden visualizar el seguimiento en tiempo real y consultar sus compras anteriores.\n\n### Módulo Citas\n\nSe encarga de administrar las citas programadas por los clientes. Permite seleccionar fecha, hora, descripción del servicio y estado de la cita. El administrador puede aceptar, reprogramar o cancelar citas, mientras que los usuarios pueden agendar nuevas citas, consultar las existentes y realizar modificaciones cuando sea necesario.\n\n### Módulo Direcciones\n\nGestiona toda la información relacionada con las direcciones de entrega. Los usuarios pueden registrar varias direcciones, indicando nombre del destinatario, teléfono, ciudad, barrio, dirección principal e informsción adicional. También es posible editarlas. El sistema utiliza esta información para asociarla automáticamente a los pedidos y al proceso de compra desde el carrito.\n\n### Módulo Carrito\n\nAdministra los productos seleccionados por el usuario antes de finalizar una compra. Permite agregar productos, modificar cantidades, eliminar elementos, vaciar el carrito y calcular automáticamente el subtotal y el valor total. Además, mantiene sincronizada la información con las direcciones registradas y con el módulo de pedidos para facilitar el proceso de compra.\n\n### Distribución por Roles\n\n#### ADMIN\n\nEl rol administrador cuenta con acceso completo al sistema y posee permisos para:\n\n- Gestionar usuarios.\n    \n- Crear, editar y consular los productos.\n    \n- Administrar paquetes y categorías.\n    \n- Controlar el estado de los pedidos.\n    \n- Gestionar citas programadas.\n    \n- Visualizar y administrar direcciones.\n    \n- Supervisar el carrito de compras.\n    \n- Controlar la disponibilidad de productos y paquetes.\n    \n- Realizar búsquedas y filtros avanzados.\n    \n\n#### USER\n\nEl rol usuario posee acceso a las funcionalidades orientadas al cliente, permitiendo:\n\n- Registrarse e iniciar sesión.\n    \n- Actualizar su perfil.\n    \n- Consultar productos y paquetes disponibles.\n    \n- Realizar búsquedas y aplicar filtros.\n    \n- Solicitar productos o paquetes.\n    \n- Gestionar sus direcciones de envío.\n    \n- Agendar citas.\n    \n- Realizar compras y consultar el historial de pedidos.\n    \n- Hacer seguimiento al estado de sus pedidos.\n    \n- Consultar la información disponible dentro de la plataforma.\n    \n\nLa colección se encuentra completamente organizada y documentada, permitiendo realizar pruebas individuales a cada endpoint, verificar respuestas del servidor, validar permisos según el rol correspondiente y garantizar una integración eficiente entre la base de datos, el backend y las interfaces desarrolladas para la aplicación móvil.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53189787",
+    "_collection_link": "https://go.postman.co/collection/53189787-5c6e7c90-b4b5-4d55-9a33-845f75c3bd7e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "AUTENTICACION",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@cdl.com\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica un usuario administrador en el sistema mediante credenciales de correo electrónico y contraseña. El servidor valida exhaustivamente las credenciales proporcionadas contra la base de datos de administradores registrados y, si la validación es exitosa, genera un JWT (JSON Web Token) de seguridad que debe ser almacenado inmediatamente en la variable {{admin}} para autorizar automáticamente todas las peticiones administrativas posteriores. Este token JWT contiene información codificada sobre el administrador autenticado y tiene una duración de sesión predefinida. El token es absolutamente mandatorio para acceder a cualquier funcionalidad de administración del sistema, como gestión de usuarios, productos, pedidos y configuración general."
+          },
+          "response": []
+        },
+        {
+          "name": "Login Auxiliar",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"samuel@gmail.com\",\n  \"password\": \"Samuel123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica un usuario administrador en el sistema mediante credenciales de correo electrónico y contraseña. El servidor valida exhaustivamente las credenciales proporcionadas contra la base de datos de administradores registrados y, si la validación es exitosa, genera un JWT (JSON Web Token) de seguridad que debe ser almacenado inmediatamente en la variable {{admin}} para autorizar automáticamente todas las peticiones administrativas posteriores. Este token JWT contiene información codificada sobre el administrador autenticado y tiene una duración de sesión predefinida. El token es absolutamente mandatorio para acceder a cualquier funcionalidad de administración del sistema, como gestión de usuarios, productos, pedidos y configuración general."
+          },
+          "response": []
+        },
+        {
+          "name": "Login Cliente",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"samuel.parrado01@gmail.com\",\n  \"password\": \"1022961218\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Autentica un usuario cliente en el sistema proporcionando correo electrónico y contraseña previamente registrados. El servidor valida exhaustivamente las credenciales contra la base de datos de clientes y, si la validación es exitosa, genera un JWT (JSON Web Token) que debe ser almacenado en {{cliente}} para autorizar automáticamente todas las peticiones del cliente en sesiones posteriores. Este token permite acceso a todas las funcionalidades disponibles para clientes incluyendo navegación del catálogo, gestión de carrito de compras, creación y seguimiento de pedidos, agendamiento de citas, gestión de direcciones, publicación de opiniones y otras operaciones de cliente."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ADMINISTRADOR",
+      "item": [
+        {
+          "name": "1. USER",
+          "item": [
+            {
+              "name": "Login Admin",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"admin@cdl.com\",\n  \"password\": \"admin123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Esta funcionalidad permite autenticar a los administradores dentro de la plataforma mediante la validación de sus credenciales de acceso. Una vez completado el proceso, el sistema genera los permisos necesarios para acceder a los módulos administrativos y ejecutar tareas de gestión sobre la información almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Usuarios",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los usuarios registrados en la plataforma. A través de este proceso es posible conocer la información básica de cada cuenta, facilitando labores de administración, seguimiento y control de los registros existentes dentro del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Usuario por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un usuario específico mediante su identificador único. Resulta útil para validar información, realizar seguimiento a una cuenta determinada o gestionar situaciones particulares relacionadas con un usuario registrado."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Usuario (Admin)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-admin-key",
+                    "value": "CDL_Admin_Secret_2026",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdsoCli2\",\n  \"apellidos\": \"T\",\n  \"correo\": \"adsocli2@cdl.com\",\n  \"contraseña\": \"adso1234\",\n  \"celular\": \"3000000000\",\n  \"rol\": \"cliente\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/registro-admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "registro-admin"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos usuarios dentro de la plataforma, almacenando la información necesaria para su identificación y asignando los permisos correspondientes según el rol definido. Su objetivo es facilitar la creación y administración de cuentas desde el entorno administrativo."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Usuario",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"adsocliNew\",\n  \"apellidos\": \"T\",\n  \"celular\": \"3001234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de usuarios previamente registrados cuando sea necesario modificar datos personales o administrativos. Contribuye a mantener la integridad, precisión y actualización permanente de la información almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Asignar Rol Admin",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nuevoRol\": \"cliente\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/admin/7/rol",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "admin",
+                    "7",
+                    "rol"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar los privilegios asignados a un usuario mediante el cambio de rol dentro de la plataforma. Gracias a este proceso es posible otorgar o restringir permisos específicos según las responsabilidades y necesidades de administración definidas para cada cuenta."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Usuario",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar el acceso de los usuarios al sistema mediante la habilitación o restricción de sus cuentas. Su utilización facilita la administración de permisos sin necesidad de eliminar información previamente registrada."
+              },
+              "response": []
+            }
+          ],
+          "description": "El rol **USER** está orientado a las funcionalidades del cliente, permitiéndole registrarse e iniciar sesión en la plataforma, gestionar su perfil y datos personales, consultar productos, paquetes y catálogos disponibles, realizar búsquedas y aplicar filtros, solicitar productos o paquetes, administrar sus direcciones de envío, agendar citas, realizar pedidos y consultar su historial de compras. Además, puede hacer seguimiento al estado de sus pedidos, visualizar información detallada de los servicios disponibles en la plataforma.",
+          "auth": {
+            "type": "bearer"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. PAQUETES",
+          "item": [
+            {
+              "name": "Consultar Paquetes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de todos los paquetes registrados dentro de la plataforma. La consulta incluye información relacionada con sus características, disponibilidad y estado actual, facilitando la gestión y supervisión del catálogo de servicios ofrecidos."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Paquete por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/8",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "8"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un paquete específico mediante su identificador único. Su propósito es facilitar el acceso a información puntual para procesos de validación, seguimiento, administración o revisión de las características asociadas al servicio."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdsoPa2\",\n  \"descripcion\": \"Todo 2\",\n  \"precio\": 250000,\n  \"imagen\": \"boda.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos paquetes dentro de la plataforma, definiendo información como nombre, descripción, precio, imagen y demás características asociadas al servicio. Su objetivo es mantener actualizado el catálogo disponible para los usuarios."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adsopanew2\",\n  \"precio\": 2800000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información de paquetes previamente registrados cuando sea necesario actualizar características, condiciones o datos relacionados con el servicio. Esto garantiza que la información disponible se mantenga actualizada y acorde con la oferta vigente."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin/8/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin",
+                    "8",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un paquete dentro del sistema mediante el cambio de su estado. Gracias a este proceso es posible habilitar o restringir temporalmente determinados servicios sin eliminar la información almacenada."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3. CATEGORIAS",
+          "item": [
+            {
+              "name": "Consultar Categorias",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de las categorías registradas dentro de la plataforma. Su finalidad es facilitar la organización de productos y servicios mediante una estructura de clasificación clara y administrable."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Categoria por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una categoría específica mediante su identificador único. La consulta facilita la validación y revisión de la información asociada a una clasificación determinada dentro del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso Cate2\",\n  \"descripcion\": \"Para toda ocasion\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/categorias",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas categorías para organizar productos, paquetes o servicios dentro de la plataforma. Su implementación favorece una mejor clasificación de la información y optimiza los procesos de búsqueda y navegación."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso cate New\",\n  \"descripcion\": \"Para toda ocasion especial\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de categorías previamente registradas cuando sea necesario modificar nombres, descripciones u otros datos relacionados con la clasificación establecida."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7/activar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7",
+                    "activar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una categoría dentro del sistema. Mediante este proceso se puede habilitar o restringir su utilización sin afectar la información previamente asociada a ella."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "4. PRODUCTOS",
+          "item": [
+            {
+              "name": "Consultar Productos (Todos)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/todos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "todos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los productos registrados dentro del catálogo de la plataforma. La información consultada facilita el seguimiento de existencias, categorías asociadas, precios y disponibilidad de los productos administrados."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Producto por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "2"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un producto específico mediante su identificador único. Resulta útil para validar información, verificar características particulares y gestionar registros individuales dentro del catálogo."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdsoPro2\",\n  \"descripcion\": \"2\",\n  \"precio\": 85000,\n  \"categoriaId\": 1,\n  \"stock\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos productos dentro del sistema incorporando información como nombre, descripción, precio, categoría y existencias. Su propósito es mantener actualizado el catálogo disponible para los usuarios de la aplicación."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdoProNew\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/8",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "8"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de productos previamente registrados, incluyendo características, disponibilidad y demás datos relevantes asociados a cada artículo."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/2/activar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "2",
+                    "activar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de los productos dentro de la plataforma. Mediante este proceso es posible habilitar o restringir temporalmente su acceso para los usuarios sin eliminar el registro correspondiente."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "5. PEDIDOS PRODUCTOS",
+          "item": [
+            {
+              "name": "Consultar Pedidos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/admin/todos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "admin",
+                    "todos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los pedidos registrados dentro de la plataforma. A través de este proceso es posible conocer la información asociada a cada solicitud realizada por los clientes, facilitando el seguimiento de los servicios contratados y el control de las operaciones gestionadas por la empresa."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Pedido por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un pedido específico mediante su identificador único. La información consultada permite verificar los datos asociados a la solicitud, incluyendo estado, servicios relacionados y demás elementos necesarios para su seguimiento y administración."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"direccionEnvio\": \"Calle 100\",\n  \"telefono\": \"3000000\",\n  \"notas\": \"Cuidado\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos pedidos dentro del sistema mediante el almacenamiento de la información necesaria para su procesamiento. Durante este proceso se registran datos relacionados con la entrega, contacto del cliente y observaciones adicionales, garantizando que la solicitud quede disponible para su posterior gestión y seguimiento."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Estado Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"enviado\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/admin/1/estado",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "admin",
+                    "1",
+                    "estado"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar el estado de un pedido según la etapa en la que se encuentre dentro del proceso de atención. Su utilización facilita el seguimiento operativo de cada solicitud y garantiza que la información consultada refleje el estado actual del servicio o compra gestionada dentro de la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"direccionEnvio\": \"Calle 100\",\n  \"telefono\": \"3000000\",\n  \"notas\": \"pedidoadso1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información asociada a un pedido previamente registrado cuando sea necesario actualizar datos relacionados con la entrega, contacto o detalles de la solicitud. Gracias a este proceso se mantiene la información actualizada y alineada con los requerimientos operativos del servicio."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad o vigencia de un pedido dentro del sistema mediante el cambio de su estado administrativo. Su propósito es facilitar la gestión de registros sin necesidad de eliminarlos, conservando la trazabilidad y el historial de información asociado a cada solicitud."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6. CITAS",
+          "item": [
+            {
+              "name": "Consultar Citas (Todas)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/admin/todas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "admin",
+                    "todas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de todas las citas registradas dentro de la plataforma. Mediante este proceso es posible acceder a la información relacionada con las programaciones realizadas, facilitando el control, seguimiento y organización de las actividades asociadas a los servicios ofrecidos."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Cita por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una cita específica mediante su identificador único. Su objetivo es facilitar la revisión de información puntual relacionada con una programación determinada, permitiendo validar datos y realizar procesos de seguimiento sobre registros individuales."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paqueteId\": 1,\n  \"nombreCompleto\": \"Cliente X\",\n  \"correo\": \"x@x.com\",\n  \"telefono\": \"123\",\n  \"tipoEvento\": \"Cumpleaños\",\n  \"fechaEvento\": \"2024-12-01\",\n  \"numeroInvitados\": 50,\n  \"informacionAdicional\": \"N/A\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas citas dentro del sistema, asociando la información necesaria para la programación de actividades o servicios. El proceso garantiza una adecuada organización de los horarios y contribuye a una gestión eficiente de las solicitudes realizadas por los usuarios."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Estado Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"confirmada\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas/admin/1/estado",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "admin",
+                    "1",
+                    "estado"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar el estado de una cita según la etapa en la que se encuentre dentro del proceso de atención. Su implementación facilita el seguimiento de las programaciones y permite mantener actualizada la información relacionada con cada servicio agendado."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paqueteId\": 1,\n  \"nombreCompleto\": \"Citaadso1\",\n  \"correo\": \"adso@gmail.com\",\n  \"telefono\": \"123\",\n  \"tipoEvento\": \"Cumpleaños\",\n  \"fechaEvento\": \"2024-12-01\",\n  \"numeroInvitados\": 50,\n  \"informacionAdicional\": \"adso\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información de una cita previamente registrada cuando sea necesario actualizar aspectos relacionados con la programación o los datos asociados al servicio. Esto contribuye a mantener una gestión organizada y precisa de las actividades registradas."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite habilitar o restringir la disponibilidad de una cita dentro de la plataforma mediante el cambio de su estado. Gracias a este proceso es posible gestionar registros de manera flexible sin eliminar la información almacenada."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "7. DIRECCIONES",
+          "item": [
+            {
+              "name": "Consultar Direcciones",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de las direcciones registradas dentro de la plataforma. Su propósito es facilitar la administración de la información de ubicación asociada a usuarios, pedidos o servicios, permitiendo mantener un control adecuado sobre los registros almacenados."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Direccion por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una dirección específica mediante su identificador único. La información consultada facilita la validación de datos de ubicación y el seguimiento de registros particulares cuando se requiere información más precisa."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombreCompleto\": \"Admin Dir\",\n  \"direccion\": \"Cra 5\",\n  \"departamento\": \"Cun\",\n  \"municipio\": \"Bog\",\n  \"barrio\": \"Centro\",\n  \"telefono\": \"000\",\n  \"tipo\": \"residencial\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas direcciones dentro del sistema para asociarlas a usuarios o servicios específicos. Su utilización garantiza una correcta organización de la información geográfica necesaria para el funcionamiento de la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"barrio\": \"Norte\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de una dirección previamente registrada cuando sea necesario corregir o modificar datos relacionados con la ubicación almacenada. Esto contribuye a mantener la precisión y confiabilidad de la información utilizada en los diferentes procesos del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una dirección dentro de la plataforma mediante la modificación de su estado. Su implementación facilita la administración de registros sin afectar la integridad de la información previamente almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite eliminar registros de direcciones que ya no sean necesarios dentro del sistema. Su propósito es mantener organizada la información almacenada y evitar la acumulación de registros que no tengan utilidad dentro de los procesos operativos de la plataforma."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "8. CARRITO",
+          "item": [
+            {
+              "name": "Consultar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los carritos registrados dentro de la plataforma. A través de este proceso es posible acceder a la información relacionada con las selecciones realizadas por los usuarios, facilitando el seguimiento y la gestión de los productos asociados a cada carrito."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Item Carrito por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un carrito específico mediante su identificador único. Su objetivo es facilitar la revisión de la información asociada a una selección determinada y apoyar los procesos de control y administración dentro del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear/Agregar al Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productoId\": 2,\n  \"cantidad\": 4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite incorporar productos a un carrito previamente registrado. Durante el proceso se almacena la información correspondiente a la selección realizada, permitiendo construir pedidos de manera organizada antes de completar una compra o solicitud."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cantidad\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información asociada a un carrito, incluyendo aspectos relacionados con los productos o cantidades registradas. Su propósito es mantener actualizada la selección realizada y garantizar que la información almacenada refleje correctamente las decisiones del usuario."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un carrito dentro de la plataforma mediante la modificación de su estado. Gracias a esta operación es posible gestionar registros sin necesidad de eliminarlos permanentemente, conservando la trazabilidad de la información."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar del Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite retirar productos previamente agregados a un carrito. Su utilización brinda flexibilidad durante el proceso de selección, permitiendo actualizar el contenido almacenado y mantener únicamente los elementos que el usuario desea conservar."
+              },
+              "response": []
+            }
+          ]
+        }
+      ],
+      "description": "El rol **ADMIN** cuenta con acceso completo a todos los módulos del sistema, lo que le permite gestionar usuarios, productos, paquetes y catálogos; crear, editar, consultar, activar o desactivar registros, administrar pedidos, incluyendo la actualización de sus estados. Gestionar las citas programadas por los clientes, supervisar las direcciones y la información del carrito de compras. Además, dispone de funciones de búsqueda, filtrado y control general de la información, garantizando el correcto funcionamiento y administración de la plataforma."
+    },
+    {
+      "name": "AUXILIAR",
+      "item": [
+        {
+          "name": "1. USER",
+          "item": [
+            {
+              "name": "Consultar Usuarios",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los usuarios registrados dentro de la plataforma. A través de este proceso es posible acceder a la información principal de cada cuenta, facilitando el seguimiento, control y gestión de los registros disponibles dentro del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Usuario por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un usuario específico mediante su identificador único. Su propósito es facilitar la validación de información, el seguimiento de registros particulares y el acceso a los datos asociados a una cuenta determinada."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Usuario",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"adsocliNew\",\n  \"apellidos\": \"T\",\n  \"celular\": \"3001234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de un usuario previamente registrado cuando sea necesario modificar datos personales o administrativos. Su utilización contribuye a mantener la información almacenada actualizada y acorde con las necesidades de gestión de la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Usuario",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/usuarios/9/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "usuarios",
+                    "9",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una cuenta mediante la modificación de su estado. Su propósito es habilitar o restringir temporalmente el acceso del usuario sin eliminar la información almacenada, conservando la integridad y el historial de los registros."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. PAQUETES",
+          "item": [
+            {
+              "name": "Consultar Paquetes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los paquetes registrados dentro de la plataforma. La información consultada incluye las características principales, disponibilidad y demás datos relevantes de cada paquete, facilitando la administración y seguimiento del catálogo de servicios."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Paquete por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/8",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "8"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un paquete específico mediante su identificador único. A través de este proceso es posible acceder a la información completa del servicio seleccionado para apoyar labores de validación, administración y seguimiento."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdsoPa2\",\n  \"descripcion\": \"Todo 2\",\n  \"precio\": 250000,\n  \"imagen\": \"boda.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos paquetes dentro de la plataforma, incorporando la información necesaria para su identificación y posterior gestión. Durante el proceso se almacenan datos como nombre, descripción, precio y demás características que conforman el servicio ofrecido."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adsopanew2\",\n  \"precio\": 2800000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información de un paquete previamente registrado cuando sea necesario actualizar sus características o datos asociados. Su utilización garantiza que la información disponible permanezca actualizada y acorde con los servicios ofrecidos por la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Paquete",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/admin/8/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "admin",
+                    "8",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un paquete mediante la modificación de su estado. Gracias a este proceso es posible habilitar o restringir temporalmente un servicio sin eliminar el registro correspondiente del sistema."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3. CATEGORIAS",
+          "item": [
+            {
+              "name": "Consultar Categorias",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de las categorías registradas dentro de la plataforma. Su finalidad es facilitar la organización y clasificación de los productos disponibles, permitiendo una administración más eficiente de la información."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Categoria por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una categoría específica mediante su identificador único. La información consultada facilita la validación de registros y el acceso a los datos asociados a una clasificación determinada."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso Cate2\",\n  \"descripcion\": \"Para toda ocasion\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/categorias",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas categorías dentro del sistema para organizar los productos y servicios disponibles. Su implementación contribuye a mantener una estructura organizada que facilite la administración y consulta de la información."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso cate New\",\n  \"descripcion\": \"Para toda ocasion especial\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de una categoría previamente registrada cuando sea necesario modificar sus datos o características. De esta manera se garantiza que la clasificación utilizada por la plataforma permanezca actualizada y consistente."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Categoria",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/7/activar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "7",
+                    "activar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una categoría mediante la modificación de su estado. Su propósito es habilitar o restringir su utilización dentro del sistema sin eliminar la información previamente registrada."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "4. PRODUCTOS",
+          "item": [
+            {
+              "name": "Consultar Productos (Todos)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/todos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "todos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de todos los productos registrados dentro de la plataforma, incluyendo aquellos que se encuentren inactivos. La consulta facilita el control del inventario y la administración completa del catálogo disponible."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Producto por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "2"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un producto específico mediante su identificador único. Su finalidad es facilitar la validación de información y el acceso a las características particulares del producto seleccionado."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdsoPro2\",\n  \"descripcion\": \"2\",\n  \"precio\": 85000,\n  \"categoriaId\": 1,\n  \"stock\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos productos dentro del sistema incorporando la información necesaria para su identificación, clasificación y gestión. Durante el proceso se almacenan los datos requeridos para que el producto forme parte del catálogo disponible en la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"AdoProNew\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/8",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "8"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de un producto previamente registrado cuando sea necesario modificar sus características, disponibilidad o demás datos asociados. Su utilización garantiza que el catálogo permanezca actualizado y refleje la información vigente."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Producto",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/admin/2/activar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "admin",
+                    "2",
+                    "activar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un producto mediante la modificación de su estado. Gracias a este proceso es posible habilitar o restringir temporalmente su visualización y utilización sin eliminar el registro correspondiente del sistema."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "5. PEDIDOS PRODUCTOS",
+          "item": [
+            {
+              "name": "Consultar Pedidos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/admin/",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "admin",
+                    ""
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de todos los pedidos registrados dentro de la plataforma. A través de este proceso es posible acceder a la información principal de cada solicitud, incluyendo su estado, datos asociados y demás elementos relacionados con la compra realizada. Su finalidad es facilitar el seguimiento, control y gestión de los pedidos administrados por el sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Pedido por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un pedido específico mediante su identificador único. La información consultada permite validar los datos asociados a la solicitud, realizar seguimiento a un registro determinado y consultar el estado de un pedido de manera individual."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"direccionEnvio\": \"Calle 100\",\n  \"telefono\": \"3000000\",\n  \"notas\": \"Pedido Adso 1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevos pedidos dentro de la plataforma a partir de la información suministrada durante el proceso de compra. Su propósito es almacenar correctamente los datos de la solicitud para que pueda ser gestionada, atendida y supervisada durante las diferentes etapas de procesamiento."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Estado Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"enviado\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/admin/7/estado",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "admin",
+                    "7",
+                    "estado"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar el estado de un pedido de acuerdo con el avance de su proceso de atención. Gracias a esta operación es posible mantener actualizada la información del pedido y facilitar el seguimiento de su progreso dentro de la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"notas\": \"Pedidoadso 11\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información de un pedido previamente registrado cuando sea necesario actualizar datos relacionados con la solicitud. Su utilización contribuye a mantener la información precisa y garantiza que los registros permanezcan acordes con las necesidades operativas del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un pedido mediante la modificación de su estado. Su propósito es facilitar la administración de los registros sin necesidad de eliminarlos, conservando la trazabilidad y el historial de la información almacenada."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6. CITAS",
+          "item": [
+            {
+              "name": "Consultar Citas (Todas)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/admin/todas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "admin",
+                    "todas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de todas las citas registradas dentro de la plataforma. A través de este proceso es posible acceder a la programación de los servicios, facilitando el seguimiento, organización y control de las citas administradas por el sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Cita por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una cita específica mediante su identificador único. La información consultada facilita la validación de los datos asociados a una programación determinada y permite realizar un seguimiento preciso del servicio agendado."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paqueteId\": 1,\n  \"nombreCompleto\": \"Cita Adso 11 \",\n  \"correo\": \"x@x.com\",\n  \"telefono\": \"123\",\n  \"tipoEvento\": \"Cumpleaños\",\n  \"fechaEvento\": \"2024-12-01\",\n  \"numeroInvitados\": 50,\n  \"informacionAdicional\": \"N/A\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas citas dentro de la plataforma, asociando la información necesaria para la programación de un evento o servicio. Durante el proceso se almacenan los datos requeridos para garantizar una adecuada organización y posterior gestión de la cita."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Estado Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"confirmada\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas/admin/1/estado",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "admin",
+                    "1",
+                    "estado"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar el estado de una cita conforme avanza su proceso de atención. Su implementación facilita el control de las programaciones y garantiza que la información registrada refleje la situación actual de cada servicio agendado."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fechaEvento\": \"2025-12-19\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información de una cita previamente registrada cuando sea necesario actualizar datos relacionados con la programación o el evento asociado. Esto contribuye a mantener la información organizada y acorde con las necesidades operativas del servicio."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una cita mediante la modificación de su estado. Gracias a este proceso es posible habilitar o restringir temporalmente un registro sin eliminar la información almacenada dentro del sistema."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "7. DIRECCIONES",
+          "item": [
+            {
+              "name": "Consultar Direcciones",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de las direcciones registradas dentro de la plataforma. Su finalidad es facilitar la administración de la información de ubicación asociada a usuarios, pedidos y servicios, permitiendo un control organizado de los registros disponibles."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Direccion por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una dirección específica mediante su identificador único. A través de este proceso es posible validar la información de ubicación y consultar los datos asociados a un registro determinado."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombreCompleto\": \"Admin Dir\",\n  \"direccion\": \"Cra 5\",\n  \"departamento\": \"Cun\",\n  \"municipio\": \"Bog\",\n  \"barrio\": \"Centro\",\n  \"telefono\": \"000\",\n  \"tipo\": \"residencial\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas direcciones dentro del sistema para asociarlas a usuarios o servicios específicos. Su implementación garantiza una correcta organización de la información geográfica utilizada durante los procesos de entrega y atención."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"barrio\": \"Norte\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de una dirección previamente registrada cuando sea necesario modificar datos relacionados con la ubicación almacenada. Esto contribuye a mantener la precisión y confiabilidad de la información utilizada por la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de una dirección mediante la modificación de su estado. Su propósito es facilitar la administración de registros sin afectar la integridad de la información almacenada dentro del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite eliminar una dirección registrada cuando ya no sea necesaria dentro de la plataforma. El proceso contribuye a mantener organizada la información almacenada y facilita la depuración de registros que no serán utilizados en futuras operaciones."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "8. CARRITO",
+          "item": [
+            {
+              "name": "Consultar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta general de los productos almacenados dentro de un carrito de compras. Mediante este proceso es posible consultar la información de los artículos seleccionados y facilitar el seguimiento de las operaciones relacionadas con futuras compras o pedidos."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Item Carrito por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un producto específico almacenado dentro de un carrito mediante su identificador único. La información consultada facilita la validación de datos y el seguimiento individual de cada artículo registrado."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear/Agregar al Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productoId\": 2,\n  \"cantidad\": 4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la información asociada a los productos almacenados dentro de un carrito, incluyendo la actualización de cantidades u otros datos relacionados con la selección realizada. De esta manera se garantiza que la información permanezca acorde con los cambios efectuados durante el proceso de compra."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cantidad\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un carrito mediante la modificación de su estado. Gracias a este proceso es posible administrar los registros sin eliminarlos permanentemente, conservando la trazabilidad de la información almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Activar/Desactivar Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/1/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "1",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite controlar la disponibilidad de un carrito mediante la modificación de su estado. Gracias a este proceso es posible administrar los registros sin eliminarlos permanentemente, conservando la trazabilidad de la información almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar del Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{auxiliar}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite retirar productos previamente registrados dentro de un carrito de compras cuando ya no sean requeridos. Su utilización facilita mantener actualizada la selección de artículos y conservar únicamente los elementos que formarán parte del pedido final."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CLIENTE",
+      "item": [
+        {
+          "name": "1. USER",
+          "item": [
+            {
+              "name": "Registro Cliente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso user\",\n  \"apellidos\": \"Perez\",\n  \"correo\": \"user@cliente.com\",\n  \"contraseña\": \"user123\",\n  \"celular\": \"3001234567\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/registro",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "registro"
+                  ]
+                },
+                "description": "Esta funcionalidad permite a los usuarios crear una cuenta dentro de la plataforma mediante el registro de sus datos personales. Durante el proceso se almacena la información necesaria para su identificación y autenticación, permitiendo posteriormente el acceso a las funcionalidades disponibles para los clientes."
+              },
+              "response": []
+            },
+            {
+              "name": "Login Cliente",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"correo\": \"samuel.parrado01@gmail.com\",\n  \"password\": \"1022961218\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Esta funcionalidad permite autenticar a los clientes dentro de la plataforma mediante la validación de sus credenciales de acceso. Una vez completado el proceso, el sistema habilita el acceso a las funciones correspondientes al perfil del usuario y garantiza una interacción segura con la información registrada."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Mi Perfil",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/perfil",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "perfil"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de la información asociada a la cuenta del usuario autenticado. A través de este proceso es posible acceder a los datos personales registrados y verificar que la información almacenada se encuentre actualizada y correcta."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Mi Perfil",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Adso user new\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/perfil",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "perfil"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información personal asociada a la cuenta del cliente. Su propósito es mantener actualizados los datos registrados dentro de la plataforma y garantizar la precisión de la información utilizada en los distintos procesos del sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Desactivar Mi Cuenta",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/perfil/toggle",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "perfil",
+                    "toggle"
+                  ]
+                },
+                "description": "Esta funcionalidad permite al usuario desactivar su cuenta dentro de la plataforma, restringiendo el acceso a las funcionalidades asociadas a su perfil. El proceso conserva la información registrada y facilita la gestión de la cuenta sin necesidad de eliminar permanentemente los datos almacenados."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Mi Cuenta",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/auth/perfil",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "perfil"
+                  ]
+                },
+                "description": "Esta funcionalidad permite eliminar la cuenta asociada al usuario cuando este decida finalizar su uso de la plataforma. Su propósito es retirar el registro correspondiente del sistema conforme a las condiciones definidas para la gestión de cuentas y la administración de la información de los usuarios."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2. PAQUETES",
+          "item": [
+            {
+              "name": "Consultar Paquetes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de los paquetes disponibles dentro de la plataforma. La información consultada facilita el conocimiento de los servicios ofrecidos, sus características principales y las opciones disponibles para los usuarios interesados en realizar una contratación."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Paquete por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/paquetes/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "paquetes",
+                    "1"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un paquete específico mediante su identificador único. Gracias a este proceso el cliente puede acceder a información más completa sobre las características, condiciones y detalles asociados al servicio seleccionado."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3. CATALOGOS",
+          "item": [
+            {
+              "name": "Consultar Categorias",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de las categorías disponibles dentro de la plataforma. Su finalidad es facilitar la organización de la información y permitir que los usuarios identifiquen de manera más sencilla los productos o servicios que desean consultar."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Categoria por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/categorias/3",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "categorias",
+                    "3"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una categoría específica mediante su identificador único. A través de este proceso es posible acceder a información puntual relacionada con una clasificación determinada dentro del sistema."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "4. PRODUCTOS",
+          "item": [
+            {
+              "name": "Consultar Productos (Activos)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de los productos disponibles dentro de la plataforma. Mediante este proceso los usuarios pueden conocer los artículos registrados, sus características principales y la información necesaria para apoyar sus decisiones de compra."
+              },
+              "response": []
+            },
+            {
+              "name": "Consultar Producto por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/productos/7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "productos",
+                    "7"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un producto específico mediante su identificador único. La información consultada permite conocer las características particulares del artículo seleccionado y facilita la evaluación de las opciones disponibles."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "5. PEDIDOS PRODUCTOS",
+          "item": [
+            {
+              "name": "Mis Pedidos",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de los pedidos asociados al usuario autenticado. Su propósito es facilitar el seguimiento de las solicitudes realizadas y permitir el acceso a la información relacionada con cada operación registrada dentro de la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Mi Pedido por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un pedido específico perteneciente al usuario. A través de este proceso es posible verificar información puntual relacionada con la solicitud y realizar un seguimiento más preciso de su estado y características."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"direccionEnvio\": \"Calle 72b sur #14 v 45\",\n  \"telefono\": \"3142108863\",\n  \"notas\": \"No se\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas solicitudes de productos o servicios dentro de la plataforma. Durante el proceso se almacena la información necesaria para la gestión y atención del pedido, garantizando que este quede correctamente asociado al usuario que lo realiza."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Mi Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n   \"direccionEnvio\": \"Sena 12345\",\n        \"telefono\": \"3194284396\",\n        \"notas\": \"Golpear en la puerta de la izquierda\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/6",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "6"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar determinados datos asociados a un pedido previamente registrado, siempre que las condiciones operativas lo permitan. Su objetivo es facilitar la actualización de información y mantener la precisión de los registros almacenados."
+              },
+              "response": []
+            },
+            {
+              "name": "Cancelar Mi Pedido",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/pedidos/5/cancelar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pedidos",
+                    "5",
+                    "cancelar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite cancelar un pedido realizado por el usuario cuando las condiciones del proceso lo permitan. El sistema conserva la información correspondiente para mantener la trazabilidad y el historial de las operaciones efectuadas."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "6. CITAS",
+          "item": [
+            {
+              "name": "Mis Citas",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de las citas asociadas al usuario autenticado. Gracias a este proceso es posible acceder a la información relacionada con las programaciones realizadas y efectuar un seguimiento adecuado de los servicios agendados."
+              },
+              "response": []
+            },
+            {
+              "name": "Mi Cita por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/5",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "5"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una cita específica perteneciente al usuario. La información consultada facilita la verificación de fechas, horarios y demás datos asociados a una programación determinada."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paqueteId\": 1,\n  \"nombreCompleto\": \"samuel Parrado\",\n  \"correo\": \"samuel.parrado01@gmail.com\",\n  \"telefono\": \"3142108863\",\n  \"tipoEvento\": \"Boda\",\n  \"fechaEvento\": \"2025-05-10\",\n  \"numeroInvitados\": 100,\n  \"informacionAdicional\": \"N/A\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de una cita previamente programada cuando sea necesario modificar aspectos relacionados con la reserva o la prestación del servicio. De esta manera se mantiene actualizada la información almacenada en el sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Mi Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"Numero_Invitados\": 30\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/citas/6",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "6"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar la información de una cita previamente programada cuando sea necesario modificar aspectos relacionados con la reserva o la prestación del servicio. De esta manera se mantiene actualizada la información almacenada en el sistema."
+              },
+              "response": []
+            },
+            {
+              "name": "Cancelar Mi Cita",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/citas/5/cancelar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "citas",
+                    "5",
+                    "cancelar"
+                  ]
+                },
+                "description": "Esta funcionalidad permite cancelar una cita previamente registrada cuando las condiciones establecidas lo permitan. El proceso conserva el historial correspondiente y facilita la gestión de cambios dentro de la programación de servicios."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "7. DIRECCIONES",
+          "item": [
+            {
+              "name": "Mis Direcciones",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de las direcciones registradas por el usuario dentro de la plataforma. Su propósito es facilitar la gestión de la información de ubicación utilizada para pedidos, servicios y demás operaciones relacionadas."
+              },
+              "response": []
+            },
+            {
+              "name": "Mi Direccion por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "10"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de una dirección específica perteneciente al usuario. Gracias a este proceso es posible verificar información puntual relacionada con ubicaciones previamente registradas."
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombreCompleto\": \"Juan Perez\",\n  \"direccion\": \"Adso di2\",\n  \"departamento\": \"Ant\",\n  \"municipio\": \"Med\",\n  \"barrio\": \"Poblado\",\n  \"telefono\": \"300\",\n  \"tipo\": \"residencial\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones"
+                  ]
+                },
+                "description": "Esta funcionalidad permite registrar nuevas direcciones dentro de la cuenta del usuario para ser utilizadas en futuras solicitudes o servicios. Su implementación contribuye a mantener organizada la información de ubicación requerida por la plataforma."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Mi Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n        \"Direccion\": \"Calle 72b sur #14 v 45\",\n        \"Departamento\": \"Bogotá D.C.\",\n        \"Municipio_Localidad\": \"Usme\",\n        \"Barrio\": \"Quintas de la aurora\",\n        \"Apart_Casa\": \"45\",\n        \"Telefono\": \"3142108863\",\n        \"Indicaciones\": \"Casa de 3 pisos, color azul \",\n        \"Residencia_Laboral\": \"Casa\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/8",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "8"
+                  ]
+                },
+                "description": "Esta funcionalidad permite actualizar los datos asociados a una dirección previamente registrada cuando sea necesario corregir o modificar información relacionada con la ubicación almacenada."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Mi Direccion",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/direcciones/10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "direcciones",
+                    "10"
+                  ]
+                },
+                "description": "Esta funcionalidad permite eliminar direcciones registradas que ya no sean necesarias para el usuario. Su propósito es mantener actualizada la información almacenada y facilitar una gestión más eficiente de los registros de ubicación."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "8. CARRITO",
+          "item": [
+            {
+              "name": "Mi Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta de los productos almacenados dentro del carrito asociado al usuario autenticado. La información consultada facilita el seguimiento de los artículos seleccionados antes de finalizar una compra o solicitud."
+              },
+              "response": []
+            },
+            {
+              "name": "Mi Item Carrito por ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/11",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "11"
+                  ]
+                },
+                "description": "Esta funcionalidad permite realizar la consulta detallada de un elemento específico almacenado dentro del carrito. Su objetivo es facilitar la revisión de información puntual relacionada con un producto previamente agregado por el usuario."
+              },
+              "response": []
+            },
+            {
+              "name": "Agregar al Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productoId\": 7,\n  \"cantidad\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito"
+                  ]
+                },
+                "description": "Esta funcionalidad permite incorporar productos al carrito de compras del usuario. Durante este proceso se registra la selección realizada y se actualiza la información necesaria para futuras operaciones relacionadas con la compra."
+              },
+              "response": []
+            },
+            {
+              "name": "Editar Cantidad Item",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cantidad\": 15\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/16",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "16"
+                  ]
+                },
+                "description": "Esta funcionalidad permite modificar la cantidad de unidades asociadas a un producto almacenado dentro del carrito. Su utilización brinda flexibilidad al usuario durante el proceso de selección y permite ajustar los artículos según sus necesidades."
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Item del Carrito",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{cliente}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/carrito/11",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "carrito",
+                    "11"
+                  ]
+                },
+                "description": "Esta funcionalidad permite retirar productos previamente agregados al carrito de compras. Gracias a este proceso el usuario puede actualizar su selección y conservar únicamente los artículos que desea incluir en su futura compra o solicitud."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "admin"
+    },
+    {
+      "key": "cliente",
+      "value": ""
+    },
+    {
+      "key": "auxiliar",
+      "value": ""
+    }
+  ]
+}

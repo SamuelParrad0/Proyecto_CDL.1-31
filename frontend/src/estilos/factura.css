@@ -1,0 +1,510 @@
+/* ==================== VARIABLES Y RESET ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.pagina-factura {
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #000000;
+    padding: 40px 20px;
+}
+
+/* ==================== MENSAJE DE ÉXITO ==================== */
+.mensaje-exito {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(0, 255, 100, 0.1), rgba(0, 255, 100, 0.05));
+    border: 2px solid #00ff64;
+    border-radius: 20px;
+    margin: 0 auto 30px;
+    max-width: 900px;
+    animation: pulsar 2s infinite;
+}
+
+@keyframes pulsar {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 100, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(0, 255, 100, 0.6); }
+}
+
+.icono-exito {
+    font-size: 80px;
+    margin-bottom: 20px;
+    color: #00ff64;
+    animation: aparecer 0.5s ease;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.titulo-exito {
+    color: #00ff64;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.descripcion-exito {
+    color: #b0b0b0;
+    font-size: 1.1rem;
+}
+
+/* ==================== CONTENEDOR FACTURA ==================== */
+.contenedor-factura {
+    background: #ffffff;
+    color: #000000;
+    border-radius: 20px;
+    padding: 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* ==================== SELLO PAGADO ==================== */
+.sello-pagado {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #00cc55, #00b34a);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 3px 12px rgba(0, 204, 85, 0.3);
+}
+
+/* ==================== ENCABEZADO FACTURA ==================== */
+.encabezado-factura {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 30px;
+    border-bottom: 3px solid #ff0040;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.encabezado-factura::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: #ff0040;
+}
+
+.logo-factura {
+    max-width: 180px;
+    height: auto;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+}
+
+.nombre-empresa-principal {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    font-style: italic;
+    color: #ff0040;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 15px;
+}
+
+.info-empresa {
+    text-align: left;
+}
+
+.datos-empresa {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.8;
+    margin-top: 15px;
+}
+
+.datos-empresa p {
+    margin: 3px 0;
+}
+
+.icono-dato {
+    color: #ff0040;
+    font-size: 0.9rem;
+    margin-right: 8px;
+}
+
+.info-factura {
+    text-align: right;
+}
+
+.titulo-factura-empresa {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ff0040;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.fecha-factura {
+    color: #666;
+    font-size: 0.95rem;
+    background: #f8f8f8;
+    padding: 8px 15px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.fecha-factura i {
+    margin-right: 5px;
+}
+
+.estado-pago {
+    display: inline-block;
+    background: linear-gradient(135deg, #00cc55, #00b34a);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 204, 85, 0.3);
+}
+
+/* ==================== SECCIÓN CLIENTE ==================== */
+.seccion-cliente {
+    background: linear-gradient(135deg, #f8f8f8, #ffffff);
+    border-left: 5px solid #ff0040;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+.titulo-cliente {
+    font-size: 1.3rem;
+    color: #ff0040;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.titulo-cliente i {
+    font-size: 1.2rem;
+}
+
+.dato-cliente {
+    display: flex;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dato-cliente:last-child {
+    border-bottom: none;
+}
+
+.etiqueta-cliente {
+    font-weight: 700;
+    min-width: 140px;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.valor-cliente {
+    color: #555;
+    flex: 1;
+}
+
+/* ==================== SEPARADOR ==================== */
+.separador-seccion {
+    height: 2px;
+    background: linear-gradient(90deg, #ff0040, transparent);
+    margin: 40px 0;
+}
+
+/* ==================== DETALLE PEDIDO ==================== */
+.titulo-detalle-pedido {
+    font-size: 1.4rem;
+    color: #ff0040;
+    border-bottom: 2px solid #ff0040;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.titulo-detalle-pedido i {
+    font-size: 1.3rem;
+}
+
+/* ==================== TABLA PRODUCTOS ==================== */
+.tabla-productos {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabla-productos thead {
+    background: linear-gradient(135deg, #ff0040, #ff1a56);
+    color: white;
+}
+
+.tabla-productos th {
+    padding: 18px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tabla-productos td {
+    padding: 20px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.tabla-productos tbody tr {
+    transition: all 0.2s ease;
+}
+
+.tabla-productos tbody tr:hover {
+    background: #f9f9f9;
+    transform: scale(1.01);
+}
+
+.tabla-productos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.nombre-producto-tabla {
+    font-weight: 700;
+    color: #333;
+    font-size: 1.05rem;
+}
+
+.personalizacion-tabla {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    margin-top: 8px;
+    padding: 10px;
+    background: #fff9e6;
+    border-left: 3px solid #ffd700;
+    border-radius: 4px;
+}
+
+/* ==================== SECCIÓN TOTALES ==================== */
+.seccion-totales {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+}
+
+.contenedor-totales {
+    width: 400px;
+    background: linear-gradient(135deg, #f8f8f8, #ffffff);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f0f0f0;
+}
+
+.linea-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 1rem;
+}
+
+.linea-total:last-child {
+    border-bottom: none;
+}
+
+/* Total grande — la clase usada en el JSX */
+.linea-gran-total {
+    border-top: 3px solid #ff0040;
+    margin-top: 15px;
+    padding-top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff0040;
+    background: linear-gradient(135deg, #fff5f7, #ffffff);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px -10px 0;
+    border-bottom: none;
+}
+
+/* ==================== MÉTODO DE PAGO ==================== */
+.seccion-metodo-pago {
+    background: linear-gradient(135deg, #f0f9ff, #ffffff);
+    border-left: 5px solid #0066cc;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 40px;
+    box-shadow: 0 2px 15px rgba(0, 102, 204, 0.1);
+}
+
+.fila-metodo-pago {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.05rem;
+}
+
+.fila-metodo-pago span:first-child {
+    font-weight: 700;
+    color: #0066cc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fila-metodo-pago span:last-child {
+    color: #333;
+    font-weight: 600;
+}
+
+/* ==================== BOTONES DE ACCIÓN ==================== */
+.acciones-factura {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.boton-imprimir,
+.boton-nueva-compra {
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.boton-imprimir {
+    background: linear-gradient(135deg, #ff0040, #ff4d7d);
+    color: white;
+    box-shadow: 0 5px 25px rgba(255, 0, 64, 0.5);
+}
+
+.boton-imprimir:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 35px rgba(255, 0, 64, 0.8);
+}
+
+.boton-nueva-compra {
+    background: transparent;
+    border: 2px solid rgba(255, 8, 68, 0.3);
+    color: #ff0040;
+}
+
+.boton-nueva-compra:hover {
+    background: rgba(255, 8, 68, 0.1);
+    border-color: #ff0040;
+    transform: translateY(-3px);
+}
+
+/* ==================== PIE FACTURA ==================== */
+.pie-factura {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 3px double #e0e0e0;
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.pie-factura p {
+    margin: 8px 0;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .contenedor-factura {
+        padding: 30px 20px;
+    }
+
+    .encabezado-factura {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-factura {
+        text-align: left;
+    }
+
+    .seccion-totales {
+        justify-content: center;
+    }
+
+    .contenedor-totales {
+        width: 100%;
+    }
+
+    .acciones-factura {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== IMPRESIÓN ==================== */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .mensaje-exito,
+    .acciones-factura {
+        display: none !important;
+    }
+
+    .contenedor-factura {
+        box-shadow: none;
+        padding: 0;
+        max-width: none;
+    }
+
+    .sello-pagado {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .tabla-productos thead {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
