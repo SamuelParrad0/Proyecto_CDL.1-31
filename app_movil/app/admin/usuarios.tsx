@@ -18,7 +18,7 @@ import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedText } from '../../components/themed-text';
 
-import { listarUsuarios, toggleUsuario, cambiarRolUsuario, editarUsuario } from '@/src/servicios/servicioUsuarioAdmin';
+import { listarUsuarios, toggleUsuario, cambiarRolUsuario, editarUsuario, eliminarUsuario } from '@/src/servicios/servicioUsuarioAdmin';
 import { AuthContext } from '@/src/contexto/ContextoAuth';
 
 type Usuario = {
@@ -126,7 +126,63 @@ export default function AdminUsuariosScreen() {
         if (typeof u.Rol === 'string') return u.Rol;
         if (u.Id_Rol === 1) return 'admin';
         if (u.Id_Rol === 2) return 'cliente';
+        if (u.Id_Rol === 3) return 'auxiliar';
         return 'desconocido';
+    };
+
+    const handleCambiarRol = (item: Usuario) => {
+        const rolActual = getRolName(item).toLowerCase();
+        const rolesDisponibles = ['admin', 'auxiliar', 'cliente'];
+        const opciones = rolesDisponibles.filter((rol) => rol !== rolActual);
+
+        Alert.alert(
+            'Cambiar rol',
+            `Rol actual: ${rolActual.toUpperCase()}. Selecciona el nuevo rol.`,
+            [
+                ...opciones.map((rol) => ({
+                    text: rol.toUpperCase(),
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+                            await cambiarRolUsuario(item.Id_Usuario!, rol);
+                            await fetchUsuarios();
+                            Alert.alert('Éxito', `Rol cambiado a ${rol}`);
+                        } catch {
+                            Alert.alert('Error', 'No se pudo cambiar el rol');
+                            setLoading(false);
+                        }
+                    },
+                })),
+                { text: 'Cancelar', style: 'cancel' },
+            ],
+            { cancelable: true }
+        );
+    };
+
+    const handleEliminarUsuario = (item: Usuario) => {
+        Alert.alert(
+            'Eliminar usuario',
+            `¿Estás seguro de eliminar a ${item.Nombre} ${item.Apellidos || ''}? Esta acción no se puede deshacer.`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Eliminar',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+                            await eliminarUsuario(item.Id_Usuario!);
+                            await fetchUsuarios();
+                            Alert.alert('Éxito', 'Usuario eliminado correctamente');
+                        } catch {
+                            Alert.alert('Error', 'No se pudo eliminar el usuario');
+                            setLoading(false);
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
     };
 
     return (
@@ -203,32 +259,20 @@ export default function AdminUsuariosScreen() {
                                             {isAdminAuth && (
                                                 <TouchableOpacity
                                                     style={[styles.actionBtn, styles.rolBtn]}
-                                                    onPress={() => {
-                                                        const nuevoRol = rolName === 'admin' || rolName === 'administrador' ? 'cliente' : 'admin';
-                                                        Alert.alert('Cambiar rol', `¿Deseas cambiar el rol a ${nuevoRol.toUpperCase()}?`, [
-                                                            { text: 'Cancelar', style: 'cancel' },
-                                                            {
-                                                                text: 'Cambiar',
-                                                                onPress: async () => {
-                                                                    try {
-                                                                        setLoading(true);
-                                                                        await cambiarRolUsuario(item.Id_Usuario!, nuevoRol);
-                                                                        await fetchUsuarios();
-                                                                        Alert.alert('Éxito', 'Rol actualizado');
-                                                                    } catch {
-                                                                        Alert.alert('Error', 'No se pudo cambiar el rol');
-                                                                        setLoading(false);
-                                                                    }
-                                                                },
-                                                            },
-                                                        ]);
-                                                    }}
+                                                    onPress={() => handleCambiarRol(item)}
                                                 >
                                                     <IconSymbol name="arrow.triangle.2.circlepath" size={14} color={Tema.dark.dorado} />
                                                     <Text style={[styles.actionBtnText, { color: Tema.dark.dorado }]}>Rol</Text>
                                                 </TouchableOpacity>
                                             )}
 
+                                            {isAdminAuth && (
+                                                <TouchableOpacity
+                                                    style={[styles.actionBtn, styles.deleteBtn]}
+                                                    onPress={() => handleEliminarUsuario(item)}
+                                                >
+                                                    <IconSymbol name="trash" size={14} color={Tema.dark.error} />
+                                                    <Text style={[styles.actionBtnText, { color: Tema.dark.error }]}>Eliminar</Text>
                                             <TouchableOpacity
                                                 style={[styles.actionBtn, item.Activo ? styles.deactivateBtn : styles.activateBtn]}
                                                 onPress={async () => {
@@ -254,10 +298,10 @@ export default function AdminUsuariosScreen() {
                                 </View>
                             </View>
                         );
-                    }}
+                    }
                     ListEmptyComponent={!loading && !errorMessage ? <Text style={styles.emptyText}>No hay usuarios que coincidan con la búsqueda.</Text> : null}
                     contentContainerStyle={styles.listContainer}
-                />
+                /
             </View>
 
             {/* Modal Editar Usuario */}

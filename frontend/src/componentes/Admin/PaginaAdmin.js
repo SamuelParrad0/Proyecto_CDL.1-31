@@ -138,21 +138,36 @@ const PaginaAdmin = () => {
     setDialogo({ abierto: true, titulo, mensaje, onConfirm, variante });
   };
 
-  // --- HANDLERS USUARIOS ---
-  const cambiarRolUsuario = async (id, rolActual) => {
-    const nuevoRol = rolActual === 'admin' || rolActual === 'administrador' ? 'cliente' : 'admin';
-    pedirConfirmacion(
-      '¿Cambiar rol?',
-      `¿Deseas cambiar el rol de este usuario a ${nuevoRol.toUpperCase()}?`,
-      async () => {
+  // Mostrar diálogo con opciones para seleccionar un rol
+  const pedirSeleccionRol = (id, rolActual) => {
+    const opciones = ['admin', 'auxiliar', 'cliente'];
+    setDialogo({
+      abierto: true,
+      titulo: 'Seleccionar nuevo rol',
+      mensaje: `Rol actual: ${String(rolActual || 'cliente').toUpperCase()}. Elige un rol:`,
+      variante: 'info',
+      opciones,
+      onConfirm: null,
+      onSelect: async (nuevoRol) => {
         try {
+          setCargando(true);
           await actualizarRolAPI(id, nuevoRol);
           showToast(`Usuario actualizado a ${nuevoRol}`);
           cargarDatos();
-        } catch (e) { showToast(e.message, 'error'); }
-      },
-      'info'
-    );
+        } catch (e) {
+          showToast(e.message, 'error');
+        } finally {
+          setCargando(false);
+          setDialogo({ ...dialogo, abierto: false });
+        }
+      }
+    });
+  };
+
+  // --- HANDLERS USUARIOS ---
+  const cambiarRolUsuario = (id, rolActual) => {
+    // Solo admin puede abrir selector avanzado; auxiliar no debe ver el control (ya controlado en render)
+    pedirSeleccionRol(id, rolActual);
   };
 
   const eliminarUsuario = async (id) => {
@@ -577,13 +592,18 @@ const PaginaAdmin = () => {
                         <div style={{fontSize:'0.8rem', opacity:0.7}}>{u.Correo}</div>
                         <div style={{fontSize:'0.8rem', opacity:0.7}}>{u.Celular}</div>
                       </div>
-                      <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'5px', flexWrap:'wrap'}}>
+                        <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'5px', flexWrap:'wrap'}}>
                         <button className="boton-accion" onClick={() => {setElementoEditable(u); setModalAbierto('usuario');}} title="Editar Usuario">
                           <i className="fas fa-pen"></i>
                         </button>
                         {!esAuxiliar && (
                           <button className="boton-accion boton-accion--editar" onClick={() => cambiarRolUsuario(u.Id_Usuario, u.Rol?.Nombre_Rol)} title="Cambiar Rol">
                             <i className="fas fa-user-shield"></i>
+                          </button>
+                        )}
+                        {esAdminGeneral && (
+                          <button className="boton-accion boton-accion--eliminar" onClick={() => eliminarUsuario(u.Id_Usuario)} title="Eliminar Usuario">
+                            <i className="fas fa-trash"></i>
                           </button>
                         )}
                         <button className={`boton-accion ${u.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleUsuario(u.Id_Usuario)} title={u.Activo === false ? 'Activar Usuario' : 'Desactivar Usuario'}>
@@ -1242,9 +1262,18 @@ const PaginaAdmin = () => {
              <p className="dialogo__mensaje">{dialogo.mensaje}</p>
              <div className="dialogo__fila-botones">
                 <button className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
-                <button className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} onClick={() => { dialogo.onConfirm(); setDialogo({ ...dialogo, abierto: false }); }}>
-                  Proceder
-                </button>
+                {dialogo.opciones ? (
+                  // Mostrar botones por cada opción (ej. roles)
+                  dialogo.opciones.map(op => (
+                    <button key={op} className="boton-accion boton-accion--editar" onClick={async () => { if (dialogo.onSelect) await dialogo.onSelect(op); else if (dialogo.onConfirm) { await dialogo.onConfirm(op); } }}>
+                      {String(op).toUpperCase()}
+                    </button>
+                  ))
+                ) : (
+                  <button className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} onClick={() => { if (dialogo.onConfirm) dialogo.onConfirm(); setDialogo({ ...dialogo, abierto: false }); }}>
+                    Proceder
+                  </button>
+                )}
              </div>
           </div>
         </div>
