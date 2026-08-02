@@ -3,7 +3,7 @@
  *
  * - Configura la URL base del backend y el timeout desde las constantes.
  * - Interceptor de petición: adjunta el JWT automáticamente si existe.
- * - Interceptor de respuesta: normaliza errores del backend para que siempre
+ * - Interceptor de respuesta: normaliza errores del backend para que siempre.
  *   se reciba un objeto Error con mensaje legible en español.
  * - Maneja token expirado (401): limpia el almacenamiento automáticamente.
  */
