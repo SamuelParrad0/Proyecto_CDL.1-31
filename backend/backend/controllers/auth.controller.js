@@ -4,7 +4,7 @@ const { normalizarRol } = require('../utils/roles');
 
 // ==========================================
 // REGISTRO DE USUARIO
-// ==========================================
+// ==========================================   ggg
 const registrar = async (req, res) => {
   try {
     const { nombre, apellidos, correo, contraseña, celular } = req.body;
