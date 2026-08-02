@@ -32,10 +32,10 @@ export const DATOS_GALERIA = [
 ];
 
 export const DATOS_PRODUCTOS = [
-  { id:1, nombre:'Cajita Corazón',       precio:20000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png',    'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=700&q=80', 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=700&q=80'] },
-  { id:2, nombre:'Bolsa Sorpresa',        precio:65000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Bolsa-Sorpresa.png',     'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=700&q=80', 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80'] },
-  { id:3, nombre:'Caja Multifotográfica', precio:65000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Caja-multifotografia.png','https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80', 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=700&q=80'] },
-  { id:4, nombre:'Libro Emoción',         precio:95000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Libro-emocion.png',      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=700&q=80', 'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=700&q=80'] },
+  { id:1, nombre:'Cajita Corazón.',       precio:20000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png',    'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=700&q=80', 'https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=700&q=80'] },
+  { id:2, nombre:'Bolsa Sorpresa.',        precio:65000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Bolsa-Sorpresa.png',     'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=700&q=80', 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80'] },
+  { id:3, nombre:'Caja Multifotográfica.', precio:65000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Caja-multifotografia.png','https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&q=80', 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=700&q=80'] },
+  { id:4, nombre:'Libro Emoción.',         precio:95000,  imagenes:['Imagenes_Videos/Imagenes_Videos/Img-Productos/Libro-emocion.png',      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=700&q=80', 'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=700&q=80'] },
 ];
 
 export const DATOS_FAQ = [
