@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../estilos/admin.css';
 import { 
-  listarUsuariosAPI, eliminarUsuarioAPI, actualizarRolAPI, editarUsuarioAPI, toggleUsuarioAPI,
-  obtenerProductosAPI, listarProductosAdminAPI, crearProductoAPI, actualizarProductoAPI, eliminarProductoAPI, toggleProductoAPI,
+  listarUsuariosAPI, eliminarUsuarioAPI, actualizarRolAPI, editarUsuarioAPI, toggleUsuarioAPI, listarProductosAdminAPI, crearProductoAPI, actualizarProductoAPI, eliminarProductoAPI, toggleProductoAPI,
   obtenerPaquetesAPI, crearPaqueteAPI, actualizarPaqueteAPI, eliminarPaqueteAPI, togglePaqueteAPI,
   obtenerTodasLasSolicitudesAPI, actualizarEstadoSolicitudAPI,
   editarCitaAPI, toggleCitaAPI, eliminarCitaAPI, editarPedidoAPI, togglePedidoAPI, eliminarPedidoAPI, editarSolicitudAPI, toggleSolicitudAPI, eliminarSolicitudAdminAPI,
