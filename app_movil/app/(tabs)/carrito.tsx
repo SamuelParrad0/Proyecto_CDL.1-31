@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CarritoContext } from '@/src/contexto/ContextoCarrito';
 import { AuthContext } from '@/src/contexto/ContextoAuth';
-import servicioCatalogo from '@/src/servicios/servicioCatalogo';
 import servicioPedido from '@/src/servicios/servicioPedido';
 import servicioDirecciones from '@/src/servicios/servicioDirecciones';
 import { Picker } from '@react-native-picker/picker';
@@ -194,19 +193,19 @@ export default function CarritoScreen() {
       }
     }
 
-    try {
-      const direccionTexto = `${direccionSeleccionada.Direccion_Completa}, ${direccionSeleccionada.Barrio}, ${direccionSeleccionada.Municipio_Localidad}`;
-      await servicioPedido.crearPedido({
-        direccionEnvio: direccionTexto,
-        telefono: direccionSeleccionada.Telefono,
-        notas: direccionSeleccionada.Indicaciones || 'Pedido desde la app móvil',
-        metodoPago: datosPago.metodo
-      });
-      setOrderIdFactura(`CDL-${Math.floor(10000000 + Math.random() * 90000000)}`);
-      setPasoCheckout(3);
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'No se pudo procesar el pago.');
-    }
+try {
+  const direccionTexto = `${direccionSeleccionada.Direccion_Completa}, ${direccionSeleccionada.Barrio}, ${direccionSeleccionada.Municipio_Localidad}`;
+  const pedidoCreado = await servicioPedido.crearPedido({
+    direccionEnvio: direccionTexto,
+    telefono: direccionSeleccionada.Telefono,
+    notas: direccionSeleccionada.Indicaciones || 'Pedido desde la app móvil',
+    metodoPago: datosPago.metodo
+  });
+  setOrderIdFactura(`CDL-${pedidoCreado.id}`);
+  setPasoCheckout(3);
+} catch (error: any) {
+  Alert.alert('Error', error.message || 'No se pudo procesar el pago.');
+}
   };
 
   const renderItem = ({ item }) => {
