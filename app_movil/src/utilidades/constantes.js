@@ -9,7 +9,7 @@
 // Por defecto para emulador Android use localhost del PC (10.0.2.2).
 // Si usas un dispositivo físico cambia esta URL por la IP LAN de tu PC
 // (ej. http://192.168.1.5:5000/api).
-export const URL_BASE_API = 'http://10.95.235.63:5000/api';
+export const URL_BASE_API = 'http://192.168.1.5/api';
 export const TIEMPO_ESPERA_MS = 15000; // 15 segundos
 
 // ─── CLAVES DE ALMACENAMIENTO LOCAL ──────────────────────────────────────────

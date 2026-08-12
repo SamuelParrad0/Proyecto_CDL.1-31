@@ -241,35 +241,6 @@ const cambiarEstadoCita = async (req, res) => {
   }
 };
 
-// PATCH /api/citas/:id/toggle
-const toggleCita = async (req, res) => {
-  try {
-    const esGestion = ['admin', 'administrador', 'auxiliar'].includes(req.usuarioRol);
-
-    const where = esGestion
-      ? { Id_Reserva_Paquete: req.params.id }
-      : { Id_Reserva_Paquete: req.params.id, Id_Usuario: req.usuarioId };
-
-    const reserva = await ReservaPaquete.findOne({ where });
-
-    if (!reserva) {
-      return res.status(404).json({ ok: false, mensaje: 'Reserva no encontrada' });
-    }
-
-    const nuevoEstado = reserva.Estado_Reserva_Paquete === 'cancelada'
-      ? 'pendiente'
-      : 'cancelada';
-
-    await reserva.update({ Estado_Reserva_Paquete: nuevoEstado });
-
-    res.json({ ok: true, mensaje: `Cita ${nuevoEstado}`, reserva });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ ok: false, mensaje: error.message });
-  }
-};
-
 // DELETE /api/citas/admin/:id
 const eliminarCita = async (req, res) => {
   try {
