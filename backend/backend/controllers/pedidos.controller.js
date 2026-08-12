@@ -271,6 +271,25 @@ const editarPedido = async (req, res) => {
   }
 };
 
+// DELETE /api/pedidos/admin/:id
+const eliminarPedido = async (req, res) => {
+  try {
+    const pedido = await Pedido.findByPk(req.params.id);
+
+    if (!pedido) {
+      return res.status(404).json({ ok: false, mensaje: 'Pedido no encontrado' });
+    }
+
+    await pedido.destroy();
+
+    res.json({ ok: true, mensaje: 'Pedido eliminado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: error.message });
+  }
+};
+
 
 
 const togglePedido = async (req, res) => {
@@ -311,26 +330,6 @@ const togglePedido = async (req, res) => {
     }
 
     res.json({ ok: true, mensaje: `Pedido ${nuevoEstado}`, pedido });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ ok: false, mensaje: error.message });
-  }
-};
-
-
-// DELETE /api/pedidos/admin/:id
-const eliminarPedido = async (req, res) => {
-  try {
-    const pedido = await Pedido.findByPk(req.params.id);
-
-    if (!pedido) {
-      return res.status(404).json({ ok: false, mensaje: 'Pedido no encontrado' });
-    }
-
-    await pedido.destroy();
-
-    res.json({ ok: true, mensaje: 'Pedido eliminado correctamente' });
 
   } catch (error) {
     console.error(error);
