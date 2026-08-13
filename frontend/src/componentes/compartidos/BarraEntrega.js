@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { crearDireccionAPI, haySesionActiva } from '../../servicios/api';
 
 const CLAVE_DIRECCION = 'cdl_direccion';
@@ -10,7 +11,14 @@ const DEPARTAMENTOS = [
 ];
 
 function leerDireccion() {
-  try { return JSON.parse(localStorage.getItem(CLAVE_DIRECCION) || '{}'); } catch { return {}; }
+  try {
+    const rawData = localStorage.getItem(CLAVE_DIRECCION);
+    if (!rawData) return {};
+    const parsed = JSON.parse(rawData);
+    return sanitizarObjeto(parsed);
+  } catch {
+    return {};
+  }
 }
 
 function textoResumen(datos) {
@@ -23,16 +31,18 @@ function textoResumen(datos) {
   return partes.join(' — ') || 'Agregar dirección de entrega';
 }
 
-// Elimina etiquetas HTML de un valor antes de guardarlo en almacenamiento local
 function sanitizarTexto(valor) {
-  if (typeof valor !== 'string') return valor;
-  return valor.replace(/<[^>]*>/g, '').trim();
+  if (typeof valor !== 'string') return valor || '';
+  return DOMPurify.sanitize(valor, { ALLOWED_TAGS: [] }).trim();
 }
 
 function sanitizarObjeto(obj) {
+  if (!obj || typeof obj !== 'object') return {};
   const limpio = {};
   for (const clave in obj) {
-    limpio[clave] = sanitizarTexto(obj[clave]);
+    if (Object.hasOwn(obj, clave)) {
+      limpio[clave] = sanitizarTexto(obj[clave]);
+    }
   }
   return limpio;
 }
@@ -54,7 +64,6 @@ export default function BarraEntrega({ mostrarToast }) {
     if (datos.direccion) setTextoEntrega(textoResumen(datos));
   }, [sesionActiva]);
 
-  // Si no hay sesión activa, no mostrar la barra
   if (!sesionActiva) return null;
 
   const abrirModal = () => {
@@ -74,21 +83,22 @@ export default function BarraEntrega({ mostrarToast }) {
     if (!form.direccion.trim()) { mostrarToast('⚠️ Ingresa la dirección de entrega'); return; }
     if (!form.departamento) { mostrarToast('⚠️ Selecciona un departamento'); return; }
 
-    localStorage.setItem(CLAVE_DIRECCION, JSON.stringify(sanitizarObjeto(form)));
-    setTextoEntrega(textoResumen(form));
+    const datosLimpios = sanitizarObjeto(form);
+    localStorage.setItem(CLAVE_DIRECCION, JSON.stringify(datosLimpios));
+    setTextoEntrega(textoResumen(datosLimpios));
 
     try {
       setGuardando(true);
       await crearDireccionAPI({
-        nombre: form.nombre,
-        direccion: form.direccion,
-        departamento: form.departamento,
-        municipio: form.municipio,
-        barrio: form.barrio,
-        apto: form.apto,
-        telefono: form.telefono,
-        indicaciones: form.indicaciones,
-        tipo: form.tipo
+        nombre: datosLimpios.nombre,
+        direccion: datosLimpios.direccion,
+        departamento: datosLimpios.departamento,
+        municipio: datosLimpios.municipio,
+        barrio: datosLimpios.barrio,
+        apto: datosLimpios.apto,
+        telefono: datosLimpios.telefono,
+        indicaciones: datosLimpios.indicaciones,
+        tipo: datosLimpios.tipo
       });
     } catch (e) {
       console.error('Error al guardar dirección en BD:', e.message);
@@ -102,17 +112,30 @@ export default function BarraEntrega({ mostrarToast }) {
 
   const cambiar = (campo, valor) => setForm(f => ({ ...f, [campo]: valor }));
 
+  const handleKeyDown = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
+    }
+  };
+
   return (
     <>
       <div className="barra-entrega" id="barraEntrega">
-        <div className="barra-entrega-izquierda" onClick={abrirModal} title="Cambiar dirección">
+        <button
+          type="button"
+          className="barra-entrega-izquierda"
+          onClick={abrirModal}
+          title="Cambiar dirección"
+          style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+        >
           <i className="fas fa-map-marker-alt barra-entrega-icono"></i>
           <div className="barra-entrega-texto">
             <span>Entregar a:</span>
             <span id="textoBarraEntrega">{textoEntrega}</span>
           </div>
           <i className="fas fa-chevron-down" style={{color:'var(--text-muted)',fontSize:'0.55rem',marginLeft:'2px'}}></i>
-        </div>
+        </button>
         <div className="barra-entrega-derecha">
           <div className="barra-entrega-etiqueta">
             <div className="barra-entrega-punto"></div> Tu experiencia, en cualquier lugar de Colombia
@@ -123,11 +146,14 @@ export default function BarraEntrega({ mostrarToast }) {
       {/* Modal Dirección */}
       <div
         id="modalDireccion"
+        role="button"
+        tabIndex={0}
         onClick={(e) => e.target === e.currentTarget && cerrarModal()}
-        style={{display: modalAbierto ? 'flex' : 'none', position:'fixed', inset:0, background:'rgba(0,0,0,0.88)', zIndex:9998, alignItems:'center', justifyContent:'center', padding:'1.5rem'}}
+        onKeyDown={(e) => handleKeyDown(e, cerrarModal)}
+        style={{display: modalAbierto ? 'flex' : 'none', position:'fixed', inset:0, background:'rgba(0,0,0,0.88)', zIndex:9998, alignItems:'center', justifyContent:'center', padding:'1.5rem', outline:'none'}}
       >
         <div style={{background:'var(--bg-2)', border:'1px solid var(--border-red)', borderRadius:'18px', width:'100%', maxWidth:'500px', maxHeight:'90vh', overflowY:'auto', padding:'2rem 2.2rem', boxShadow:'0 0 60px var(--red-glow)', position:'relative'}}>
-          <button onClick={cerrarModal} style={{position:'absolute',top:'14px',right:'14px',background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',width:'32px',height:'32px',borderRadius:'50%',cursor:'pointer',fontSize:'1.1rem',display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
+          <button type="button" onClick={cerrarModal} style={{position:'absolute',top:'14px',right:'14px',background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',width:'32px',height:'32px',borderRadius:'50%',cursor:'pointer',fontSize:'1.1rem',display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
           <div style={{marginBottom:'1.4rem'}}>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.6rem',letterSpacing:'3px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,marginBottom:'4px'}}>— Dirección de entrega</div>
             <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:'1.7rem',letterSpacing:'2px',color:'#fff'}}>¿A dónde entregamos?</div>
@@ -144,15 +170,27 @@ export default function BarraEntrega({ mostrarToast }) {
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
               <div style={{position:'relative'}}>
                 <LabelModal>Departamento</LabelModal>
-                <div onClick={() => setDepListaAbierta(p => !p)} style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none'}}>
+                <button
+                  type="button"
+                  onClick={() => setDepListaAbierta(p => !p)}
+                  style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none',textAlign:'left'}}
+                >
                   <span>{form.departamento || 'Selecciona departamento'}</span>
                   <i className="fas fa-chevron-down" style={{fontSize:'0.65rem',color:'var(--text-muted)',transform: depListaAbierta ? 'rotate(180deg)' : 'rotate(0deg)',transition:'transform 0.3s'}}></i>
-                </div>
+                </button>
                 {depListaAbierta && (
                   <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,background:'var(--bg-1)',border:'1px solid var(--border-red)',borderRadius:'8px',zIndex:9999,maxHeight:'200px',overflowY:'auto',boxShadow:'0 8px 24px rgba(0,0,0,0.7)'}}>
                     <div style={{padding:'9px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-muted)',borderBottom:'1px solid var(--border)'}}>— Selecciona un departamento —</div>
                     {DEPARTAMENTOS.map(dep => (
-                      <div key={dep} className="departamento-opcion" onClick={() => { cambiar('departamento', dep); setDepListaAbierta(false); }} style={{color: form.departamento === dep ? 'var(--red)' : '', background: form.departamento === dep ? 'rgba(255,8,68,0.08)' : ''}}>{dep}</div>
+                      <button
+                        type="button"
+                        key={dep}
+                        className="departamento-opcion"
+                        onClick={() => { cambiar('departamento', dep); setDepListaAbierta(false); }}
+                        style={{width:'100%',textAlign:'left',border:'none',color: form.departamento === dep ? 'var(--red)' : '', background: form.departamento === dep ? 'rgba(255,8,68,0.08)' : 'transparent',cursor:'pointer',padding:'8px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem'}}
+                      >
+                        {dep}
+                      </button>
                     ))}
                   </div>
                 )}
@@ -182,7 +220,7 @@ export default function BarraEntrega({ mostrarToast }) {
               </div>
             </div>
           </div>
-          <button onClick={guardar} disabled={guardando} style={{width:'100%',marginTop:'1.3rem',background:'var(--red)',border:'none',color:'#fff',padding:'13px',borderRadius:'10px',fontFamily:"'Rajdhani',sans-serif",fontSize:'0.88rem',fontWeight:700,letterSpacing:'2.5px',textTransform:'uppercase',cursor:'pointer',transition:'var(--transition)',boxShadow:'0 4px 18px var(--red-glow)',opacity: guardando ? 0.7 : 1}}>
+          <button type="button" onClick={guardar} disabled={guardando} style={{width:'100%',marginTop:'1.3rem',background:'var(--red)',border:'none',color:'#fff',padding:'13px',borderRadius:'10px',fontFamily:"'Rajdhani',sans-serif",fontSize:'0.88rem',fontWeight:700,letterSpacing:'2.5px',textTransform:'uppercase',cursor:'pointer',transition:'var(--transition)',boxShadow:'0 4px 18px var(--red-glow)',opacity: guardando ? 0.7 : 1}}>
             <i className="fas fa-map-marker-alt" style={{marginRight:'8px'}}></i>
             {guardando ? 'Guardando...' : 'Guardar dirección'}
           </button>
