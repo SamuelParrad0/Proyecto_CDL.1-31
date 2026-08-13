@@ -273,35 +273,38 @@ export default function AdminUsuariosScreen() {
                                                 >
                                                     <IconSymbol name="trash" size={14} color={Tema.dark.error} />
                                                     <Text style={[styles.actionBtnText, { color: Tema.dark.error }]}>Eliminar</Text>
-                                            <TouchableOpacity
-                                                style={[styles.actionBtn, item.Activo ? styles.deactivateBtn : styles.activateBtn]}
-                                                onPress={async () => {
-                                                    try {
-                                                        setLoading(true);
-                                                        await toggleUsuario(item.Id_Usuario!);
-                                                        await fetchUsuarios();
-                                                    } catch {
-                                                        Alert.alert('Error', 'No se pudo cambiar el estado');
-                                                        setLoading(false);
-                                                    }
-                                                }}
-                                            >
-                                                <IconSymbol name={item.Activo ? "lock.fill" : "lock.open.fill"} size={14} color={item.Activo ? Tema.dark.error : Tema.dark.exito} />
-                                                <Text style={[styles.actionBtnText, { color: item.Activo ? Tema.dark.error : Tema.dark.exito }]}>
-                                                    {item.Activo ? 'Bloquear' : 'Activar'}
-                                                </Text>
-                                            </TouchableOpacity>
+                                                </TouchableOpacity>
+                                            )}
 
-
+                                            {isAdminAuth && (
+                                                <TouchableOpacity
+                                                    style={[styles.actionBtn, item.Activo ? styles.deactivateBtn : styles.activateBtn]}
+                                                    onPress={async () => {
+                                                        try {
+                                                            setLoading(true);
+                                                            await toggleUsuario(item.Id_Usuario!);
+                                                            await fetchUsuarios();
+                                                        } catch {
+                                                            Alert.alert('Error', 'No se pudo cambiar el estado');
+                                                            setLoading(false);
+                                                        }
+                                                    }}
+                                                >
+                                                    <IconSymbol name={item.Activo ? "lock.fill" : "lock.open.fill"} size={14} color={item.Activo ? Tema.dark.error : Tema.dark.exito} />
+                                                    <Text style={[styles.actionBtnText, { color: item.Activo ? Tema.dark.error : Tema.dark.exito }]}>
+                                                        {item.Activo ? 'Bloquear' : 'Activar'}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
                                         </View>
                                     )}
                                 </View>
                             </View>
                         );
-                    }
+                    }}
                     ListEmptyComponent={!loading && !errorMessage ? <Text style={styles.emptyText}>No hay usuarios que coincidan con la búsqueda.</Text> : null}
                     contentContainerStyle={styles.listContainer}
-                /
+                />
             </View>
 
             {/* Modal Editar Usuario */}
@@ -509,6 +512,10 @@ const styles = StyleSheet.create({
     rolBtn: {
         backgroundColor: 'rgba(201, 160, 96, 0.1)',
         borderColor: Tema.dark.dorado,
+    },
+    deleteBtn: {
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: Tema.dark.error,
     },
     activateBtn: {
         backgroundColor: 'rgba(34, 197, 94, 0.1)',
