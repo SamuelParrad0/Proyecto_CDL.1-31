@@ -23,6 +23,20 @@ function textoResumen(datos) {
   return partes.join(' — ') || 'Agregar dirección de entrega';
 }
 
+// Elimina etiquetas HTML de un valor antes de guardarlo en almacenamiento local
+function sanitizarTexto(valor) {
+  if (typeof valor !== 'string') return valor;
+  return valor.replace(/<[^>]*>/g, '').trim();
+}
+
+function sanitizarObjeto(obj) {
+  const limpio = {};
+  for (const clave in obj) {
+    limpio[clave] = sanitizarTexto(obj[clave]);
+  }
+  return limpio;
+}
+
 export default function BarraEntrega({ mostrarToast }) {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [textoEntrega, setTextoEntrega] = useState('Agregar dirección de entrega');
@@ -60,7 +74,7 @@ export default function BarraEntrega({ mostrarToast }) {
     if (!form.direccion.trim()) { mostrarToast('⚠️ Ingresa la dirección de entrega'); return; }
     if (!form.departamento) { mostrarToast('⚠️ Selecciona un departamento'); return; }
 
-    localStorage.setItem(CLAVE_DIRECCION, JSON.stringify(form));
+    localStorage.setItem(CLAVE_DIRECCION, JSON.stringify(sanitizarObjeto(form)));
     setTextoEntrega(textoResumen(form));
 
     try {

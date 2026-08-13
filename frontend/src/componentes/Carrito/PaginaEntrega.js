@@ -53,6 +53,19 @@ function normalizarDir(item) {
   };
 }
 
+function sanitizarTexto(valor) {
+  if (typeof valor !== 'string') return valor;
+  return valor.replace(/<[^>]*>/g, '').trim();
+}
+
+function sanitizarObjeto(obj) {
+  const limpio = {};
+  for (const clave in obj) {
+    limpio[clave] = sanitizarTexto(obj[clave]);
+  }
+  return limpio;
+}
+
 export default function PaginaEntrega() {
   const navigate = useNavigate();
   const [carrito] = useState(obtenerCarrito);
@@ -146,9 +159,9 @@ export default function PaginaEntrega() {
         setSeleccionado(actualizadas.length - 1);
       } else {
         // Sin sesión: solo localStorage
-        const actualizadas = [...dirs, { ...form }];
-        setDirs(actualizadas);
-        localStorage.setItem('cdl_dirs_entrega', JSON.stringify(actualizadas));
+        const actualizadas = [...dirs, sanitizarObjeto(form)];
+setDirs(actualizadas);
+localStorage.setItem('cdl_dirs_entrega', JSON.stringify(actualizadas.map(sanitizarObjeto)));
         setSeleccionado(actualizadas.length - 1);
       }
       setForm(FORM_VACIO);
@@ -159,6 +172,8 @@ export default function PaginaEntrega() {
     } finally {
       setGuardando(false);
     }
+
+
   };
 
   const continuar = () => {
