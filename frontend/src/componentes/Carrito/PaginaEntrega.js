@@ -12,12 +12,12 @@ import '../../estilos/perfil.css';
 const CART_KEY = 'productoCarrito';
 
 const DEPARTAMENTOS = [
-  'Amazonas','Antioquia','Arauca','Atlántico','Bogotá','Bolívar','Boyacá',
-  'Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba',
-  'Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena',
-  'Meta','Nariño','Norte de Santander','Putumayo','Quindío','Risaralda',
-  'San Andrés y Providencia','Santander','Sucre','Tolima',
-  'Valle del Cauca','Vaupés','Vichada'
+  'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá', 'Bolívar', 'Boyacá',
+  'Caldas', 'Caquetá', 'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba',
+  'Cundinamarca', 'Guainía', 'Guaviare', 'Huila', 'La Guajira', 'Magdalena',
+  'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 'Quindío', 'Risaralda',
+  'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima',
+  'Valle del Cauca', 'Vaupés', 'Vichada'
 ];
 
 const FORM_VACIO = {
@@ -53,6 +53,21 @@ function normalizarDir(item) {
   };
 }
 
+function sanitizarTexto(valor) {
+  if (typeof valor !== 'string') return valor;
+  return valor.replaceAll('<', '&lt;').replaceAll('>', '&gt;').trim();
+}
+
+function sanitizarObjeto(obj) {
+  const limpio = {};
+  for (const clave in obj) {
+    if (Object.hasOwn(obj, clave)) {
+      limpio[clave] = sanitizarTexto(obj[clave]);
+    }
+  }
+  return limpio;
+}
+
 export default function PaginaEntrega() {
   const navigate = useNavigate();
   const [carrito] = useState(obtenerCarrito);
@@ -73,7 +88,6 @@ export default function PaginaEntrega() {
     setTimeout(() => setToast(p => ({ ...p, visible: false })), 3500);
   }, []);
 
-  // Cargar direcciones: API si hay sesión, localStorage como fallback
   useEffect(() => {
     const cargar = async () => {
       setCargando(true);
@@ -82,13 +96,11 @@ export default function PaginaEntrega() {
           const data = await obtenerDireccionesAPI();
           const normalizadas = data.map(normalizarDir);
           setDirs(normalizadas);
-          // Sincronizar localStorage con la primera dir de la BD
           if (normalizadas.length > 0) {
             localStorage.setItem('cdl_direccion', JSON.stringify(normalizadas[0]));
           }
         } catch (e) {
           console.error('Error cargando dirs:', e);
-          // Fallback a localStorage
           cargarDesdeStorage();
         }
       } else {
@@ -141,14 +153,12 @@ export default function PaginaEntrega() {
         const nueva = normalizarDir(res.direccion);
         const actualizadas = [...dirs, nueva];
         setDirs(actualizadas);
-        // Sincronizar localStorage
         localStorage.setItem('cdl_dirs_entrega', JSON.stringify(actualizadas));
         setSeleccionado(actualizadas.length - 1);
       } else {
-        // Sin sesión: solo localStorage
-        const actualizadas = [...dirs, { ...form }];
+        const actualizadas = [...dirs, sanitizarObjeto(form)];
         setDirs(actualizadas);
-        localStorage.setItem('cdl_dirs_entrega', JSON.stringify(actualizadas));
+        localStorage.setItem('cdl_dirs_entrega', JSON.stringify(actualizadas.map(sanitizarObjeto)));
         setSeleccionado(actualizadas.length - 1);
       }
       setForm(FORM_VACIO);
@@ -168,6 +178,53 @@ export default function PaginaEntrega() {
   };
 
   const dirActual = dirs[seleccionado];
+
+  const renderDirecciones = () => {
+    if (cargando) {
+      return <p className="aviso-sin-direcciones">Cargando direcciones...</p>;
+    }
+    if (!dirs.length) {
+      return <p className="aviso-sin-direcciones">No tienes ninguna dirección guardada. Agrega una abajo.</p>;
+    }
+    return (
+      <div id="listaDireccionesGuardadas">
+        {dirs.map((dir, i) => {
+          const linea1 = [dir.direccion, dir.apto].filter(Boolean).join(', ');
+          const linea2 = [dir.barrio, dir.municipio, dir.departamento]
+            .filter(Boolean).join(' — ') +
+            (dir.nombre ? ` · ${dir.nombre}` : '') +
+            (dir.telefono ? ` · ${dir.telefono}` : '');
+          const esLaboral = dir.tipo === 'laboral';
+          
+          return (
+            <button
+              key={dir.id || `dir-${dir.direccion}-${i}`}
+              type="button"
+              className={`tarjeta-opcion-direccion${i === seleccionado ? ' seleccionada' : ''}`}
+              style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
+              onClick={() => { setSeleccionado(i); setPanelVisible(false); }}
+            >
+              <div className="radio-seleccion-direccion"></div>
+              <div style={{ flex: 1 }}>
+                <div className="texto-principal-direccion">{linea1 || '—'}</div>
+                {linea2 && <div className="texto-secundario-direccion">{linea2}</div>}
+                <div style={{ marginTop: '4px' }}>
+                  <span style={{
+                    background: 'rgba(255,8,68,0.1)', color: '#ff0844',
+                    fontSize: '0.68rem', fontWeight: 700, padding: '2px 8px',
+                    borderRadius: '20px', textTransform: 'capitalize'
+                  }}>
+                    <i className={`fas fa-${esLaboral ? 'briefcase' : 'home'}`} style={{ marginRight: '4px' }}></i>
+                    {dir.tipo || 'Residencial'}
+                  </span>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="pagina-entrega">
@@ -198,7 +255,7 @@ export default function PaginaEntrega() {
       </header>
 
       <div className="zona-boton-volver">
-        <button className="boton-regresar-carrito" onClick={() => navigate('/carrito')}>
+        <button type="button" className="boton-regresar-carrito" onClick={() => navigate('/carrito')}>
           <i className="fas fa-arrow-left"></i> Volver al carrito
         </button>
       </div>
@@ -212,52 +269,14 @@ export default function PaginaEntrega() {
           <div className="bloque-seleccion-direccion">
             <h3 className="subtitulo-bloque-direccion">En una de tus direcciones</h3>
 
-            {cargando ? (
-              <p className="aviso-sin-direcciones">Cargando direcciones...</p>
-            ) : !dirs.length ? (
-              <p className="aviso-sin-direcciones">No tienes ninguna dirección guardada. Agrega una abajo.</p>
-            ) : (
-              <div id="listaDireccionesGuardadas">
-                {dirs.map((dir, i) => {
-                  const linea1 = [dir.direccion, dir.apto].filter(Boolean).join(', ');
-                  const linea2 = [dir.barrio, dir.municipio, dir.departamento]
-                    .filter(Boolean).join(' — ') +
-                    (dir.nombre ? ` · ${dir.nombre}` : '') +
-                    (dir.telefono ? ` · ${dir.telefono}` : '');
-                  return (
-                    <div
-                      key={dir.id || i}
-                      className={`tarjeta-opcion-direccion${i === seleccionado ? ' seleccionada' : ''}`}
-                      onClick={() => { setSeleccionado(i); setPanelVisible(false); }}
-                    >
-                      <div className="radio-seleccion-direccion"></div>
-                      <div style={{ flex: 1 }}>
-                        <div className="texto-principal-direccion">{linea1 || '—'}</div>
-                        {linea2 && <div className="texto-secundario-direccion">{linea2}</div>}
-                        <div style={{ marginTop: '4px' }}>
-                          <span style={{
-                            background: 'rgba(255,8,68,0.1)', color: '#ff0844',
-                            fontSize: '0.68rem', fontWeight: 700, padding: '2px 8px',
-                            borderRadius: '20px', textTransform: 'capitalize'
-                          }}>
-                            <i className={`fas fa-${dir.tipo === 'laboral' ? 'briefcase' : 'home'}`}
-                               style={{ marginRight: '4px' }}></i>
-                            {dir.tipo || 'Residencial'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            {renderDirecciones()}
 
             {dirs.length > 0 && (
               <div className="grupo-botones-direccion">
-                <button className="boton-accion-direccion boton-eliminar-direccion" onClick={() => eliminarDir(seleccionado)}>
+                <button type="button" className="boton-accion-direccion boton-eliminar-direccion" onClick={() => eliminarDir(seleccionado)}>
                   <i className="fas fa-trash-alt"></i> Eliminar dirección
                 </button>
-                <button className="boton-accion-direccion boton-ver-detalle-direccion" onClick={() => setPanelVisible(p => !p)}>
+                <button type="button" className="boton-accion-direccion boton-ver-detalle-direccion" onClick={() => setPanelVisible(p => !p)}>
                   <i className="fas fa-eye"></i> {panelVisible ? 'Ocultar' : 'Ver completa'}
                 </button>
               </div>
@@ -286,11 +305,11 @@ export default function PaginaEntrega() {
               </div>
             )}
 
-            <button className="boton-agregar-nueva-direccion" onClick={() => { setMostrarForm(p => !p); setDepAbierto(false); }}>
+            <button type="button" className="boton-agregar-nueva-direccion" onClick={() => { setMostrarForm(p => !p); setDepAbierto(false); }}>
               <i className="fas fa-plus"></i> {mostrarForm ? 'Cancelar' : 'Agregar otra dirección'}
             </button>
 
-            {/* ── FORMULARIO NUEVA DIRECCIÓN (mismos campos que Perfil) ── */}
+            {/* FORMULARIO NUEVA DIRECCIÓN */}
             {mostrarForm && (
               <div className="formulario-nueva-direccion entrega-form-ampliado" style={{ display: 'block' }}>
                 <h4 className="titulo-formulario-direccion">
@@ -298,12 +317,11 @@ export default function PaginaEntrega() {
                   Nueva dirección
                 </h4>
 
-                {/* Grid 2 columnas */}
                 <div className="entrega-form-grid">
-                  {/* Dirección - fila completa */}
                   <div className="campo-input-direccion entrega-campo-full">
-                    <label>Dirección <span className="req">*</span></label>
+                    <label htmlFor="form-direccion">Dirección <span className="req">*</span></label>
                     <input
+                      id="form-direccion"
                       type="text"
                       value={form.direccion}
                       onChange={e => setForm(p => ({ ...p, direccion: e.target.value }))}
@@ -312,8 +330,9 @@ export default function PaginaEntrega() {
                   </div>
 
                   <div className="campo-input-direccion">
-                    <label>Municipio / Ciudad</label>
+                    <label htmlFor="form-municipio">Municipio / Ciudad</label>
                     <input
+                      id="form-municipio"
                       type="text"
                       value={form.municipio}
                       onChange={e => setForm(p => ({ ...p, municipio: e.target.value }))}
@@ -322,8 +341,9 @@ export default function PaginaEntrega() {
                   </div>
 
                   <div className="campo-input-direccion">
-                    <label>Barrio</label>
+                    <label htmlFor="form-barrio">Barrio</label>
                     <input
+                      id="form-barrio"
                       type="text"
                       value={form.barrio}
                       onChange={e => setForm(p => ({ ...p, barrio: e.target.value }))}
@@ -332,8 +352,9 @@ export default function PaginaEntrega() {
                   </div>
 
                   <div className="campo-input-direccion">
-                    <label>Apto / Casa</label>
+                    <label htmlFor="form-apto">Apto / Casa</label>
                     <input
+                      id="form-apto"
                       type="text"
                       value={form.apto}
                       onChange={e => setForm(p => ({ ...p, apto: e.target.value }))}
@@ -342,8 +363,9 @@ export default function PaginaEntrega() {
                   </div>
 
                   <div className="campo-input-direccion">
-                    <label>Nombre de quien recibe</label>
+                    <label htmlFor="form-nombre">Nombre de quien recibe</label>
                     <input
+                      id="form-nombre"
                       type="text"
                       value={form.nombre}
                       onChange={e => setForm(p => ({ ...p, nombre: e.target.value }))}
@@ -352,8 +374,9 @@ export default function PaginaEntrega() {
                   </div>
 
                   <div className="campo-input-direccion">
-                    <label>Teléfono de contacto</label>
+                    <label htmlFor="form-telefono">Teléfono de contacto</label>
                     <input
+                      id="form-telefono"
                       type="tel"
                       value={form.telefono}
                       onChange={e => setForm(p => ({ ...p, telefono: e.target.value }))}
@@ -361,10 +384,10 @@ export default function PaginaEntrega() {
                     />
                   </div>
 
-                  {/* Indicaciones - fila completa */}
                   <div className="campo-input-direccion entrega-campo-full">
-                    <label>Indicaciones adicionales</label>
+                    <label htmlFor="form-indicaciones">Indicaciones adicionales</label>
                     <input
+                      id="form-indicaciones"
                       type="text"
                       value={form.indicaciones}
                       onChange={e => setForm(p => ({ ...p, indicaciones: e.target.value }))}
@@ -373,12 +396,20 @@ export default function PaginaEntrega() {
                   </div>
                 </div>
 
-                {/* Departamento - selector custom */}
                 <div className="campo-input-direccion" style={{ position: 'relative' }}>
-                  <label>Departamento</label>
+                  <label htmlFor="form-departamento-trigger">Departamento</label>
                   <div
+                    id="form-departamento-trigger"
                     className={`entrega-dep-select${depAbierto ? ' open' : ''}`}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setDepAbierto(p => !p)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setDepAbierto(p => !p);
+                      }
+                    }}
                   >
                     <span style={{ color: form.departamento ? '#eae8f2' : '#8484a8' }}>
                       {form.departamento || 'Selecciona tu departamento'}
@@ -391,7 +422,16 @@ export default function PaginaEntrega() {
                         <div
                           key={dep}
                           className={`entrega-dep-option${form.departamento === dep ? ' selected' : ''}`}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => { setForm(p => ({ ...p, departamento: dep })); setDepAbierto(false); }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setForm(p => ({ ...p, departamento: dep }));
+                              setDepAbierto(false);
+                            }
+                          }}
                         >
                           {form.departamento === dep && <i className="fas fa-check" style={{ color: '#ff0844', fontSize: '0.7rem' }}></i>}
                           {dep}
@@ -401,13 +441,13 @@ export default function PaginaEntrega() {
                   )}
                 </div>
 
-                {/* Tipo de domicilio */}
                 <div className="campo-input-direccion">
-                  <label>Tipo de domicilio</label>
+                  <label htmlFor="form-tipo-residencial">Tipo de domicilio</label>
                   <div className="entrega-tipo-row">
                     {['residencial', 'laboral'].map(t => (
-                      <label key={t} className={`entrega-tipo-opcion${form.tipo === t ? ' activo' : ''}`}>
+                      <label key={t} htmlFor={`form-tipo-${t}`} className={`entrega-tipo-opcion${form.tipo === t ? ' activo' : ''}`}>
                         <input
+                          id={`form-tipo-${t}`}
                           type="radio"
                           name="entregaTipo"
                           value={t}
@@ -424,13 +464,18 @@ export default function PaginaEntrega() {
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
                   <button
+                    type="button"
                     className="boton-guardar-nueva-dir"
                     onClick={guardarNueva}
                     disabled={guardando}
                   >
-                    {guardando ? <><i className="fas fa-spinner fa-spin"></i> Guardando...</> : <><i className="fas fa-map-marker-alt"></i> Guardar dirección</>}
+                    {guardando ? (
+                      <><i className="fas fa-spinner fa-spin"></i> Guardando...</>
+                    ) : (
+                      <><i className="fas fa-map-marker-alt"></i> Guardar dirección</>
+                    )}
                   </button>
-                  <button className="boton-cancelar-nueva-dir" onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }}>
+                  <button type="button" className="boton-cancelar-nueva-dir" onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }}>
                     Cancelar
                   </button>
                 </div>
@@ -438,7 +483,7 @@ export default function PaginaEntrega() {
             )}
           </div>
 
-          <button className="boton-continuar-entrega" onClick={continuar}>
+          <button type="button" className="boton-continuar-entrega" onClick={continuar}>
             Continuar al Pago <i className="fas fa-arrow-right"></i>
           </button>
         </section>
@@ -447,16 +492,19 @@ export default function PaginaEntrega() {
         <aside className="columna-resumen-entrega">
           <h2 className="titulo-resumen-entrega">Resumen del pedido</h2>
           <div id="listaItemsResumen">
-            {carrito.map((item, i) => (
-              <div key={i} className="fila-item-resumen">
-                <span className="nombre-item-resumen">
-                  {item.nombre || item.producto?.Nombre_Producto || 'Producto'}
-                </span>
-                <span className="precio-item-resumen">
-                  {formatearPrecio(Number(item.precio) || Number(item.precioTotal) || 0)}
-                </span>
-              </div>
-            ))}
+            {carrito.map((item, i) => {
+              const itemKey = item.id || item.Id_Producto || `item-${i}`;
+              return (
+                <div key={itemKey} className="fila-item-resumen">
+                  <span className="nombre-item-resumen">
+                    {item.nombre || item.producto?.Nombre_Producto || 'Producto'}
+                  </span>
+                  <span className="precio-item-resumen">
+                    {formatearPrecio(Number(item.precio) || Number(item.precioTotal) || 0)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
           <div className="separador-resumen"></div>
           <div className="fila-total-resumen">

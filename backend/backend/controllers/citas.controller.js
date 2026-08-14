@@ -180,25 +180,6 @@ const toggleCita = async (req, res) => {
 };
 
 
-// DELETE /api/citas/admin/:id
-const eliminarCita = async (req, res) => {
-  try {
-    const reserva = await ReservaPaquete.findByPk(req.params.id);
-
-    if (!reserva) {
-      return res.status(404).json({ ok: false, mensaje: 'Reserva no encontrada' });
-    }
-
-    await reserva.destroy();
-
-    res.json({ ok: true, mensaje: 'Cita eliminada correctamente' });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ ok: false, mensaje: error.message });
-  }
-};
-
 
 // GET /api/citas/admin/todas
 const verTodasCitas = async (req, res) => {
@@ -257,6 +238,25 @@ const cambiarEstadoCita = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(400).json({ ok: false, mensaje: error.message });
+  }
+};
+
+// DELETE /api/citas/admin/:id
+const eliminarCita = async (req, res) => {
+  try {
+    const reserva = await ReservaPaquete.findByPk(req.params.id);
+
+    if (!reserva) {
+      return res.status(404).json({ ok: false, mensaje: 'Reserva no encontrada' });
+    }
+
+    await reserva.destroy();
+
+    res.json({ ok: true, mensaje: 'Cita eliminada correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, mensaje: error.message });
   }
 };
 

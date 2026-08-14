@@ -21,6 +21,17 @@ const handleResponse = async (response) => {
   return data;
 };
 
+// Valida que un ID sea un número entero positivo antes de usarlo
+// para construir una URL de solicitud (evita inyección de datos
+// contaminados en la ruta del lado del cliente).
+const validarId = (id) => {
+  const idNum = Number(id);
+  if (!Number.isInteger(idNum) || idNum <= 0) {
+    throw new Error('ID inválido');
+  }
+  return idNum;
+};
+
 // ==========================================
 // AUTENTICACIÓN Y PERFIL
 // ==========================================
@@ -127,7 +138,7 @@ export async function actualizarPerfilAPI(datos) {
 // ==========================================
 export async function obtenerProductosAPI(categoriaId = null) {
   const url = categoriaId
-    ? `${API_URL}/productos/categoria/${categoriaId}`
+    ? `${API_URL}/productos/categoria/${validarId(categoriaId)}`
     : `${API_URL}/productos`;
   const response = await fetch(url);
   return handleResponse(response);
@@ -141,7 +152,7 @@ export async function listarProductosAdminAPI() {
 }
 
 export async function obtenerProductoPorIdAPI(id) {
-  const response = await fetch(`${API_URL}/productos/${id}`);
+  const response = await fetch(`${API_URL}/productos/${validarId(id)}`);
   return handleResponse(response);
 }
 
@@ -188,7 +199,7 @@ export async function obtenerMisReservasAPI() {
 }
 
 export async function cancelarReservaAPI(id) {
-  const response = await fetch(`${API_URL}/citas/${id}/cancelar`, {
+  const response = await fetch(`${API_URL}/citas/${validarId(id)}/cancelar`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -196,7 +207,7 @@ export async function cancelarReservaAPI(id) {
 }
 
 export async function cancelarPedidoAPI(id) {
-  const response = await fetch(`${API_URL}/pedidos/${id}/cancelar`, {
+  const response = await fetch(`${API_URL}/pedidos/${validarId(id)}/cancelar`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -204,7 +215,7 @@ export async function cancelarPedidoAPI(id) {
 }
 
 export async function cancelarPersonalizadoAPI(id) {
-  const response = await fetch(`${API_URL}/personalizado/${id}/cancelar`, {
+  const response = await fetch(`${API_URL}/personalizado/${validarId(id)}/cancelar`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -272,7 +283,7 @@ export async function agregarAlCarritoAPI(datos) {
 }
 
 export async function eliminarDelCarritoAPI(id) {
-  const response = await fetch(`${API_URL}/carrito/${id}`, {
+  const response = await fetch(`${API_URL}/carrito/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -280,7 +291,7 @@ export async function eliminarDelCarritoAPI(id) {
 }
 
 export async function actualizarCantidadCarritoAPI(id, cantidad) {
-  const response = await fetch(`${API_URL}/carrito/${id}`, {
+  const response = await fetch(`${API_URL}/carrito/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify({ cantidad })
@@ -331,7 +342,7 @@ export async function crearDireccionAPI(datos) {
 }
 
 export async function eliminarDireccionAPI(id) {
-  const response = await fetch(`${API_URL}/direcciones/${id}`, {
+  const response = await fetch(`${API_URL}/direcciones/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -350,7 +361,7 @@ export async function editarDireccionAPI(id, datos) {
     indicaciones:   datos.indicaciones || '',
     tipo:           datos.tipo || 'residencial'
   };
-  const response = await fetch(`${API_URL}/direcciones/${id}`, {
+  const response = await fetch(`${API_URL}/direcciones/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(payload)
@@ -371,7 +382,7 @@ export async function listarUsuariosAPI() {
 }
 
 export async function eliminarUsuarioAPI(id) {
-  const response = await fetch(`${API_URL}/auth/usuarios/${id}`, {
+  const response = await fetch(`${API_URL}/auth/usuarios/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -379,7 +390,7 @@ export async function eliminarUsuarioAPI(id) {
 }
 
 export async function actualizarRolAPI(id, nuevoRol) {
-  const response = await fetch(`${API_URL}/auth/admin/${id}/rol`, {
+  const response = await fetch(`${API_URL}/auth/admin/${validarId(id)}/rol`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify({ nuevoRol })
@@ -388,7 +399,7 @@ export async function actualizarRolAPI(id, nuevoRol) {
 }
 
 export async function toggleUsuarioAPI(id) {
-  const response = await fetch(`${API_URL}/auth/usuarios/${id}/toggle`, {
+  const response = await fetch(`${API_URL}/auth/usuarios/${validarId(id)}/toggle`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -396,7 +407,7 @@ export async function toggleUsuarioAPI(id) {
 }
 
 export async function editarUsuarioAPI(id, datos) {
-  const response = await fetch(`${API_URL}/auth/usuarios/${id}`, {
+  const response = await fetch(`${API_URL}/auth/usuarios/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -415,7 +426,7 @@ export async function crearProductoAPI(datos) {
 }
 
 export async function actualizarProductoAPI(id, datos) {
-  const response = await fetch(`${API_URL}/productos/admin/${id}`, {
+  const response = await fetch(`${API_URL}/productos/admin/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -424,7 +435,7 @@ export async function actualizarProductoAPI(id, datos) {
 }
 
 export async function toggleProductoAPI(id) {
-  const response = await fetch(`${API_URL}/productos/admin/${id}/activar`, {
+  const response = await fetch(`${API_URL}/productos/admin/${validarId(id)}/activar`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -432,7 +443,7 @@ export async function toggleProductoAPI(id) {
 }
 
 export async function eliminarProductoAPI(id) {
-  const response = await fetch(`${API_URL}/productos/admin/${id}`, {
+  const response = await fetch(`${API_URL}/productos/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -450,7 +461,7 @@ export async function crearCategoriaAPI(datos) {
 }
 
 export async function actualizarCategoriaAPI(id, datos) {
-  const response = await fetch(`${API_URL}/categorias/${id}`, {
+  const response = await fetch(`${API_URL}/categorias/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -459,7 +470,7 @@ export async function actualizarCategoriaAPI(id, datos) {
 }
 
 export async function eliminarCategoriaAPI(id) {
-  const response = await fetch(`${API_URL}/categorias/${id}`, {
+  const response = await fetch(`${API_URL}/categorias/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -467,7 +478,7 @@ export async function eliminarCategoriaAPI(id) {
 }
 
 export async function toggleCategoriaAPI(id) {
-  const response = await fetch(`${API_URL}/categorias/${id}/activar`, {
+  const response = await fetch(`${API_URL}/categorias/${validarId(id)}/activar`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -485,7 +496,7 @@ export async function crearPaqueteAPI(datos) {
 }
 
 export async function actualizarPaqueteAPI(id, datos) {
-  const response = await fetch(`${API_URL}/paquetes/admin/${id}`, {
+  const response = await fetch(`${API_URL}/paquetes/admin/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -494,7 +505,7 @@ export async function actualizarPaqueteAPI(id, datos) {
 }
 
 export async function eliminarPaqueteAPI(id) {
-  const response = await fetch(`${API_URL}/paquetes/admin/${id}`, {
+  const response = await fetch(`${API_URL}/paquetes/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -502,7 +513,7 @@ export async function eliminarPaqueteAPI(id) {
 }
 
 export async function togglePaqueteAPI(id) {
-  const response = await fetch(`${API_URL}/paquetes/admin/${id}/toggle`, {
+  const response = await fetch(`${API_URL}/paquetes/admin/${validarId(id)}/toggle`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -530,9 +541,10 @@ export async function obtenerTodasLasSolicitudesAPI(tipo = 'personalizado') {
 }
 
 export async function actualizarEstadoSolicitudAPI(tipo, id, estado) {
-  let path = `personalizado/admin/${id}/estado`;
-  if (tipo === 'productos') path = `pedidos/admin/${id}/estado`;
-  if (tipo === 'paquetes') path = `citas/admin/${id}/estado`;
+  const idValidado = validarId(id);
+  let path = `personalizado/admin/${idValidado}/estado`;
+  if (tipo === 'productos') path = `pedidos/admin/${idValidado}/estado`;
+  if (tipo === 'paquetes') path = `citas/admin/${idValidado}/estado`;
 
   const response = await fetch(`${API_URL}/${path}`, {
     method: 'PUT',
@@ -560,7 +572,7 @@ export async function crearOpinionAPI(datos) {
 }
 
 export async function eliminarOpinionAPI(id) {
-  const response = await fetch(`${API_URL}/opiniones/admin/${id}`, {
+  const response = await fetch(`${API_URL}/opiniones/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -569,7 +581,7 @@ export async function eliminarOpinionAPI(id) {
 
 // --- Nuevas funciones de edición y toggle ---
 export async function editarCitaAPI(id, datos) {
-  const response = await fetch(`${API_URL}/citas/${id}`, {
+  const response = await fetch(`${API_URL}/citas/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -578,7 +590,7 @@ export async function editarCitaAPI(id, datos) {
 }
 
 export async function toggleCitaAPI(id) {
-  const response = await fetch(`${API_URL}/citas/${id}/toggle`, {
+  const response = await fetch(`${API_URL}/citas/${validarId(id)}/toggle`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -586,7 +598,7 @@ export async function toggleCitaAPI(id) {
 }
 
 export async function eliminarCitaAPI(id) {
-  const response = await fetch(`${API_URL}/citas/admin/${id}`, {
+  const response = await fetch(`${API_URL}/citas/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -594,7 +606,7 @@ export async function eliminarCitaAPI(id) {
 }
 
 export async function editarPedidoAPI(id, datos) {
-  const response = await fetch(`${API_URL}/pedidos/${id}`, {
+  const response = await fetch(`${API_URL}/pedidos/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -603,7 +615,7 @@ export async function editarPedidoAPI(id, datos) {
 }
 
 export async function togglePedidoAPI(id) {
-  const response = await fetch(`${API_URL}/pedidos/${id}/toggle`, {
+  const response = await fetch(`${API_URL}/pedidos/${validarId(id)}/toggle`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -611,7 +623,7 @@ export async function togglePedidoAPI(id) {
 }
 
 export async function eliminarPedidoAPI(id) {
-  const response = await fetch(`${API_URL}/pedidos/admin/${id}`, {
+  const response = await fetch(`${API_URL}/pedidos/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -619,7 +631,7 @@ export async function eliminarPedidoAPI(id) {
 }
 
 export async function editarSolicitudAPI(id, datos) {
-  const response = await fetch(`${API_URL}/personalizado/${id}`, {
+  const response = await fetch(`${API_URL}/personalizado/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -628,7 +640,7 @@ export async function editarSolicitudAPI(id, datos) {
 }
 
 export async function toggleSolicitudAPI(id) {
-  const response = await fetch(`${API_URL}/personalizado/${id}/toggle`, {
+  const response = await fetch(`${API_URL}/personalizado/${validarId(id)}/toggle`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });
@@ -636,7 +648,7 @@ export async function toggleSolicitudAPI(id) {
 }
 
 export async function eliminarSolicitudAdminAPI(id) {
-  const response = await fetch(`${API_URL}/personalizado/admin/${id}`, {
+  const response = await fetch(`${API_URL}/personalizado/admin/${validarId(id)}`, {
     method: 'DELETE',
     headers: getHeaders(true)
   });
@@ -644,7 +656,7 @@ export async function eliminarSolicitudAdminAPI(id) {
 }
 
 export async function editarOpinionAPI(id, datos) {
-  const response = await fetch(`${API_URL}/opiniones/${id}`, {
+  const response = await fetch(`${API_URL}/opiniones/${validarId(id)}`, {
     method: 'PUT',
     headers: getHeaders(true),
     body: JSON.stringify(datos)
@@ -653,7 +665,7 @@ export async function editarOpinionAPI(id, datos) {
 }
 
 export async function toggleOpinionAPI(id) {
-  const response = await fetch(`${API_URL}/opiniones/admin/${id}/estado`, {
+  const response = await fetch(`${API_URL}/opiniones/admin/${validarId(id)}/estado`, {
     method: 'PATCH',
     headers: getHeaders(true)
   });

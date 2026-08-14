@@ -8,6 +8,7 @@ const { initAssociations } = require('./models');
 const { normalizarBody } = require('./middleware/normalizarBody');
 
 const app = express();
+app.disable('x-powered-by');
 
 // Middlewares
 app.use(cors({
