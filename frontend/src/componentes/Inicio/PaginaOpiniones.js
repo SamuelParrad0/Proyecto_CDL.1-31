@@ -36,9 +36,9 @@ export default function PaginaOpiniones() {
     if (!formReseña.texto.trim()) { mostrarToast('⚠️ Escribe tu opinión'); return; }
     const nombreUsuario = mostrarNombre ? (formReseña.nombre.trim() || 'Anónimo') : 'Anónimo';
     try {
-      await crearOpinionAPI({ nombre: nombreUsuario, calificacion: parseInt(formReseña.calificacion), comentario: formReseña.texto.trim() });
+      await crearOpinionAPI({ nombre: nombreUsuario, calificacion: Number.parseInt(formReseña.calificacion), comentario: formReseña.texto.trim() });
       const iniciales = nombreUsuario === 'Anónimo' ? '👤' : nombreUsuario.split(' ').map(p => p[0]).join('').toUpperCase().substring(0, 2);
-      setReseñas(prev => [{ nombre: nombreUsuario, iniciales, estrellas: parseInt(formReseña.calificacion), texto: formReseña.texto.trim(), fecha: 'Ahora mismo', color: ['#ff0844', '#800020'] }, ...prev]);
+      setReseñas(prev => [{ nombre: nombreUsuario, iniciales, estrellas: Number.parseInt(formReseña.calificacion), texto: formReseña.texto.trim(), fecha: 'Ahora mismo', color: ['#ff0844', '#800020'] }, ...prev]);
       mostrarToast('⭐ ¡Opinión publicada con éxito!');
       setFormReseña({ nombre: '', calificacion: '', texto: '' });
       setContadorTexto(0);

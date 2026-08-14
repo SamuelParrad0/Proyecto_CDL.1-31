@@ -43,8 +43,8 @@ export default function PaginaCarrito() {
   const carritoConClientes = obtenerCarritoConClientes();
 
   const handleCambioCantidad = (itemId, nuevaCantidad, stock) => {
-    let cant = parseInt(nuevaCantidad);
-    if (isNaN(cant) || cant < 1) cant = 1;
+    let cant = Number.Number.parseInt(nuevaCantidad);
+    if (Number.isNaN(cant) || cant < 1) cant = 1;
     if (cant > stock) {
       alert(`Solo hay ${stock} unidades disponibles.`);
       cant = stock;

@@ -38,13 +38,13 @@ const crearPedido = async (req, res) => {
     // Crear detalles desde el carrito y descontar stock
     const detalles = [];
     for (const item of itemsCarrito) {
-      const precioUnitario = parseFloat(item.Precio_Total) / item.Cantidad_Productos;
+      const precioUnitario = Number.parseFloat(item.Precio_Total) / item.Cantidad_Productos;
       const detalle = await DetallePedido.create({
         pedidoId: pedido.id,
         productoId: item.Id_Producto,
         cantidad: item.Cantidad_Productos,
         precioUnitario: precioUnitario,
-        subtotal: parseFloat(item.Precio_Total)
+        subtotal: Number.parseFloat(item.Precio_Total)
       });
       detalles.push(detalle);
 
@@ -55,7 +55,7 @@ const crearPedido = async (req, res) => {
     }
 
     // Calcular total
-    const total = detalles.reduce((acc, d) => acc + parseFloat(d.subtotal), 0);
+    const total = detalles.reduce((acc, d) => acc + Number.parseFloat(d.subtotal), 0);
     await pedido.update({ total });
 
     // Vaciar carrito

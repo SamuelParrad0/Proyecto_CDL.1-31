@@ -52,7 +52,7 @@ const Carrito = sequelize.define('Carrito', {
 
 // MÉTODO SUBTOTAL
 Carrito.prototype.calcularSubtotal = function() {
-  return parseFloat(this.Precio_Total);
+  return Number.parseFloat(this.Precio_Total);
 };
 
 module.exports = Carrito;

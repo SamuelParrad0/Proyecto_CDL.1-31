@@ -13,7 +13,7 @@ const PRODUCTOS_PEDIDO = [
 const TEXTO_TITULO = 'Regalos que se convierten en recuerdos';
 
 function parsePrecio(str) {
-  return parseFloat(str.replace(/\./g, '').replace(',', '.'));
+  return Number.parseFloat(str.replace(/\./g, '').replace(',', '.'));
 }
 
 export default function PaginaPedidos() {

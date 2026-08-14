@@ -133,10 +133,10 @@ export default function AdminProductoForm() {
             const data = {
                 nombre,
                 descripcion,
-                precio: parseFloat(precio),
-                stock: parseInt(stock, 10),
-                categoriaId: parseInt(categoriaId, 10),
-                subcategoriaId: parseInt(subcategoriaId, 10),
+                precio: Number.Number.parseFloat(precio),
+                stock: Number.parseInt(stock, 10),
+                categoriaId: Number.parseInt(categoriaId, 10),
+                subcategoriaId: Number.parseInt(subcategoriaId, 10),
             };
 
             if (editing && producto) {

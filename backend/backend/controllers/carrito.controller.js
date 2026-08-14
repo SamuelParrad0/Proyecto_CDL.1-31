@@ -15,11 +15,11 @@ const agregarProducto = async (req, res) => {
       where: { Id_Usuario: usuarioId, Id_Producto: productoId }
     });
 
-    const precioTotal = parseFloat(producto.Precio_Producto) * cantidad;
+    const precioTotal = Number.parseFloat(producto.Precio_Producto) * cantidad;
 
     if (itemExistente) {
       itemExistente.Cantidad_Productos += cantidad;
-      itemExistente.Precio_Total = parseFloat(itemExistente.Precio_Total) + precioTotal;
+      itemExistente.Precio_Total = Number.parseFloat(itemExistente.Precio_Total) + precioTotal;
       await itemExistente.save();
       return res.json({ ok: true, mensaje: 'Cantidad actualizada', item: itemExistente });
     }
@@ -54,7 +54,7 @@ const verCarrito = async (req, res) => {
 
     let total = 0;
     const itemsFormateados = items.map(item => {
-      total += parseFloat(item.Precio_Total);
+      total += Number.parseFloat(item.Precio_Total);
       return item.toJSON();
     });
 
@@ -118,7 +118,7 @@ const actualizarCantidad = async (req, res) => {
     }
 
     item.Cantidad_Productos = cantidad;
-    item.Precio_Total = parseFloat(producto.Precio_Producto) * cantidad;
+    item.Precio_Total = Number.parseFloat(producto.Precio_Producto) * cantidad;
     await item.save();
 
     res.json({ ok: true, mensaje: 'Cantidad actualizada', item });

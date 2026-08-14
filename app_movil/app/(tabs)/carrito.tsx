@@ -240,8 +240,8 @@ try {
                   keyboardType="number-pad"
                   value={item.cantidad.toString()}
                   onChangeText={(text) => {
-                    let cant = parseInt(text);
-                    if (isNaN(cant) || cant < 1) cant = 1;
+                    let cant = Number.parseInt(text);
+                    if (Number.isNaN(cant) || cant < 1) cant = 1;
                     if (cant > (item.stock || 1)) {
                       Alert.alert('Aviso', `Solo hay ${item.stock || 1} unidades disponibles.`);
                       cant = item.stock || 1;

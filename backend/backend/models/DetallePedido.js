@@ -56,12 +56,12 @@ const DetallePedido = sequelize.define('DetallePedido', {
 
   hooks: {
     beforeCreate: (detalle) => {
-      detalle.subtotal = parseFloat(detalle.precioUnitario) * detalle.cantidad;
+      detalle.subtotal = Number.parseFloat(detalle.precioUnitario) * detalle.cantidad;
     },
 
     beforeUpdate: (detalle) => {
       if (detalle.changed('precioUnitario') || detalle.changed('cantidad')) {
-        detalle.subtotal = parseFloat(detalle.precioUnitario) * detalle.cantidad;
+        detalle.subtotal = Number.parseFloat(detalle.precioUnitario) * detalle.cantidad;
       }
     }
   }
@@ -73,7 +73,7 @@ const DetallePedido = sequelize.define('DetallePedido', {
 // ==============================
 
 DetallePedido.prototype.calcularSubtotal = function() {
-  return parseFloat(this.precioUnitario) * this.cantidad;
+  return Number.parseFloat(this.precioUnitario) * this.cantidad;
 };
 
 DetallePedido.prototype.obtenerProducto = async function() {
@@ -112,7 +112,7 @@ DetallePedido.calcularTotalPedido = async function(pedidoId) {
   let total = 0;
 
   for (const d of detalles) {
-    total += parseFloat(d.subtotal);
+    total += Number.parseFloat(d.subtotal);
   }
 
   return total;
