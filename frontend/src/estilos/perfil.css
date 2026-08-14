@@ -30,7 +30,6 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 .pagina-perfil {
-    min-height: 100vh;
     width: 100%;
     
   font-family: 'DM Sans', sans-serif;
@@ -1426,7 +1425,7 @@
 }
 .premium-address-sub::before {
     content: '\f024'; /* Icono de bandera/mapa */
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'Font Awesome 5 Free', sans-serif;
     font-weight: 900;
     margin-right: 8px;
     color: var(--text-muted);
