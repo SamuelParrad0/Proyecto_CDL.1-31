@@ -10,7 +10,7 @@
     width: 100%;
     font-family: 'Segoe UI', Arial, sans-serif;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-    color: #000000;
+    color: #eae8f2;
     padding: 40px 20px;
 }
 
@@ -77,7 +77,7 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #00cc55, #00b34a);
+    background: linear-gradient(135deg, #007a3d, #005c2d);
     color: white;
     padding: 8px 18px;
     border-radius: 6px;
@@ -174,7 +174,7 @@
 
 .estado-pago {
     display: inline-block;
-    background: linear-gradient(135deg, #00cc55, #00b34a);
+    background: linear-gradient(135deg, #007a3d, #005c2d);
     color: white;
     padding: 6px 16px;
     border-radius: 6px;
@@ -270,7 +270,7 @@
 }
 
 .tabla-productos thead {
-    background: linear-gradient(135deg, #ff0040, #ff1a56);
+    background: linear-gradient(135deg, #cc0033, #a30029);
     color: white;
 }
 
@@ -350,11 +350,9 @@
 /* Total grande — la clase usada en el JSX */
 .linea-gran-total {
     border-top: 3px solid #ff0040;
-    margin-top: 15px;
-    padding-top: 20px;
     font-size: 1.5rem;
     font-weight: bold;
-    color: #ff0040;
+    color: #cc0033;
     background: linear-gradient(135deg, #fff5f7, #ffffff);
     padding: 20px;
     border-radius: 10px;
@@ -416,7 +414,7 @@
 }
 
 .boton-imprimir {
-    background: linear-gradient(135deg, #ff0040, #ff4d7d);
+    background: linear-gradient(135deg, #cc0033, #a30029);
     color: white;
     box-shadow: 0 5px 25px rgba(255, 0, 64, 0.5);
 }
