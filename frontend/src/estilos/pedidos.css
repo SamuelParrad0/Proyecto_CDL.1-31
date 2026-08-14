@@ -33,9 +33,7 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 .pagina-pedidos {
-    min-height: 100vh;
     width: 100%;
-    
     font-family: 'DM Sans', sans-serif;
     background: var(--bg-0);
     color: var(--text-primary);
@@ -698,7 +696,7 @@
 @media (max-width: 768px) {
     .contenedor-solicitud-pedidos { padding: 40px 1.2rem 60px; }
     .contenedor-formulario-pedidos { padding: 28px 18px; }
-    .fila-campos-pedido { grid-template-cvolumns: 1fr; gap: 0; }
+    .fila-campos-pedido { grid-template-columns: 1fr; gap: 0; }
     .contenedor-vista-previa { grid-template-columns: 1fr; gap: 24px; }
     .imagen-producto-grande { height: 280px; }
     .galeria-productos { grid-template-columns: repeat(2, 1fr); }
