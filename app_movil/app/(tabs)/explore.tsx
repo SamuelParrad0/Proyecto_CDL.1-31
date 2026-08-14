@@ -35,8 +35,7 @@ export default function CuentaScreen() {
       </View>
       <View style={styles.textoContenedor}>
         <Text style={styles.opcionTitulo}>{titulo}</Text>
-        {subtitulo && <Text style={styles.opcionSubtitulo}>{subtitulo}</Text>}
-      </View>
+        {Boolean(subtitulo) && <Text style={styles.opcionSubtitulo}>{subtitulo}</Text>}      </View>
       <IconSymbol name="chevron.right" size={20} color={Tema.dark.textSecondary} />
     </TouchableOpacity>
   );
