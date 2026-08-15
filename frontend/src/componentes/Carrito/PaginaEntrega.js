@@ -197,7 +197,7 @@ export default function PaginaEntrega() {
           const esLaboral = dir.tipo === 'laboral';
           
           return (
-            <button
+            <button type="button"
               key={dir.id || `dir-${dir.direccion}-${i}`}
               type="button"
               className={`tarjeta-opcion-direccion${i === seleccionado ? ' seleccionada' : ''}`}
@@ -463,7 +463,7 @@ export default function PaginaEntrega() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-                  <button
+                  <button type="button"
                     type="button"
                     className="boton-guardar-nueva-dir"
                     onClick={guardarNueva}

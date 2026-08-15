@@ -242,7 +242,7 @@ export default function PaginaPersonalizado() {
               Gracias por confiar en <strong className="nombre-empresa-destacado">Communicating Design Lion</strong>
             </p>
             <p className="texto-informativo-modal">Pronto nos pondremos en contacto contigo para hacer realidad tu idea.</p>
-            <button className="boton-cerrar-modal" onClick={cerrarModal}>Continuar</button>
+            <button type="button" className="boton-cerrar-modal" onClick={cerrarModal}>Continuar</button>
           </div>
         </div>
       )}

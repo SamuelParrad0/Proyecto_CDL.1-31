@@ -125,7 +125,7 @@ export default function PaginaPortafolio() {
                     <span className="beneficio-pastilla entrega">{p.entrega}</span>
                   </div>
                   <div className="tarjeta-pie">
-                    <button className="tarjeta-boton-accion" onClick={e => { e.stopPropagation(); seleccionarPaquete(p); }}><span>Seleccionar</span></button>
+                    <button type="button" className="tarjeta-boton-accion" onClick={e => { e.stopPropagation(); seleccionarPaquete(p); }}><span>Seleccionar</span></button>
                     <span className="tarjeta-flecha">→</span>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ export default function PaginaPortafolio() {
               <p>Cuéntanos tu idea y nosotros la haremos realidad.</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0, alignItems: 'stretch', minWidth: '240px' }}>
-              <button className="banner-boton" onClick={() => window.open('https://wa.me/573132741001', '_blank', 'noopener,noreferrer')}>Contáctanos por WhatsApp</button>
+              <button type="button" className="banner-boton" onClick={() => window.open('https://wa.me/573132741001', '_blank', 'noopener,noreferrer')}>Contáctanos por WhatsApp</button>
               <Link to="/personalizado" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'rgba(255,8,68,0.08)', border: '1px solid rgba(255,8,68,0.35)', color: '#ff0844', padding: '14px 24px', borderRadius: '50px', fontFamily: "'Rajdhani',sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', textDecoration: 'none' }}>
                 ✶ Personalizado a tu gusto
               </Link>

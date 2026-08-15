@@ -107,7 +107,7 @@ export default function PaginaOpiniones() {
                 onChange={e => { setFormReseña(f => ({ ...f, texto: e.target.value })); setContadorTexto(e.target.value.length); }} />
               <div className="contadorCaracteres" style={{ color: contadorTexto > 450 ? 'var(--red)' : contadorTexto > 350 ? '#ffaa00' : 'var(--text-muted)' }}>{contadorTexto} / 500</div>
             </div>
-            <button className="boton-enviar-formulario" onClick={enviarReseña}>Enviar Opinión</button>
+            <button type="button" className="boton-enviar-formulario" onClick={enviarReseña}>Enviar Opinión</button>
           </div>
         </div>
       </section>

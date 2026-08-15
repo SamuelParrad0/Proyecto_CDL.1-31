@@ -73,7 +73,7 @@ export default function PaginaGaleria() {
           </div>
           <div className="galeria-filtros">
             {categorias.map(c => (
-              <button key={c} className={`boton-filtro${filtroGaleria === c ? ' active' : ''}`} onClick={() => setFiltroGaleria(c)}>
+              <button type="button" key={c} className={`boton-filtro${filtroGaleria === c ? ' active' : ''}`} onClick={() => setFiltroGaleria(c)}>
                 {c.charAt(0).toUpperCase() + c.slice(1)}
               </button>
             ))}
@@ -116,8 +116,8 @@ export default function PaginaGaleria() {
 
       {/* Lightbox */}
       <div className={`lightbox-fondo${lightboxAbierto ? ' open' : ''}`}>
-        <button className="lightbox-boton-cerrar" onClick={cerrarLightbox}>×</button>
-        <button className="lightbox-navegacion prev" onClick={() => navLightbox(-1)}>‹</button>
+        <button type="button" className="lightbox-boton-cerrar" onClick={cerrarLightbox}>×</button>
+        <button type="button" className="lightbox-navegacion prev" onClick={() => navLightbox(-1)}>‹</button>
         {itemLightboxActual && (
           <>
             <img className="lightbox-imagen" src={itemLightboxActual.src} alt={itemLightboxActual.title} />
@@ -134,13 +134,13 @@ export default function PaginaGaleria() {
             )}
           </>
         )}
-        <button className="lightbox-navegacion next" onClick={() => navLightbox(1)}>›</button>
+        <button type="button" className="lightbox-navegacion next" onClick={() => navLightbox(1)}>›</button>
       </div>
 
       {/* Modal Video */}
       <div className={`modal-video-fondo${modalVideoAbierto ? ' open' : ''}`} onClick={(e) => e.target.className.includes('modal-video-fondo') && cerrarModalVideo()}>
         <div className="modal-video-caja">
-          <button className="modal-video-boton-cerrar" onClick={cerrarModalVideo}>×</button>
+          <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}>×</button>
           <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata"></video>
           <div className="modal-video-informacion">
             <div>

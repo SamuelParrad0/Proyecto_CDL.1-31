@@ -64,7 +64,7 @@ export default function NavegacionPrincipal() {
             <span className={`contadorCarrito${carrito.length > 0 ? ' visible' : ''}`} id="contadorCarrito">{carrito.length}</span>
           </Link>
           <Link className="nav-boton-perfil" to={rutaPerfil}>{sesionActiva ? 'Mi Perfil' : 'Iniciar Sesión'}</Link>
-          <button className={`nav-boton-menu-movil${menuMovilAbierto ? ' open' : ''}`} id="botonMenuMovil" onClick={toggleMenu} aria-label="Menú">
+          <button type="button" className={`nav-boton-menu-movil${menuMovilAbierto ? ' open' : ''}`} id="botonMenuMovil" onClick={toggleMenu} aria-label="Menú">
             <span></span><span></span><span></span>
           </button>
         </div>

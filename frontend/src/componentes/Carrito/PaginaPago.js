@@ -158,7 +158,7 @@ export default function PaginaPago() {
       </header>
 
       <div className="contenedor-volver">
-        <button className="boton-volver" onClick={() => navigate('/carrito/entrega')}>← Volver a entrega</button>
+        <button type="button" className="boton-volver" onClick={() => navigate('/carrito/entrega')}>← Volver a entrega</button>
       </div>
 
       <main className="contenedor-pago">
@@ -183,7 +183,7 @@ export default function PaginaPago() {
             {forms[metodo]}
           </form>
 
-          <button className="boton-pagar" onClick={procesarPago}>
+          <button type="button" className="boton-pagar" onClick={procesarPago}>
             <span>🔒 Confirmar y Pagar {formatearPrecio(total)}</span>
           </button>
         </section>

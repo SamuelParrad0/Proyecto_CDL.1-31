@@ -122,7 +122,7 @@ export default function BarraEntrega({ mostrarToast }) {
   return (
     <>
       <div className="barra-entrega" id="barraEntrega">
-        <button
+        <button type="button"
           type="button"
           className="barra-entrega-izquierda"
           onClick={abrirModal}
@@ -170,7 +170,7 @@ export default function BarraEntrega({ mostrarToast }) {
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
               <div style={{position:'relative'}}>
                 <LabelModal>Departamento</LabelModal>
-                <button
+                <button type="button"
                   type="button"
                   onClick={() => setDepListaAbierta(p => !p)}
                   style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none',textAlign:'left'}}
@@ -182,7 +182,7 @@ export default function BarraEntrega({ mostrarToast }) {
                   <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,background:'var(--bg-1)',border:'1px solid var(--border-red)',borderRadius:'8px',zIndex:9999,maxHeight:'200px',overflowY:'auto',boxShadow:'0 8px 24px rgba(0,0,0,0.7)'}}>
                     <div style={{padding:'9px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-muted)',borderBottom:'1px solid var(--border)'}}>— Selecciona un departamento —</div>
                     {DEPARTAMENTOS.map(dep => (
-                      <button
+                      <button type="button"
                         type="button"
                         key={dep}
                         className="departamento-opcion"

@@ -133,10 +133,10 @@ export default function PaginaFactura() {
         </div>
 
         <div className="acciones-factura">
-          <button className="boton-imprimir" onClick={() => window.print()}>
+          <button type="button" className="boton-imprimir" onClick={() => window.print()}>
             <i className="fas fa-print"></i> Imprimir Factura
           </button>
-          <button className="boton-nueva-compra" onClick={nuevaCompra}>
+          <button type="button" className="boton-nueva-compra" onClick={nuevaCompra}>
             <i className="fas fa-shopping-cart"></i> Nueva Compra
           </button>
         </div>

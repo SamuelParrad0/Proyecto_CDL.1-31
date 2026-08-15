@@ -592,20 +592,20 @@ const PaginaAdmin = () => {
                         <div style={{fontSize:'0.8rem', opacity:0.7}}>{u.Celular}</div>
                       </div>
                         <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'5px', flexWrap:'wrap'}}>
-                        <button className="boton-accion" onClick={() => {setElementoEditable(u); setModalAbierto('usuario');}} title="Editar Usuario">
+                        <button type="button" className="boton-accion" onClick={() => {setElementoEditable(u); setModalAbierto('usuario');}} title="Editar Usuario">
                           <i className="fas fa-pen"></i>
                         </button>
                         {!esAuxiliar && (
-                          <button className="boton-accion boton-accion--editar" onClick={() => cambiarRolUsuario(u.Id_Usuario, u.Rol?.Nombre_Rol)} title="Cambiar Rol">
+                          <button type="button" className="boton-accion boton-accion--editar" onClick={() => cambiarRolUsuario(u.Id_Usuario, u.Rol?.Nombre_Rol)} title="Cambiar Rol">
                             <i className="fas fa-user-shield"></i>
                           </button>
                         )}
                         {esAdminGeneral && (
-                          <button className="boton-accion boton-accion--eliminar" onClick={() => eliminarUsuario(u.Id_Usuario)} title="Eliminar Usuario">
+                          <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => eliminarUsuario(u.Id_Usuario)} title="Eliminar Usuario">
                             <i className="fas fa-trash"></i>
                           </button>
                         )}
-                        <button className={`boton-accion ${u.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleUsuario(u.Id_Usuario)} title={u.Activo === false ? 'Activar Usuario' : 'Desactivar Usuario'}>
+                        <button type="button" className={`boton-accion ${u.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleUsuario(u.Id_Usuario)} title={u.Activo === false ? 'Activar Usuario' : 'Desactivar Usuario'}>
                           <i className={`fas fa-${u.Activo === false ? 'user-check' : 'user-times'}`}></i>
                         </button>
                       </div>
@@ -619,7 +619,7 @@ const PaginaAdmin = () => {
               {vistaActiva === 'paquetes' && (
                 <div>
                    <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
-                      <button className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('paquete');}}>
+                      <button type="button" className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('paquete');}}>
                         <i className="fas fa-plus"></i> Nuevo Paquete
                       </button>
                       <div className="contenedor-campo-busqueda">
@@ -642,14 +642,14 @@ const PaginaAdmin = () => {
                            <p style={{fontSize:'0.75rem', opacity:0.7}}>{p.Descripcion_Paquete}</p>
                         </div>
                         <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'10px'}}>
-                           <button className="boton-accion" onClick={() => {setElementoEditable(p); setModalAbierto('paquete');}}>
+                           <button type="button" className="boton-accion" onClick={() => {setElementoEditable(p); setModalAbierto('paquete');}}>
                              <i className="fas fa-pen"></i>
                            </button>
-                           <button className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleTogglePaquete(p.Id_Paquete)}>
+                           <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleTogglePaquete(p.Id_Paquete)}>
                              <i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i>
                            </button>
                            {!esAuxiliar && (
-                             <button className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarPaquete(p.Id_Paquete)}>
+                             <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarPaquete(p.Id_Paquete)}>
                                <i className="fas fa-trash"></i>
                              </button>
                            )}
@@ -664,7 +664,7 @@ const PaginaAdmin = () => {
               {vistaActiva === 'productos' && (
                 <div>
                   <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
-                    <button className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('producto');}}>
+                    <button type="button" className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('producto');}}>
                       <i className="fas fa-plus"></i> Nuevo Producto
                     </button>
                     <div className="contenedor-campo-busqueda">
@@ -697,14 +697,14 @@ const PaginaAdmin = () => {
                            <p style={{fontSize:'0.75rem', opacity:0.7}}>{p.Descripcion_Producto}</p>
                         </div>
                         <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'10px'}}>
-                           <button className="boton-accion" onClick={() => {setElementoEditable(p); setModalAbierto('producto');}}>
+                           <button type="button" className="boton-accion" onClick={() => {setElementoEditable(p); setModalAbierto('producto');}}>
                              <i className="fas fa-pen"></i>
                            </button>
-                           <button className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleProducto(p.Id_Producto)}>
+                           <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleProducto(p.Id_Producto)}>
                              <i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i>
                            </button>
                            {!esAuxiliar && (
-                             <button className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarProducto(p.Id_Producto)}>
+                             <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarProducto(p.Id_Producto)}>
                                <i className="fas fa-trash"></i>
                              </button>
                            )}
@@ -719,7 +719,7 @@ const PaginaAdmin = () => {
               {vistaActiva === 'categorias' && (
                 <div>
                   <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
-                    <button className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('categoria');}}>
+                    <button type="button" className="boton-accion boton-accion--guardar" onClick={() => {setElementoEditable(null); setModalAbierto('categoria');}}>
                       <i className="fas fa-plus"></i> Nueva Categoría
                     </button>
                     <div className="contenedor-campo-busqueda">
@@ -741,14 +741,14 @@ const PaginaAdmin = () => {
                            <p style={{fontSize:'0.75rem', opacity:0.7, marginTop:'10px'}}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
                         </div>
                         <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'10px'}}>
-                           <button className="boton-accion" onClick={() => {setElementoEditable(c); setModalAbierto('categoria');}}>
+                           <button type="button" className="boton-accion" onClick={() => {setElementoEditable(c); setModalAbierto('categoria');}}>
                              <i className="fas fa-pen"></i>
                            </button>
-                           <button className={`boton-accion ${c.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleCategoria(c.Id_Categoria)}>
+                           <button type="button" className={`boton-accion ${c.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleCategoria(c.Id_Categoria)}>
                              <i className={`fas fa-${c.Activo ? 'eye-slash' : 'eye'}`}></i>
                            </button>
                            {!esAuxiliar && (
-                             <button className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarCategoria(c.Id_Categoria)}>
+                             <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarCategoria(c.Id_Categoria)}>
                                <i className="fas fa-trash"></i>
                              </button>
                            )}
@@ -764,9 +764,9 @@ const PaginaAdmin = () => {
                 <div>
                   <div className="barra-busqueda-filtros" style={{marginBottom:'1.5rem', display:'flex', flexWrap:'wrap', gap:'1rem', justifyContent:'space-between', alignItems:'center'}}>
                     <div className="barra-pestanas" style={{margin:0}}>
-                      <button className={`pestana-boton ${pestanaSolicitudes === 'paquetes' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('paquetes'); setFiltroEstadoSolicitud('');}}>Citas</button>
-                      <button className={`pestana-boton ${pestanaSolicitudes === 'productos' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('productos'); setFiltroEstadoSolicitud('');}}>Pedidos</button>
-                      <button className={`pestana-boton ${pestanaSolicitudes === 'personalizado' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('personalizado'); setFiltroEstadoSolicitud('');}}>Personalizado</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'paquetes' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('paquetes'); setFiltroEstadoSolicitud('');}}>Citas</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'productos' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('productos'); setFiltroEstadoSolicitud('');}}>Pedidos</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'personalizado' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('personalizado'); setFiltroEstadoSolicitud('');}}>Personalizado</button>
                     </div>
                     <div style={{display:'flex', gap:'1rem', flexWrap:'wrap'}}>
                       <div className="contenedor-campo-busqueda" style={{flex:1}}>
@@ -903,14 +903,14 @@ const PaginaAdmin = () => {
                                ))}
                             </select>
                             <div style={{display:'flex', gap:'5px', marginTop:'10px'}}>
-                              <button className="boton-accion" style={{flex:1}} onClick={() => {setElementoEditable(s); setModalAbierto('solicitud');}}>
+                              <button type="button" className="boton-accion" style={{flex:1}} onClick={() => {setElementoEditable(s); setModalAbierto('solicitud');}}>
                                 <i className="fas fa-pen"></i> Editar
                               </button>
-                              <button className={`boton-accion ${estado === 'cancelado' || estado === 'cancelada' ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{flex:1}} onClick={() => handleToggleSolicitudEspecifica(id)}>
+                              <button type="button" className={`boton-accion ${estado === 'cancelado' || estado === 'cancelada' ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{flex:1}} onClick={() => handleToggleSolicitudEspecifica(id)}>
                                 <i className="fas fa-ban"></i> {estado === 'cancelado' || estado === 'cancelada' ? 'Restaurar' : 'Cancelar'}
                               </button>
                               {!esAuxiliar && (
-                                <button className="boton-accion boton-accion--eliminar" style={{flex:1}} onClick={() => handleEliminarSolicitud(id)}>
+                                <button type="button" className="boton-accion boton-accion--eliminar" style={{flex:1}} onClick={() => handleEliminarSolicitud(id)}>
                                   <i className="fas fa-trash"></i> Eliminar
                                 </button>
                               )}
@@ -955,14 +955,14 @@ const PaginaAdmin = () => {
                            <p style={{fontSize:'0.85rem', fontStyle:'italic', opacity:0.8}}>"{o.Comentario}"</p>
                         </div>
                         <div style={{padding:'0.8rem', background:'rgba(0,0,0,0.2)', display: 'flex', gap: '5px'}}>
-                           <button className="boton-accion" onClick={() => {setElementoEditable(o); setModalAbierto('opinion');}}>
+                           <button type="button" className="boton-accion" onClick={() => {setElementoEditable(o); setModalAbierto('opinion');}}>
                              <i className="fas fa-pen"></i>
                            </button>
-                           <button className={`boton-accion ${o.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleOpinion(o.Id_Reseña)}>
+                           <button type="button" className={`boton-accion ${o.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleOpinion(o.Id_Reseña)}>
                              <i className={`fas fa-${o.Activo === false ? 'eye' : 'eye-slash'}`}></i>
                            </button>
                            {!esAuxiliar && (
-                             <button className="boton-accion boton-accion--eliminar" onClick={() => {
+                             <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => {
                                pedirConfirmacion('¿Borrar reseña?', `Estás a punto de eliminar la reseña de "${o.Nombre_Usuario || 'Anónimo'}". Esta acción no se puede deshacer.`, async () => {
                                  try {
                                    await eliminarOpinionAPI(o.Id_Reseña);
@@ -1243,7 +1243,7 @@ const PaginaAdmin = () => {
              <div className="toast-notificacion__titulo">{toast.tipo === 'exito' ? 'Operación Exitosa' : 'Atención'}</div>
              <div className="toast-notificacion__detalle">{toast.mensaje}</div>
            </div>
-           <button className="toast-notificacion__cerrar" onClick={() => setToast({ visible: false, mensaje: '', tipo: 'exito' })}>
+           <button type="button" className="toast-notificacion__cerrar" onClick={() => setToast({ visible: false, mensaje: '', tipo: 'exito' })}>
              <i className="fas fa-times"></i>
            </button>
            <div className="toast-notificacion__barra-progreso"></div>
@@ -1260,16 +1260,16 @@ const PaginaAdmin = () => {
              <div className="dialogo__titulo">{dialogo.titulo}</div>
              <p className="dialogo__mensaje">{dialogo.mensaje}</p>
              <div className="dialogo__fila-botones">
-                <button className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
+                <button type="button" className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
                 {dialogo.opciones ? (
                   // Mostrar botones por cada opción (ej. roles)
                   dialogo.opciones.map(op => (
-                    <button key={op} className="boton-accion boton-accion--editar" onClick={async () => { if (dialogo.onSelect) await dialogo.onSelect(op); else if (dialogo.onConfirm) { await dialogo.onConfirm(op); } }}>
+                    <button type="button" key={op} className="boton-accion boton-accion--editar" onClick={async () => { if (dialogo.onSelect) await dialogo.onSelect(op); else if (dialogo.onConfirm) { await dialogo.onConfirm(op); } }}>
                       {String(op).toUpperCase()}
                     </button>
                   ))
                 ) : (
-                  <button className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} onClick={() => { if (dialogo.onConfirm) dialogo.onConfirm(); setDialogo({ ...dialogo, abierto: false }); }}>
+                  <button type="button" className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} onClick={() => { if (dialogo.onConfirm) dialogo.onConfirm(); setDialogo({ ...dialogo, abierto: false }); }}>
                     Proceder
                   </button>
                 )}

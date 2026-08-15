@@ -183,7 +183,7 @@ export default function PaginaProductos() {
                               {p.Stock <= 0 ? 'Agotado' : p.Stock <= 5 ? `¡Últimas ${p.Stock} uds!` : `${p.Stock} uds`}
                             </span>
                           </div>
-                          <button className="producto-boton-agregar" style={{ width: '100%', borderRadius: '50px', opacity: p.Stock <= 0 ? 0.5 : 1, cursor: p.Stock <= 0 ? 'not-allowed' : 'pointer' }} onClick={(e) => { e.stopPropagation(); pedirProductoDirecto(p.Id_Producto); }} disabled={enviandoPedido || p.Stock <= 0}>
+                          <button type="button" className="producto-boton-agregar" style={{ width: '100%', borderRadius: '50px', opacity: p.Stock <= 0 ? 0.5 : 1, cursor: p.Stock <= 0 ? 'not-allowed' : 'pointer' }} onClick={(e) => { e.stopPropagation(); pedirProductoDirecto(p.Id_Producto); }} disabled={enviandoPedido || p.Stock <= 0}>
                             {p.Stock <= 0 ? '🚫 Agotado' : <><i className="fas fa-shopping-cart"></i> Agregar al Carrito</>}
                           </button>
                         </div>
@@ -200,13 +200,13 @@ export default function PaginaProductos() {
       {/* Modal Producto */}
       <div className={`modal-producto-fondo${modalProductoAbierto ? ' active' : ''}`}>
         <div className="modal-producto-caja">
-          <button className="modal-boton-cerrar" onClick={cerrarModalProducto}><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
+          <button type="button" className="modal-boton-cerrar" onClick={cerrarModalProducto}><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
           {productoActivo && (
             <div className="modal-disposicion">
               <div className="modal-galeria">
                 <img className="modal-imagen-principal" src={productoActivo.imagenes[indiceImagenProducto]} alt={productoActivo.nombre} />
-                <button className="modal-boton-navegacion prev" onClick={() => navImagenProducto(-1)}><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg></button>
-                <button className="modal-boton-navegacion next" onClick={() => navImagenProducto(1)}><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg></button>
+                <button type="button" className="modal-boton-navegacion prev" onClick={() => navImagenProducto(-1)}><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg></button>
+                <button type="button" className="modal-boton-navegacion next" onClick={() => navImagenProducto(1)}><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg></button>
                 <div className="modal-contador-imagenes">{indiceImagenProducto + 1} / {productoActivo.imagenes.length}</div>
               </div>
               <div className="modal-detalles">
@@ -226,7 +226,7 @@ export default function PaginaProductos() {
                   </div>
                 </div>
                 <div className="modal-grupo-botones">
-                  <button className="modal-boton-pedir" style={{ opacity: productoActivo.Stock <= 0 ? 0.5 : 1, cursor: productoActivo.Stock <= 0 ? 'not-allowed' : 'pointer' }} onClick={() => pedirProductoDirecto(productoActivo.Id_Producto)} disabled={enviandoPedido || productoActivo.Stock <= 0}>
+                  <button type="button" className="modal-boton-pedir" style={{ opacity: productoActivo.Stock <= 0 ? 0.5 : 1, cursor: productoActivo.Stock <= 0 ? 'not-allowed' : 'pointer' }} onClick={() => pedirProductoDirecto(productoActivo.Id_Producto)} disabled={enviandoPedido || productoActivo.Stock <= 0}>
                     {productoActivo.Stock <= 0 ? '🚫 Agotado' : <><i className="fas fa-shopping-cart"></i> Agregar al Carrito</>}
                   </button>
                 </div>

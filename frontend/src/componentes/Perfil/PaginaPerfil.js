@@ -376,7 +376,7 @@ export default function PaginaPerfil() {
       <nav className="nav-barra-principal">
         <Link className="nav-logo" to="/">COMMUNICATING DESIGN <span>LION</span></Link>
         <div className="nav-controles-perfil">
-          <button className="nav-btn-logout-premium" onClick={cerrarSesion}>
+          <button type="button" className="nav-btn-logout-premium" onClick={cerrarSesion}>
             <i className="fas fa-sign-out-alt"></i> Cerrar sesión
           </button>
           <Link className="nav-btn-volver-inicio" to="/"><i className="fas fa-arrow-left"></i> Volver al inicio</Link>
@@ -415,7 +415,7 @@ export default function PaginaPerfil() {
           </div>
           <div className="footer-opciones-peligro">
             <p className="texto-peligro-pie">¿Deseas dejar de formar parte de CDL?</p>
-            <button className="btn-eliminar-cuenta-premium" onClick={cancelarCuenta}>
+            <button type="button" className="btn-eliminar-cuenta-premium" onClick={cancelarCuenta}>
               <i className="fas fa-user-times"></i> Eliminar mi cuenta permanentemente
             </button>
           </div>
@@ -425,7 +425,7 @@ export default function PaginaPerfil() {
       {/* VISTA DATOS PREMIUM */}
       {vista==='datos' && (
         <div className="contenedor-seccion vista-seccion slide-up">
-          <button className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
+          <button type="button" className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
           
           <section className="seccion-tarjeta premium-card">
             <div className="seccion-encabezado">
@@ -461,7 +461,7 @@ export default function PaginaPerfil() {
                   </label>
                   <div className="premium-row-value">{f.valor}</div>
                 </div>
-                <button className="premium-btn-edit" onClick={() => abrirEdicion(f.campo)}>
+                <button type="button" className="premium-btn-edit" onClick={() => abrirEdicion(f.campo)}>
                   <i className="fas fa-pen"></i> Modificar
                 </button>
               </div>
@@ -473,7 +473,7 @@ export default function PaginaPerfil() {
       {/* VISTA DIRECCIONES PREMIUM */}
       {vista==='direcciones' && (
         <div className="contenedor-seccion vista-seccion slide-up">
-          <button className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
+          <button type="button" className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
           
           <section className="seccion-tarjeta premium-card">
             <div className="seccion-encabezado">
@@ -499,7 +499,7 @@ export default function PaginaPerfil() {
                         <i className={`fas fa-${d.tipo==='laboral'?'briefcase':'home'}`}></i>
                         {d.tipo==='laboral'?'Laboral':'Residencial'}
                       </div>
-                      <button className="premium-btn-delete" onClick={() => eliminarDir(i)} title="Eliminar">
+                      <button type="button" className="premium-btn-delete" onClick={() => eliminarDir(i)} title="Eliminar">
                         <i className="fas fa-trash-alt"></i>
                       </button>
                     </div>
@@ -519,14 +519,14 @@ export default function PaginaPerfil() {
 
                     {/* Botones Ver / Editar */}
                     <div className="premium-address-actions">
-                      <button
+                      <button type="button"
                         className="addr-btn-ver"
                         onClick={() => setDirDetalleIdx(dirDetalleIdx === i ? null : i)}
                       >
                         <i className={`fas fa-${dirDetalleIdx === i ? 'eye-slash' : 'eye'}`}></i>
                         {dirDetalleIdx === i ? 'Ocultar' : 'Ver completa'}
                       </button>
-                      <button
+                      <button type="button"
                         className="addr-btn-editar"
                         onClick={() => abrirEditarDir(i)}
                       >
@@ -560,7 +560,7 @@ export default function PaginaPerfil() {
             </div>
 
             <div className="premium-actions-footer">
-              <button className="premium-btn-add" onClick={() => setModalDir(true)}>
+              <button type="button" className="premium-btn-add" onClick={() => setModalDir(true)}>
                 <i className="fas fa-plus"></i> Añadir Nueva Dirección
               </button>
             </div>
@@ -571,7 +571,7 @@ export default function PaginaPerfil() {
       {/* VISTA COMPRAS */}
       {vista==='compras' && (
         <div className="contenedor-seccion vista-seccion" id="vistaCompras">
-          <button className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
+          <button type="button" className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
           <section className="seccion-tarjeta">
             <div className="seccion-encabezado">
               <i className="fas fa-shopping-bag seccion-encabezado-icono"></i>
@@ -579,7 +579,7 @@ export default function PaginaPerfil() {
             </div>
             <div className="pestanas-navegacion">
               {['productos','paquetes','personalizado'].map(cat => (
-                <button key={cat} className={`pestana-btn${tabCompras===cat?' active':''}`} onClick={() => setTabCompras(cat)}>
+                <button type="button" key={cat} className={`pestana-btn${tabCompras===cat?' active':''}`} onClick={() => setTabCompras(cat)}>
                   {cat.charAt(0).toUpperCase()+cat.slice(1)}
                 </button>
               ))}
@@ -611,7 +611,7 @@ export default function PaginaPerfil() {
       {/* VISTA SOLICITUDES */}
       {vista==='solicitudes' && (
         <div className="contenedor-seccion vista-seccion" id="vistaSolicitudes">
-          <button className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
+          <button type="button" className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
           <section className="seccion-tarjeta">
             <div className="seccion-encabezado">
               <i className="fas fa-file-alt seccion-encabezado-icono"></i>
@@ -619,7 +619,7 @@ export default function PaginaPerfil() {
             </div>
             <div className="pestanas-navegacion">
               {['productos','paquetes','personalizado'].map(cat => (
-                <button key={cat} className={`pestana-btn${tabSolicitudes===cat?' active':''}`} onClick={() => setTabSolicitudes(cat)}>
+                <button type="button" key={cat} className={`pestana-btn${tabSolicitudes===cat?' active':''}`} onClick={() => setTabSolicitudes(cat)}>
                   {cat.charAt(0).toUpperCase()+cat.slice(1)}
                 </button>
               ))}
@@ -855,7 +855,7 @@ export default function PaginaPerfil() {
 
                       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                          {it.estado && it.estado.toLowerCase() !== 'cancelado' && it.estado.toLowerCase() !== 'cancelada' && (
-                           <button className="historial-btn-cancelar-solicitud" onClick={() => cancelarSolicitud(it.id, cat)}>✕ Cancelar solicitud</button>
+                           <button type="button" className="historial-btn-cancelar-solicitud" onClick={() => cancelarSolicitud(it.id, cat)}>✕ Cancelar solicitud</button>
                          )}
                       </div>
                     </div>
@@ -871,7 +871,7 @@ export default function PaginaPerfil() {
       {modalEdicion && campoEdicion && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEdicion(false)}>
           <div className="modal-caja-edicion-premium">
-            <button className="modal-btn-cerrar-premium" onClick={() => setModalEdicion(false)}>×</button>
+            <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalEdicion(false)}>×</button>
             
             <div className="modal-cabecera-premium">
               <div className="modal-accent-line"></div>
@@ -899,8 +899,8 @@ export default function PaginaPerfil() {
             </div>
 
             <div className="modal-pie-premium">
-              <button className="modal-btn-premium-cancel" onClick={() => setModalEdicion(false)}>Descartar</button>
-              <button className="modal-btn-premium-action" onClick={confirmarEdicion}>
+              <button type="button" className="modal-btn-premium-cancel" onClick={() => setModalEdicion(false)}>Descartar</button>
+              <button type="button" className="modal-btn-premium-action" onClick={confirmarEdicion}>
                 <span>Guardar Cambios</span>
                 <i className="fas fa-shield-alt"></i>
               </button>
@@ -913,7 +913,7 @@ export default function PaginaPerfil() {
       {modalEditDir && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEditDir(null)}>
           <div className="modal-dir-caja">
-            <button className="modal-btn-cerrar-premium" onClick={() => setModalEditDir(null)}>×</button>
+            <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalEditDir(null)}>×</button>
 
             <div className="modal-cabecera-premium">
               <div className="modal-accent-line"></div>
@@ -999,8 +999,8 @@ export default function PaginaPerfil() {
             </div>
 
             <div className="modal-pie-premium">
-              <button className="modal-btn-premium-cancel" onClick={() => setModalEditDir(null)}>Cancelar</button>
-              <button className="modal-btn-premium-action" onClick={guardarEditDir}>
+              <button type="button" className="modal-btn-premium-cancel" onClick={() => setModalEditDir(null)}>Cancelar</button>
+              <button type="button" className="modal-btn-premium-action" onClick={guardarEditDir}>
                 <span>Guardar Cambios</span>
                 <i className="fas fa-check"></i>
               </button>
@@ -1013,7 +1013,7 @@ export default function PaginaPerfil() {
       {modalDir && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalDir(false)}>
           <div className="modal-dir-caja">
-            <button className="modal-btn-cerrar-premium" onClick={() => setModalDir(false)}>×</button>
+            <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalDir(false)}>×</button>
 
             <div className="modal-cabecera-premium">
               <div className="modal-accent-line"></div>
@@ -1099,10 +1099,10 @@ export default function PaginaPerfil() {
             </div>
 
             <div className="modal-pie-premium">
-              <button className="modal-btn-premium-cancel" onClick={() => setModalDir(false)}>
+              <button type="button" className="modal-btn-premium-cancel" onClick={() => setModalDir(false)}>
                 Cancelar
               </button>
-              <button className="modal-btn-premium-action" onClick={guardarDir}>
+              <button type="button" className="modal-btn-premium-action" onClick={guardarDir}>
                 <span>Guardar dirección</span>
                 <i className="fas fa-map-marker-alt"></i>
               </button>
@@ -1119,10 +1119,10 @@ export default function PaginaPerfil() {
             <div className="modal-titulo-premium glow-text" style={{fontSize: '1.8rem', marginBottom: '10px'}}>{modalConfirm.titulo}</div>
             <div className="confirm-desc" dangerouslySetInnerHTML={{__html:modalConfirm.desc}}></div>
             <div className="confirm-btns" style={{marginTop:'25px'}}>
-              <button className="confirm-btn-cancel" onClick={cerrarConfirm}>
+              <button type="button" className="confirm-btn-cancel" onClick={cerrarConfirm}>
                 {modalConfirm.cancelLabel || 'Cancelar'}
               </button>
-              <button className={`confirm-btn-ok ${modalConfirm.color||''}`} onClick={ejecutarConfirm}>
+              <button type="button" className={`confirm-btn-ok ${modalConfirm.color||''}`} onClick={ejecutarConfirm}>
                 {modalConfirm.btnLabel}
               </button>
             </div>

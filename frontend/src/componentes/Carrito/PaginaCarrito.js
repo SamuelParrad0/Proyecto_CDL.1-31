@@ -84,7 +84,7 @@ export default function PaginaCarrito() {
             <i className="fas fa-folder"></i>
             <span>Communicating Design Lion</span>
           </div>
-          <button className="boton-carrito-header" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <button type="button" className="boton-carrito-header" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <i className="fas fa-shopping-cart"></i>
             <span>Carrito</span>
             <span className="badge-cantidad-carrito" style={{ display: carrito.length ? 'flex' : 'none' }}>{carrito.length}</span>
@@ -115,7 +115,7 @@ export default function PaginaCarrito() {
                 <div className="emoji-carrito-vacio">🛒</div>
                 <h3>Tu carrito está vacío</h3>
                 <p style={{ color: 'var(--texto-secundario)', margin: '10px 0' }}>Aún no has seleccionado ningún producto o paquete</p>
-                <button onClick={() => navigate('/')}>Ir a Productos</button>
+                <button type="button" onClick={() => navigate('/')}>Ir a Productos</button>
               </div>
             ) : (
               carritoConClientes.map((item) => (
@@ -129,7 +129,7 @@ export default function PaginaCarrito() {
                       <h3 className="titulo-nombre-producto">{item.producto?.Nombre_Producto}</h3>
                       <div className="precio-unitario-producto">{formatearPrecio(item.producto?.Precio_Producto || 0)}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}>
-                        <button 
+                        <button type="button" 
                           onClick={() => {
                             if (item.Cantidad_Productos > 1) {
                               actualizarCantidad(item.Id_Carrito, item.Cantidad_Productos - 1);
@@ -161,7 +161,7 @@ export default function PaginaCarrito() {
                             outline: 'none'
                           }}
                         />
-                        <button 
+                        <button type="button" 
                           disabled={(item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1)}
                           onClick={() => actualizarCantidad(item.Id_Carrito, (item.Cantidad_Productos || 1) + 1)}
                           style={{ 
@@ -198,7 +198,7 @@ export default function PaginaCarrito() {
                       <div className="bloque-texto-personalizacion"><strong>Personalización:</strong><br />{item.personalizacion}</div>
                     )}
                     <div style={{ marginTop: '15px' }}>
-                      <button onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      <button type="button" onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         onMouseOver={e => e.currentTarget.style.background = 'rgba(255,8,68,0.15)'}
                         onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
                         🗑️ Eliminar
@@ -219,7 +219,7 @@ export default function PaginaCarrito() {
               <div className="fila-detalle-precio"><span>IVA (10%):</span><span>{formatearPrecio(iva)}</span></div>
               <div className="fila-detalle-precio fila-precio-total"><span>Total:</span><span>{formatearPrecio(total)}</span></div>
             </div>
-            <button className="boton-proceder-pago" onClick={procederAlPago}>Proceder al Pago</button>
+            <button type="button" className="boton-proceder-pago" onClick={procederAlPago}>Proceder al Pago</button>
           </aside>
         )}
       </main>
