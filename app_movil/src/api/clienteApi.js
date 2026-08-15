@@ -57,7 +57,7 @@ clienteApi.interceptors.response.use(
       error.response?.data?.error;
 
     const mensaje = mensajeBackend || error.message || 'Error de conexión con el servidor';
-    return Promise.reject(new Error(mensaje));
+throw new Error(mensaje);
   }
 );
 
