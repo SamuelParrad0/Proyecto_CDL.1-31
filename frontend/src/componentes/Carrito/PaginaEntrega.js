@@ -199,7 +199,6 @@ export default function PaginaEntrega() {
           return (
             <button type="button"
               key={dir.id || `dir-${dir.direccion}-${i}`}
-              type="button"
               className={`tarjeta-opcion-direccion${i === seleccionado ? ' seleccionada' : ''}`}
               style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
               onClick={() => { setSeleccionado(i); setPanelVisible(false); }}
@@ -464,7 +463,6 @@ export default function PaginaEntrega() {
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
                   <button type="button"
-                    type="button"
                     className="boton-guardar-nueva-dir"
                     onClick={guardarNueva}
                     disabled={guardando}

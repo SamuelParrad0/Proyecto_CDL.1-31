@@ -123,7 +123,6 @@ export default function BarraEntrega({ mostrarToast }) {
     <>
       <div className="barra-entrega" id="barraEntrega">
         <button type="button"
-          type="button"
           className="barra-entrega-izquierda"
           onClick={abrirModal}
           title="Cambiar dirección"
@@ -171,7 +170,6 @@ export default function BarraEntrega({ mostrarToast }) {
               <div style={{position:'relative'}}>
                 <LabelModal>Departamento</LabelModal>
                 <button type="button"
-                  type="button"
                   onClick={() => setDepListaAbierta(p => !p)}
                   style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none',textAlign:'left'}}
                 >
@@ -183,7 +181,6 @@ export default function BarraEntrega({ mostrarToast }) {
                     <div style={{padding:'9px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-muted)',borderBottom:'1px solid var(--border)'}}>— Selecciona un departamento —</div>
                     {DEPARTAMENTOS.map(dep => (
                       <button type="button"
-                        type="button"
                         key={dep}
                         className="departamento-opcion"
                         onClick={() => { cambiar('departamento', dep); setDepListaAbierta(false); }}

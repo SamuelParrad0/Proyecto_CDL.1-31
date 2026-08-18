@@ -482,28 +482,29 @@ const PaginaAdmin = () => {
           <p style={{fontSize:'0.6rem', opacity:0.5, letterSpacing:'2px'}}>CONTROL PANEL</p>
         </div>
         <nav className="menu-lateral__navegacion">
-          <div className={`menu-lateral__enlace ${vistaActiva === 'usuarios' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('usuarios')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'usuarios' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('usuarios')}>
             <i className="fas fa-users"></i> Usuarios
-          </div>
-          <div className={`menu-lateral__enlace ${vistaActiva === 'paquetes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('paquetes')}>
+          </button>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'paquetes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('paquetes')}>
             <i className="fas fa-camera"></i> Paquetes
-          </div>
-          <div className={`menu-lateral__enlace ${vistaActiva === 'productos' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('productos')}>
+          </button>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'productos' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('productos')}>
             <i className="fas fa-box"></i> Productos
-          </div>
-          <div className={`menu-lateral__enlace ${vistaActiva === 'categorias' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('categorias')}>
+          </button>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'categorias' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('categorias')}>
             <i className="fas fa-tags"></i> Categorías
-          </div>
-          <div className={`menu-lateral__enlace ${vistaActiva === 'solicitudes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('solicitudes')}>
+          </button>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'solicitudes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('solicitudes')}>
             <i className="fas fa-envelope-open-text"></i> Solicitudes
             {countSolicitudes > 0 && <span className="menu-lateral__contador-pendientes">{countSolicitudes}</span>}
-          </div>
-          <div className={`menu-lateral__enlace ${vistaActiva === 'opiniones' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('opiniones')}>
+          </button>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'opiniones' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('opiniones')}>
             <i className="fas fa-star"></i> Opiniones
-          </div>
+          </button>
         </nav>
         <div className="menu-lateral__pie" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-           <div 
+           <button 
+             type="button"
              className="menu-lateral__informacion-admin" 
              onClick={() => navigate('/')} 
              style={{
@@ -521,9 +522,10 @@ const PaginaAdmin = () => {
                <div className="menu-lateral__nombre-admin" style={{color:'#fff', fontSize:'0.85rem', marginBottom:'2px'}}>Ver Página</div>
                <div className="menu-lateral__rol-admin" style={{color:'var(--cian)', opacity:0.8}}>Ir a la tienda</div>
              </div>
-           </div>
+           </button>
 
-           <div 
+           <button 
+             type="button"
              className="menu-lateral__informacion-admin" 
              onClick={() => {cerrarSesion(); navigate('/login');}} 
              style={{
@@ -541,7 +543,7 @@ const PaginaAdmin = () => {
                <div className="menu-lateral__nombre-admin" style={{color:'#fff', fontSize:'0.85rem', marginBottom:'2px'}}>{esAuxiliar ? 'Auxiliar' : 'Admin'}</div>
                <div className="menu-lateral__rol-admin" style={{color:'var(--rojo)', opacity:0.8}}>Cerrar Sesión</div>
              </div>
-           </div>
+           </button>
         </div>
       </aside>
 
