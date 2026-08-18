@@ -26,67 +26,61 @@ export default function EditarPerfilScreen() {
     setValores({});
   };
 
+  const procesarCambioCorreo = async () => {
+    if (!valores.nuevo?.trim()) {
+      Alert.alert('Error', 'Ingresa el nuevo correo');
+      return;
+    }
+    if (valores.nuevo !== valores.confirmar) {
+      Alert.alert('Error', 'Los correos no coinciden');
+      return;
+    }
+    await actualizarPerfil({ correo: valores.nuevo });
+    Alert.alert('¡Éxito!', 'Correo actualizado correctamente');
+    cerrarModal();
+  };
+
+  const procesarCambioTelefono = async () => {
+    if (!valores.nuevo?.trim()) {
+      Alert.alert('Error', 'Ingresa el nuevo teléfono');
+      return;
+    }
+    await actualizarPerfil({ celular: valores.nuevo });
+    Alert.alert('¡Éxito!', 'Teléfono actualizado correctamente');
+    cerrarModal();
+  };
+
+  const procesarCambioPassword = async () => {
+    if (!valores.actual?.trim()) {
+      Alert.alert('Error', 'Ingresa la contraseña actual');
+      return;
+    }
+    if ((valores.nueva || '').length < 6) {
+      Alert.alert('Error', 'La nueva contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    if (valores.nueva !== valores.confirmar) {
+      Alert.alert('Error', 'Las contraseñas no coinciden');
+      return;
+    }
+    await actualizarPerfil({ 
+      passwordActual: valores.actual, 
+      passwordNuevo: valores.nueva 
+    });
+    Alert.alert('¡Éxito!', 'Contraseña actualizada correctamente');
+    cerrarModal();
+  };
+
   const guardarCambio = async () => {
-    if (campoEditando === 'correo') {
-      if (!valores.nuevo?.trim()) {
-        Alert.alert('Error', 'Ingresa el nuevo correo');
-        return;
-      }
-      if (valores.nuevo !== valores.confirmar) {
-        Alert.alert('Error', 'Los correos no coinciden');
-        return;
-      }
-      try {
-        setCargando(true);
-        await actualizarPerfil({ correo: valores.nuevo });
-        Alert.alert('¡Éxito!', 'Correo actualizado correctamente');
-        cerrarModal();
-      } catch (error: any) {
-        Alert.alert('Error', error.message || 'No se pudo actualizar');
-      } finally {
-        setCargando(false);
-      }
-    } else if (campoEditando === 'telefono') {
-      if (!valores.nuevo?.trim()) {
-        Alert.alert('Error', 'Ingresa el nuevo teléfono');
-        return;
-      }
-      try {
-        setCargando(true);
-        await actualizarPerfil({ celular: valores.nuevo });
-        Alert.alert('¡Éxito!', 'Teléfono actualizado correctamente');
-        cerrarModal();
-      } catch (error: any) {
-        Alert.alert('Error', error.message || 'No se pudo actualizar');
-      } finally {
-        setCargando(false);
-      }
-    } else if (campoEditando === 'password') {
-      if (!valores.actual?.trim()) {
-        Alert.alert('Error', 'Ingresa la contraseña actual');
-        return;
-      }
-      if ((valores.nueva || '').length < 6) {
-        Alert.alert('Error', 'La nueva contraseña debe tener al menos 6 caracteres');
-        return;
-      }
-      if (valores.nueva !== valores.confirmar) {
-        Alert.alert('Error', 'Las contraseñas no coinciden');
-        return;
-      }
-      try {
-        setCargando(true);
-        await actualizarPerfil({ 
-          passwordActual: valores.actual, 
-          passwordNuevo: valores.nueva 
-        });
-        Alert.alert('¡Éxito!', 'Contraseña actualizada correctamente');
-        cerrarModal();
-      } catch (error: any) {
-        Alert.alert('Error', error.message || 'No se pudo actualizar');
-      } finally {
-        setCargando(false);
-      }
+    try {
+      setCargando(true);
+      if (campoEditando === 'correo') await procesarCambioCorreo();
+      else if (campoEditando === 'telefono') await procesarCambioTelefono();
+      else if (campoEditando === 'password') await procesarCambioPassword();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'No se pudo actualizar');
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -123,8 +117,6 @@ export default function EditarPerfilScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.botonVolver} onPress={() => router.back()}>
             <IconSymbol name="chevron.left" size={24} color={Tema.dark.text} />
@@ -140,7 +132,6 @@ export default function EditarPerfilScreen() {
           </View>
         </View>
 
-        {/* Nombre y Apellido - Solo lectura */}
         <View style={styles.gridDosColumnas}>
           <View style={styles.campoSoloLectura}>
             <Text style={styles.labelRojo}>Nombre</Text>
@@ -152,7 +143,6 @@ export default function EditarPerfilScreen() {
           </View>
         </View>
 
-        {/* Filas editables */}
         {filasEditables.map((fila) => (
           <View key={fila.campo} style={styles.filaEditable}>
             <View style={styles.filaInfo}>
@@ -175,35 +165,20 @@ export default function EditarPerfilScreen() {
 
       </ScrollView>
 
-      {/* Modal de edición */}
-      <Modal
-        visible={campoEditando !== null}
-        transparent
-        animationType="fade"
-        onRequestClose={cerrarModal}
-      >
-        <KeyboardAvoidingView 
-          style={styles.modalOverlay} 
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
+      <Modal visible={campoEditando !== null} transparent animationType="fade" onRequestClose={cerrarModal}>
+        <KeyboardAvoidingView style={styles.modalOverlay} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={cerrarModal}>
             <TouchableOpacity activeOpacity={1} style={styles.modalCaja}>
-              
-              {/* Cerrar */}
               <TouchableOpacity style={styles.modalCerrar} onPress={cerrarModal}>
                 <Text style={styles.modalCerrarTexto}>×</Text>
               </TouchableOpacity>
 
-              {/* Cabecera */}
               <View style={styles.modalCabecera}>
                 <View style={styles.accentLine} />
-                <Text style={styles.modalTitulo}>
-                  {campoEditando ? configCampos[campoEditando]?.titulo : ''}
-                </Text>
+                <Text style={styles.modalTitulo}>{campoEditando ? configCampos[campoEditando]?.titulo : ''}</Text>
                 <Text style={styles.modalSubtitulo}>Seguridad y Personalización de Cuenta</Text>
               </View>
 
-              {/* Campos */}
               <View style={styles.modalCampos}>
                 {campoEditando && configCampos[campoEditando]?.campos.map((campo) => (
                   <View key={campo.id} style={styles.modalCampoGrupo}>
@@ -222,19 +197,12 @@ export default function EditarPerfilScreen() {
                 ))}
               </View>
 
-              {/* Botones */}
               <View style={styles.modalBotones}>
                 <TouchableOpacity style={styles.modalBtnCancelar} onPress={cerrarModal}>
                   <Text style={styles.modalBtnCancelarTexto}>Descartar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.modalBtnGuardar, cargando && { opacity: 0.7 }]} 
-                  onPress={guardarCambio}
-                  disabled={cargando}
-                >
-                  {cargando ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
+                <TouchableOpacity style={[styles.modalBtnGuardar, cargando && { opacity: 0.7 }]} onPress={guardarCambio} disabled={cargando}>
+                  {cargando ? <ActivityIndicator color="#fff" size="small" /> : (
                     <>
                       <Text style={styles.modalBtnGuardarTexto}>Guardar Cambios</Text>
                       <IconSymbol name="checkmark.shield.fill" size={16} color="#fff" />
@@ -242,7 +210,6 @@ export default function EditarPerfilScreen() {
                   )}
                 </TouchableOpacity>
               </View>
-
             </TouchableOpacity>
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -252,253 +219,41 @@ export default function EditarPerfilScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Tema.dark.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: Espaciado.lg,
-    paddingBottom: Espaciado.xxl,
-  },
-
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Espaciado.xl,
-    paddingBottom: Espaciado.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Tema.dark.border,
-  },
-  botonVolver: {
-    padding: Espaciado.sm,
-    marginRight: Espaciado.sm,
-    marginLeft: -Espaciado.sm,
-  },
-  headerTextos: {
-    flex: 1,
-  },
-  headerIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Espaciado.sm,
-  },
-  etiquetaCategoria: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Tema.dark.tint,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 2,
-  },
-  titulo: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: Tema.dark.text,
-  },
-  textoRojo: {
-    color: Tema.dark.tint,
-  },
-
-  // Grid Nombre/Apellido (solo lectura)
-  gridDosColumnas: {
-    flexDirection: 'row',
-    gap: Espaciado.md,
-    marginBottom: Espaciado.lg,
-  },
-  campoSoloLectura: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderWidth: 1,
-    borderColor: Tema.dark.border,
-    borderRadius: RadioBorde.lg,
-    padding: Espaciado.md,
-  },
-  labelRojo: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Tema.dark.tint,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 6,
-  },
-  valorSoloLectura: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: Tema.dark.text,
-  },
-
-  // Filas editables
-  filaEditable: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.01)',
-    borderWidth: 1,
-    borderColor: Tema.dark.border,
-    borderRadius: RadioBorde.xl,
-    padding: Espaciado.md,
-    paddingHorizontal: Espaciado.lg,
-    marginBottom: Espaciado.md,
-  },
-  filaInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  filaLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  filaLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Tema.dark.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-  },
-  filaValor: {
-    fontSize: 15,
-    color: Tema.dark.text,
-    marginTop: 2,
-  },
-  btnModificar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    borderWidth: 1,
-    borderColor: Tema.dark.borderRed,
-    borderRadius: RadioBorde.md,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-  },
-  btnModificarTexto: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Tema.dark.tint,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Espaciado.lg,
-  },
-  modalCaja: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#07070f',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 8, 68, 0.25)',
-    borderRadius: 24,
-    padding: Espaciado.xl,
-  },
-  modalCerrar: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  modalCerrarTexto: {
-    color: Tema.dark.textSecondary,
-    fontSize: 20,
-    lineHeight: 22,
-  },
-  modalCabecera: {
-    marginBottom: Espaciado.xl,
-  },
-  accentLine: {
-    width: 40,
-    height: 3,
-    backgroundColor: Tema.dark.tint,
-    marginBottom: Espaciado.md,
-    borderRadius: 2,
-  },
-  modalTitulo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Tema.dark.text,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 6,
-  },
-  modalSubtitulo: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Tema.dark.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-  },
-  modalCampos: {
-    gap: Espaciado.lg,
-    marginBottom: Espaciado.xl,
-  },
-  modalCampoGrupo: {
-    gap: 6,
-  },
-  modalCampoLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Tema.dark.tint,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-  },
-  modalInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: RadioBorde.lg,
-    padding: Espaciado.md,
-    color: Tema.dark.text,
-    fontSize: 15,
-  },
-  modalBotones: {
-    flexDirection: 'row',
-    gap: Espaciado.md,
-  },
-  modalBtnCancelar: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: RadioBorde.lg,
-    padding: Espaciado.md,
-    alignItems: 'center',
-  },
-  modalBtnCancelarTexto: {
-    color: Tema.dark.textSecondary,
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  modalBtnGuardar: {
-    flex: 2,
-    backgroundColor: Tema.dark.tint,
-    borderRadius: RadioBorde.lg,
-    padding: Espaciado.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  modalBtnGuardarTexto: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
+  safeArea: { flex: 1, backgroundColor: Tema.dark.background },
+  scrollContent: { flexGrow: 1, padding: Espaciado.lg, paddingBottom: Espaciado.xxl },
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: Espaciado.xl, paddingBottom: Espaciado.lg, borderBottomWidth: 1, borderBottomColor: Tema.dark.border },
+  botonVolver: { padding: Espaciado.sm, marginRight: Espaciado.sm, marginLeft: -Espaciado.sm },
+  headerTextos: { flex: 1 },
+  headerIconRow: { flexDirection: 'row', alignItems: 'center', gap: Espaciado.sm },
+  etiquetaCategoria: { fontSize: 11, fontWeight: '700', color: Tema.dark.tint, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 2 },
+  titulo: { fontSize: 22, fontWeight: 'bold', color: Tema.dark.text },
+  textoRojo: { color: Tema.dark.tint },
+  gridDosColumnas: { flexDirection: 'row', gap: Espaciado.md, marginBottom: Espaciado.lg },
+  campoSoloLectura: { flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.02)', borderWidth: 1, borderColor: Tema.dark.border, borderRadius: RadioBorde.lg, padding: Espaciado.md },
+  labelRojo: { fontSize: 11, fontWeight: '700', color: Tema.dark.tint, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 },
+  valorSoloLectura: { fontSize: 16, fontWeight: '500', color: Tema.dark.text },
+  filaEditable: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(255, 255, 255, 0.01)', borderWidth: 1, borderColor: Tema.dark.border, borderRadius: RadioBorde.xl, padding: Espaciado.md, paddingHorizontal: Espaciado.lg, marginBottom: Espaciado.md },
+  filaInfo: { flex: 1, gap: 4 },
+  filaLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  filaLabel: { fontSize: 11, fontWeight: '700', color: Tema.dark.textSecondary, textTransform: 'uppercase', letterSpacing: 1.5 },
+  filaValor: { fontSize: 15, color: Tema.dark.text, marginTop: 2 },
+  btnModificar: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: Tema.dark.borderRed, borderRadius: RadioBorde.md, paddingVertical: 8, paddingHorizontal: 14 },
+  btnModificarTexto: { fontSize: 12, fontWeight: '700', color: Tema.dark.tint, textTransform: 'uppercase', letterSpacing: 1 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.85)', justifyContent: 'center', alignItems: 'center', padding: Espaciado.lg },
+  modalCaja: { width: '100%', maxWidth: 400, backgroundColor: '#07070f', borderWidth: 1, borderColor: 'rgba(255, 8, 68, 0.25)', borderRadius: 24, padding: Espaciado.xl },
+  modalCerrar: { position: 'absolute', top: 16, right: 16, width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255, 255, 255, 0.03)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+  modalCerrarTexto: { color: Tema.dark.textSecondary, fontSize: 20, lineHeight: 22 },
+  modalCabecera: { marginBottom: Espaciado.xl },
+  accentLine: { width: 40, height: 3, backgroundColor: Tema.dark.tint, marginBottom: Espaciado.md, borderRadius: 2 },
+  modalTitulo: { fontSize: 24, fontWeight: 'bold', color: Tema.dark.text, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 },
+  modalSubtitulo: { fontSize: 11, fontWeight: '600', color: Tema.dark.textSecondary, textTransform: 'uppercase', letterSpacing: 2 },
+  modalCampos: { gap: Espaciado.lg, marginBottom: Espaciado.xl },
+  modalCampoGrupo: { gap: 6 },
+  modalCampoLabel: { fontSize: 11, fontWeight: '700', color: Tema.dark.tint, textTransform: 'uppercase', letterSpacing: 2 },
+  modalInput: { backgroundColor: 'rgba(255, 255, 255, 0.02)', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.08)', borderRadius: RadioBorde.lg, padding: Espaciado.md, color: Tema.dark.text, fontSize: 15 },
+  modalBotones: { flexDirection: 'row', gap: Espaciado.md },
+  modalBtnCancelar: { flex: 1, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: RadioBorde.lg, padding: Espaciado.md, alignItems: 'center' },
+  modalBtnCancelarTexto: { color: Tema.dark.textSecondary, fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
+  modalBtnGuardar: { flex: 2, backgroundColor: Tema.dark.tint, borderRadius: RadioBorde.lg, padding: Espaciado.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  modalBtnGuardarTexto: { color: '#fff', fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
 });

@@ -53,6 +53,28 @@ const normalizarRolWeb = (rol) => {
   return valor;
 };
 
+const filtrarSolicitudes = (solicitudes, text, filtroEstado) => {
+  return solicitudes.filter(s => {
+    const id = String(s.Id_Reserva_Paquete || s.id || s.Id_Personalizado || '');
+    const nombre = (s.Nombre_Completo || s.usuario?.Nombre || '').toLowerCase();
+    const correo = (s.Correo || s.usuario?.Correo || '').toLowerCase();
+    const estado = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
+    const cumpleBusqueda = id.includes(text) || nombre.includes(text) || correo.includes(text);
+    const cumpleFiltro = filtroEstado ? estado === filtroEstado : true;
+    return cumpleBusqueda && cumpleFiltro;
+  });
+};
+
+const filtrarOpiniones = (opiniones, text, filtroCalificacion) => {
+  return opiniones.filter(o => {
+    const id = String(o.Id_Reseña || '');
+    const nombre = (o.Nombre_Usuario || '').toLowerCase();
+    const cumpleBusqueda = id.includes(text) || nombre.includes(text);
+    const cumpleFiltro = filtroCalificacion ? String(o.Calificacion) === filtroCalificacion : true;
+    return cumpleBusqueda && cumpleFiltro;
+  });
+};
+
 const PaginaAdmin = () => {
   const navigate = useNavigate();
   const [userLocal] = useState(getUsuarioLocal());
@@ -60,14 +82,12 @@ const PaginaAdmin = () => {
   const esAuxiliar = rolUsuario === 'auxiliar';
   const esAdminGeneral = rolUsuario === 'admin';
   
-  // Estados de interfaz
   const [vistaActiva, setVistaActiva] = useState('usuarios');
   const [pestanaSolicitudes, setPestanaSolicitudes] = useState('paquetes');
   const [cargando, setCargando] = useState(false);
   const [toast, setToast] = useState({ visible: false, mensaje: '', tipo: 'exito' });
   const [dialogo, setDialogo] = useState({ abierto: false, titulo: '', mensaje: '', onConfirm: null, variante: 'peligro' });
 
-  // Estados de datos
   const [usuarios, setUsuarios] = useState([]);
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -78,11 +98,9 @@ const PaginaAdmin = () => {
   const [filtroEstadoSolicitud, setFiltroEstadoSolicitud] = useState('');
   const [filtroCalificacionOpinion, setFiltroCalificacionOpinion] = useState('');
 
-  // Estados de Modales
-  const [modalAbierto, setModalAbierto] = useState(null); // 'usuario' | 'producto' | 'categoria' | 'paquete'
+  const [modalAbierto, setModalAbierto] = useState(null);
   const [elementoEditable, setElementoEditable] = useState(null);
 
-  // Seguridad
   useEffect(() => {
     if (!userLocal || (!esAdminGeneral && !esAuxiliar)) {
       navigate('/login');
@@ -91,30 +109,23 @@ const PaginaAdmin = () => {
     }
   }, [userLocal, navigate, esAdminGeneral, esAuxiliar]);
 
-  // Carga de datos dinámica
   const cargarDatos = useCallback(async () => {
     setCargando(true);
     try {
-      let data = [];
       if (vistaActiva === 'usuarios') {
-        data = await listarUsuariosAPI();
-        setUsuarios(data);
+        setUsuarios(await listarUsuariosAPI());
       } else if (vistaActiva === 'productos') {
         const [resProd, resCat] = await Promise.all([listarProductosAdminAPI(), obtenerCategoriasAPI()]);
         setProductos(resProd);
         setCategorias(resCat);
       } else if (vistaActiva === 'categorias') {
-        data = await listarCategoriasAdminAPI();
-        setCategorias(data);
+        setCategorias(await listarCategoriasAdminAPI());
       } else if (vistaActiva === 'paquetes') {
-        data = await obtenerPaquetesAPI();
-        setPaquetes(data);
+        setPaquetes(await obtenerPaquetesAPI());
       } else if (vistaActiva === 'opiniones') {
-        data = await obtenerOpinionesAPI();
-        setOpiniones(data);
+        setOpiniones(await obtenerOpinionesAPI());
       } else if (vistaActiva === 'solicitudes') {
-        data = await obtenerTodasLasSolicitudesAPI(pestanaSolicitudes);
-        setSolicitudes(data);
+        setSolicitudes(await obtenerTodasLasSolicitudesAPI(pestanaSolicitudes));
       }
     } catch (error) {
       showToast(error.message, 'error');
@@ -136,15 +147,13 @@ const PaginaAdmin = () => {
     setDialogo({ abierto: true, titulo, mensaje, onConfirm, variante });
   };
 
-  // Mostrar diálogo con opciones para seleccionar un rol
   const pedirSeleccionRol = (id, rolActual) => {
-    const opciones = ['admin', 'auxiliar', 'cliente'];
     setDialogo({
       abierto: true,
       titulo: 'Seleccionar nuevo rol',
       mensaje: `Rol actual: ${String(rolActual || 'cliente').toUpperCase()}. Elige un rol:`,
       variante: 'info',
-      opciones,
+      opciones: ['admin', 'auxiliar', 'cliente'],
       onConfirm: null,
       onSelect: async (nuevoRol) => {
         try {
@@ -156,16 +165,13 @@ const PaginaAdmin = () => {
           showToast(e.message, 'error');
         } finally {
           setCargando(false);
-          setDialogo({ ...dialogo, abierto: false });
+          setDialogo(prev => ({ ...prev, abierto: false }));
         }
       }
     });
   };
 
-  // --- HANDLERS USUARIOS ---
-  const cambiarRolUsuario = (id, rolActual) => {
-    pedirSeleccionRol(id, rolActual);
-  };
+  const cambiarRolUsuario = (id, rolActual) => pedirSeleccionRol(id, rolActual);
 
   const eliminarUsuario = async (id) => {
     pedirConfirmacion(
@@ -181,27 +187,22 @@ const PaginaAdmin = () => {
     );
   };
 
-  // --- HANDLERS PAQUETES ---
   const handleGuardarPaquete = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const datos = Object.fromEntries(formData.entries());
+    const payload = {
+      nombre: datos.nombre,
+      descripcion: datos.descripcion,
+      precio: Number(datos.precio),
+      imagen: datos.imagen
+    };
     try {
       if (elementoEditable) {
-        await actualizarPaqueteAPI(elementoEditable.Id_Paquete, {
-          nombre: datos.nombre,
-          descripcion: datos.descripcion,
-          precio: Number(datos.precio),
-          imagen: datos.imagen
-        });
+        await actualizarPaqueteAPI(elementoEditable.Id_Paquete, payload);
         showToast(`✏️ Paquete "${datos.nombre}" editado correctamente`);
       } else {
-        await crearPaqueteAPI({
-          nombre: datos.nombre,
-          descripcion: datos.descripcion,
-          precio: Number(datos.precio),
-          imagen: datos.imagen
-        });
+        await crearPaqueteAPI(payload);
         showToast(`✅ Paquete "${datos.nombre}" creado exitosamente`);
       }
       setModalAbierto(null);
@@ -262,7 +263,6 @@ const PaginaAdmin = () => {
     );
   };
 
-  // --- HANDLERS CATEGORÍAS ---
   const handleGuardarCategoria = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -335,7 +335,6 @@ const PaginaAdmin = () => {
     );
   };
 
-  // --- HANDLERS SOLICITUDES ---
   const handleCambiarEstadoSolicitud = async (id, nuevoEstado) => {
     try {
       await actualizarEstadoSolicitudAPI(pestanaSolicitudes, id, nuevoEstado);
@@ -440,40 +439,13 @@ const PaginaAdmin = () => {
     if (vistaActiva === 'paquetes') return paquetes.filter(p => (p.Nombre_Paquete || '').toLowerCase().includes(text));
     if (vistaActiva === 'productos') return productos.filter(p => (p.Nombre_Producto || '').toLowerCase().includes(text));
     if (vistaActiva === 'categorias') return categorias.filter(c => (c.Nombre_Categoria || '').toLowerCase().includes(text) || (c.Descripcion_Categoria || '').toLowerCase().includes(text));
-    
-    if (vistaActiva === 'solicitudes') {
-      return solicitudes.filter(s => {
-        const id = String(s.Id_Reserva_Paquete || s.id || s.Id_Personalizado || '');
-        const nombre = (s.Nombre_Completo || s.usuario?.Nombre || '').toLowerCase();
-        const correo = (s.Correo || s.usuario?.Correo || '').toLowerCase();
-        const estado = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
-        
-        const cumpleBusqueda = id.includes(text) || nombre.includes(text) || correo.includes(text);
-        const cumpleFiltro = filtroEstadoSolicitud ? estado === filtroEstadoSolicitud : true;
-        
-        return cumpleBusqueda && cumpleFiltro;
-      });
-    }
-
-    if (vistaActiva === 'opiniones') {
-      return opiniones.filter(o => {
-        const id = String(o.Id_Reseña || '');
-        const nombre = (o.Nombre_Usuario || '').toLowerCase();
-        const calificacion = o.Calificacion;
-        
-        const cumpleBusqueda = id.includes(text) || nombre.includes(text);
-        const cumpleFiltro = filtroCalificacionOpinion ? String(calificacion) === filtroCalificacionOpinion : true;
-        
-        return cumpleBusqueda && cumpleFiltro;
-      });
-    }
-
+    if (vistaActiva === 'solicitudes') return filtrarSolicitudes(solicitudes, text, filtroEstadoSolicitud);
+    if (vistaActiva === 'opiniones') return filtrarOpiniones(opiniones, text, filtroCalificacionOpinion);
     return [];
   };
 
   return (
     <div className="pagina-admin-root">
-      {/* SIDEBAR */}
       <aside className="menu-lateral">
         <div className="menu-lateral__contenedor-logo">
           <div className="menu-lateral__texto-logo"><span>Admin</span></div>
@@ -545,7 +517,6 @@ const PaginaAdmin = () => {
         </div>
       </aside>
 
-      {/* CONTENT */}
       <main className="area-contenido">
         <header className="barra-encabezado">
           <div className="barra-encabezado__titulo" style={{textTransform:'uppercase'}}>
@@ -565,7 +536,6 @@ const PaginaAdmin = () => {
             </div>
           ) : (
             <>
-              {/* VISTA USUARIOS */}
               {vistaActiva === 'usuarios' && (
                 <div>
                   <div className="barra-busqueda-filtros" style={{marginBottom:'2rem'}}>
@@ -591,7 +561,7 @@ const PaginaAdmin = () => {
                         <div style={{fontSize:'0.8rem', opacity:0.7}}>{u.Correo}</div>
                         <div style={{fontSize:'0.8rem', opacity:0.7}}>{u.Celular}</div>
                       </div>
-                        <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'5px', flexWrap:'wrap'}}>
+                      <div style={{padding:'1rem', background:'rgba(0,0,0,0.2)', display:'flex', gap:'5px', flexWrap:'wrap'}}>
                         <button type="button" className="boton-accion" onClick={() => {setElementoEditable(u); setModalAbierto('usuario');}} title="Editar Usuario">
                           <i className="fas fa-pen"></i>
                         </button>
@@ -615,7 +585,6 @@ const PaginaAdmin = () => {
               </div>
             )}
 
-              {/* VISTA PAQUETES */}
               {vistaActiva === 'paquetes' && (
                 <div>
                    <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
@@ -660,7 +629,6 @@ const PaginaAdmin = () => {
                 </div>
               )}
 
-              {/* VISTA PRODUCTOS */}
               {vistaActiva === 'productos' && (
                 <div>
                   <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
@@ -715,7 +683,6 @@ const PaginaAdmin = () => {
                 </div>
               )}
 
-              {/* VISTA CATEGORÍAS */}
               {vistaActiva === 'categorias' && (
                 <div>
                   <div style={{display:'flex', gap:'1rem', marginBottom:'1.5rem', flexWrap:'wrap'}}>
@@ -759,7 +726,6 @@ const PaginaAdmin = () => {
                 </div>
               )}
 
-              {/* VISTA SOLICITUDES */}
               {vistaActiva === 'solicitudes' && (
                 <div>
                   <div className="barra-busqueda-filtros" style={{marginBottom:'1.5rem', display:'flex', flexWrap:'wrap', gap:'1rem', justifyContent:'space-between', alignItems:'center'}}>
@@ -796,7 +762,6 @@ const PaginaAdmin = () => {
                       return (
                         <div key={id} className="tarjeta-admin" style={{borderTop: '3px solid var(--rojo)'}}>
                           <div className="tarjeta-admin__cuerpo">
-                            {/* ENCABEZADO CLIENTE */}
                             <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'15px'}}>
                               <div>
                                 <div style={{fontWeight:700, fontSize:'1.1rem'}}>{nombre}</div>
@@ -813,10 +778,7 @@ const PaginaAdmin = () => {
 
                             <hr style={{borderColor: 'rgba(255,255,255,0.05)', margin: '15px 0'}} />
 
-                            {/* DETALLES ESPECÍFICOS SEGÚN TIPO */}
                             <div style={{marginBottom:'20px'}}>
-                              
-                              {/* --- CITAS (PAQUETES) --- */}
                               {pestanaSolicitudes === 'paquetes' && (
                                 <div style={{fontSize:'0.85rem'}}>
                                   <div style={{marginBottom:'10px', background:'rgba(255,255,255,0.03)', padding:'10px', borderRadius:'6px'}}>
@@ -836,7 +798,6 @@ const PaginaAdmin = () => {
                                 </div>
                               )}
 
-                              {/* --- PEDIDOS (PRODUCTOS) --- */}
                               {pestanaSolicitudes === 'productos' && (
                                 <div style={{fontSize:'0.85rem'}}>
                                   <div style={{marginBottom:'10px', background:'rgba(255,255,255,0.03)', padding:'10px', borderRadius:'6px'}}>
@@ -862,7 +823,6 @@ const PaginaAdmin = () => {
                                 </div>
                               )}
 
-                              {/* --- PERSONALIZADO --- */}
                               {pestanaSolicitudes === 'personalizado' && (
                                 <div style={{fontSize:'0.85rem'}}>
                                   <div style={{marginBottom:'10px', background:'rgba(255,255,255,0.03)', padding:'10px', borderRadius:'6px'}}>
@@ -890,7 +850,6 @@ const PaginaAdmin = () => {
                               )}
                             </div>
 
-                            {/* SELECTOR DE ESTADO */}
                             <label htmlFor={`estado-solicitud-${id}`} style={{fontSize:'0.75rem', fontWeight:'bold', marginBottom:'5px', color:'var(--rojo)', display:'block'}}>ACTUALIZAR ESTADO:</label>
                             <select 
                               id={`estado-solicitud-${id}`}
@@ -924,7 +883,6 @@ const PaginaAdmin = () => {
                 </div>
               )}
 
-              {/* VISTA OPINIONES */}
               {vistaActiva === 'opiniones' && (
                 <div>
                   <div className="barra-busqueda-filtros" style={{marginBottom:'1.5rem', display:'flex', flexWrap:'wrap', gap:'1rem', justifyContent:'space-between'}}>
@@ -986,7 +944,6 @@ const PaginaAdmin = () => {
         </div>
       </main>
 
-      {/* MODAL PAQUETES */}
       {modalAbierto === 'paquete' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarPaquete}>
@@ -1015,7 +972,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* MODAL PRODUCTOS */}
       {modalAbierto === 'producto' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarProducto}>
@@ -1057,7 +1013,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* MODAL CATEGORÍAS */}
       {modalAbierto === 'categoria' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarCategoria}>
@@ -1078,7 +1033,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* MODAL USUARIO */}
       {modalAbierto === 'usuario' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarUsuario}>
@@ -1111,13 +1065,11 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* MODAL SOLICITUD (Citas/Pedidos/Personalizados) */}
       {modalAbierto === 'solicitud' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarSolicitudEspecifica}>
               <div className="modal__titulo">Editar <span>{pestanaSolicitudes === 'paquetes' ? 'Cita' : pestanaSolicitudes === 'productos' ? 'Pedido' : 'Personalizado'}</span></div>
               
-              {/* Campos para CITAS */}
               {pestanaSolicitudes === 'paquetes' && (
                 <>
                   <div className="modal__campo">
@@ -1151,7 +1103,6 @@ const PaginaAdmin = () => {
                 </>
               )}
 
-              {/* Campos para PEDIDOS */}
               {pestanaSolicitudes === 'productos' && (
                 <>
                   <div className="modal__campo">
@@ -1165,7 +1116,6 @@ const PaginaAdmin = () => {
                 </>
               )}
 
-              {/* Campos para PERSONALIZADO */}
               {pestanaSolicitudes === 'personalizado' && (
                 <>
                   <div className="modal__campo">
@@ -1203,7 +1153,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* MODAL OPINIÓN */}
       {modalAbierto === 'opinion' && (
         <div className="modal-fondo">
            <form className="modal-caja" onSubmit={handleGuardarOpinion}>
@@ -1234,7 +1183,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* TOAST SYSTEM */}
       {toast.visible && (
         <div className={`toast-notificacion toast-notificacion--${toast.tipo}`}>
            <div className="toast-notificacion__icono">
@@ -1251,7 +1199,6 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {/* DIÁLOGO DE CONFIRMACIÓN CUSTOM */}
       {dialogo.abierto && (
         <div className="dialogo-fondo dialogo-fondo--abierto">
           <div className={`dialogo-caja ${dialogo.variante === 'info' ? 'dialogo-caja--variante-info' : ''}`}>
