@@ -68,12 +68,10 @@ export default function NavegacionPrincipal() {
         </div>
       </nav>
 
-      <div
+      <nav
         className={`menu-movil-desplegable${menuMovilAbierto ? ' open' : ''}`}
         id="menuMovilDesplegable"
-        role="navigation"
-        aria-label="Menú móvil"
-        onClick={e => e.stopPropagation()}
+        aria-label="Menú navegación móvil"
         style={{ top: topMenuMovil }}
       >
         <Link to="/" onClick={cerrarMenu}>Inicio</Link>
@@ -89,7 +87,7 @@ export default function NavegacionPrincipal() {
           </Link>
           <Link className="nav-boton-perfil" to={rutaPerfil} onClick={cerrarMenu}>{sesionActiva ? 'Mi Perfil' : 'Iniciar Sesión'}</Link>
         </div>
-      </div>
+      </nav>
     </>
   );
 }

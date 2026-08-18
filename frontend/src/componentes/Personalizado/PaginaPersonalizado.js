@@ -20,7 +20,6 @@ export default function PaginaPersonalizado() {
   const [errores, setErrores] = useState({});
   let toastTimer = useRef(null);
 
-  // Efecto typewriter
   useEffect(() => {
     let idx = 0;
     const interval = setInterval(() => {
@@ -60,7 +59,6 @@ export default function PaginaPersonalizado() {
       document.getElementById(primerError)?.focus();
       return;
     }
-    // RegEx lineal y segura contra backtracking
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(form.correoElectronico.trim())) {
       setErrores(p => ({ ...p, correoElectronico: true }));
@@ -112,12 +110,10 @@ export default function PaginaPersonalizado() {
 
   return (
     <div className="pagina-personalizado">
-      {/* Botón volver */}
       <Link className="enlace-volver-al-inicio" to="/">
         <i className="fas fa-arrow-left"></i> Volver
       </Link>
 
-      {/* Hero */}
       <div className="encabezado-hero">
         <div className="etiqueta-nombre-marca">
           <span className="punto-parpadeante-marca"></span>
@@ -132,12 +128,9 @@ export default function PaginaPersonalizado() {
         <div className="linea-separadora-hero"></div>
       </div>
 
-      {/* Formulario */}
       <div className="contenedor-pagina-principal">
         <div className="tarjeta-contenedor-formulario">
           <form id="formulario-solicitud-personalizada" onSubmit={enviar}>
-
-            {/* Sección 1 — Info personal */}
             <div className="bloque-seccion-formulario">
               <h3 className="titulo-seccion-formulario">👤 Información Personal</h3>
               <div className="fila-dos-columnas">
@@ -179,7 +172,6 @@ export default function PaginaPersonalizado() {
               </div>
             </div>
 
-            {/* Sección 2 — Tu idea */}
             <div className="bloque-seccion-formulario">
               <h3 className="titulo-seccion-formulario">💡 Tu Idea</h3>
               <div className="grupo-campo-formulario">
@@ -203,7 +195,6 @@ export default function PaginaPersonalizado() {
               </div>
             </div>
 
-            {/* Sección 3 — Comentarios */}
             <div className="bloque-seccion-formulario">
               <h3 className="titulo-seccion-formulario">💬 Comentarios Finales</h3>
               <div className="grupo-campo-formulario grupo-campo-formulario--sin-margen">
@@ -222,23 +213,22 @@ export default function PaginaPersonalizado() {
         </div>
       </div>
 
-      {/* Toast error */}
       <div className={`toast-error-validacion${toastVisible ? ' toast--visible' : ''}`} id="toast-error-validacion">
         <span className="icono-toast-error">⚠️</span>
         <span className="texto-mensaje-toast">{toastMsg}</span>
         <div className="barra-progreso-toast"></div>
       </div>
 
-      {/* Modal éxito */}
       {modalExito && (
-        <div 
-          className="fondo-modal-exito modal-fondo--visible" 
-          id="fondo-modal-exito"
-          role="dialog"
-          aria-modal="true"
-          onClick={e => e.target === e.currentTarget && cerrarModal()}
-        >
-          <div className="tarjeta-modal-exito">
+        <div className="fondo-modal-exito modal-fondo--visible" id="fondo-modal-exito">
+          <button 
+            type="button" 
+            className="modal-backdrop-btn" 
+            onClick={cerrarModal}
+            aria-label="Cerrar modal"
+            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="tarjeta-modal-exito" style={{ position:'relative', zIndex: 1 }}>
             <div className="particula-decorativa-modal particula-decorativa-modal--superior-derecha"></div>
             <div className="particula-decorativa-modal particula-decorativa-modal--inferior-izquierda"></div>
             <div className="particula-decorativa-modal particula-decorativa-modal--lateral-derecha"></div>

@@ -12,7 +12,6 @@ export default function PaginaPortafolio() {
   const navigate = useNavigate();
   const [paquetesAPI, setPaquetesAPI] = useState([]);
   
-  // Estados para filtros
   const [busqueda, setBusqueda] = useState('');
   const [paqueteFiltro, setPaqueteFiltro] = useState('todos');
 
@@ -57,7 +56,6 @@ export default function PaginaPortafolio() {
           <p className="paquetes-descripcion">Cada paquete es una promesa de calidad, pensada para que tu recuerdo perdure para siempre.</p>
         </div>
 
-        {/* Barra de Búsqueda y Filtro para Paquetes */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', padding: '0 1rem' }}>
           <label htmlFor="input-busqueda-paquetes" style={{ display: 'none' }}>Buscar paquete</label>
           <input 
@@ -113,13 +111,11 @@ export default function PaginaPortafolio() {
             <div key={p.nombre} className="paquete-fila" style={esDerecha ? { flexDirection: 'row' } : {}}>
               {esDerecha && <div style={{ flex: 1, maxWidth: '80px' }}></div>}
               {esDerecha && <div className="nodo-linea-tiempo"><div className="nodo-circulo">{p.numero}</div><div className="nodo-conector"></div></div>}
-              <div 
+              <button 
+                type="button"
                 className={`tarjeta-paquete${p.destacado ? ' destacado' : ''}`} 
                 onClick={() => seleccionarPaquete(p)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); seleccionarPaquete(p); } }}
-                style={{ cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', width: '100%', display: 'block' }}
               >
                 {p.destacado && <div className="insignia-destacado">Más Popular</div>}
                 <div className="tarjeta-imagen">
@@ -136,11 +132,11 @@ export default function PaginaPortafolio() {
                     <span className="beneficio-pastilla entrega">{p.entrega}</span>
                   </div>
                   <div className="tarjeta-pie">
-                    <button type="button" className="tarjeta-boton-accion" onClick={e => { e.stopPropagation(); seleccionarPaquete(p); }}><span>Seleccionar</span></button>
+                    <span className="tarjeta-boton-accion"><span>Seleccionar</span></span>
                     <span className="tarjeta-flecha">→</span>
                   </div>
                 </div>
-              </div>
+              </button>
               {!esDerecha && <div className="nodo-linea-tiempo"><div className="nodo-circulo" style={p.destacado ? { borderColor: 'var(--red)', color: 'var(--red)' } : {}}>{p.numero}</div><div className="nodo-conector"></div></div>}
               {!esDerecha && <div style={{ flex: 1, maxWidth: '80px' }}></div>}
             </div>

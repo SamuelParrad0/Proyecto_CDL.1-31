@@ -79,11 +79,12 @@ export default function PaginaGaleria() {
             ))}
           </div>
           <div className="galeria-mosaico">
-            {itemsFiltrados.map((item, idx) => {
+            {itemsFiltrados.map(item => {
+              const itemKey = `${item.title}-${item.src}`;
               if (item.type === 'video') return (
                 <button 
                   type="button"
-                  key={idx} 
+                  key={itemKey} 
                   className="galeria-item item-video" 
                   onClick={() => abrirModalVideo(item.src, item.title, item.category)}
                   style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
@@ -103,7 +104,7 @@ export default function PaginaGaleria() {
               if (item.type === 'especial') return (
                 <button 
                   type="button"
-                  key={idx} 
+                  key={itemKey} 
                   className="galeria-item item-especial" 
                   onClick={() => abrirLightbox(lbIdx)}
                   style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
@@ -117,7 +118,7 @@ export default function PaginaGaleria() {
               return (
                 <button 
                   type="button"
-                  key={idx} 
+                  key={itemKey} 
                   className="galeria-item" 
                   onClick={() => abrirLightbox(lbIdx)}
                   style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
@@ -156,23 +157,27 @@ export default function PaginaGaleria() {
       </div>
 
       {/* Modal Video */}
-      <div 
-        className={`modal-video-fondo${modalVideoAbierto ? ' open' : ''}`} 
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.target.className.includes('modal-video-fondo') && cerrarModalVideo()}
-      >
-        <div className="modal-video-caja">
-          <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}>×</button>
-          <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata"></video>
-          <div className="modal-video-informacion">
-            <div>
-              <div className="modal-video-categoria">{videoActual.categoria}</div>
-              <div className="modal-video-titulo">{videoActual.titulo}</div>
+      {modalVideoAbierto && (
+        <div className="modal-video-fondo open">
+          <button 
+            type="button" 
+            className="modal-video-overlay-btn" 
+            onClick={cerrarModalVideo}
+            aria-label="Cerrar video"
+            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="modal-video-caja" style={{ position:'relative', zIndex: 1 }}>
+            <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}></button>
+            <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata"></video>
+            <div className="modal-video-informacion">
+              <div>
+                <div className="modal-video-categoria">{videoActual.categoria}</div>
+                <div className="modal-video-titulo">{videoActual.titulo}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <RedesSocialesFlotantes />
       <div className={`notificacion-emergente${toastVisible ? ' show' : ''}`}>

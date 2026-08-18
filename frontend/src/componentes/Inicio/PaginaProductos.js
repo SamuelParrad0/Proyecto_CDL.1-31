@@ -8,7 +8,6 @@ import { useScrollReveal } from '../compartidos/useScrollReveal';
 import { useCarrito } from '../../contexto/CarritoContexto';
 import { obtenerProductosAPI, obtenerCategoriasAPI } from '../../servicios/api';
 
-// Mapeo de nombres de producto a imágenes locales (fallback cuando la BD no tiene imagen)
 const MAPA_IMAGENES_PRODUCTO = {
   'cajita corazón': 'Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png',
   'bolsa sorpresa': 'Imagenes_Videos/Imagenes_Videos/Img-Productos/Bolsa-Sorpresa.png',
@@ -42,7 +41,6 @@ export default function PaginaProductos() {
   const [indiceImagenProducto, setIndiceImagenProducto] = useState(0);
   const [enviandoPedido, setEnviandoPedido] = useState(false);
 
-  // Estados para filtros
   const [busqueda, setBusqueda] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('todas');
 
@@ -100,7 +98,6 @@ export default function PaginaProductos() {
             <h2 className="titulo-seccion">NUESTROS <span>PRODUCTOS</span></h2>
           </div>
 
-          {/* Barra de Búsqueda y Filtro */}
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '4rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
             <label htmlFor="input-busqueda-productos-vista" style={{ display: 'none' }}>Buscar producto por nombre</label>
             <input 
@@ -224,14 +221,14 @@ export default function PaginaProductos() {
                     </span>
                   </div>
                   <div className="modal-miniaturas">
-                    {productoActivo.imagenes.map((img, i) => (
+                    {productoActivo.imagenes.map((img) => (
                       <button 
                         type="button" 
-                        key={i} 
-                        className={`modal-miniatura${i === indiceImagenProducto ? ' active' : ''}`} 
-                        onClick={() => setIndiceImagenProducto(i)}
+                        key={img} 
+                        className={`modal-miniatura${img === productoActivo.imagenes[indiceImagenProducto] ? ' active' : ''}`} 
+                        onClick={() => setIndiceImagenProducto(productoActivo.imagenes.indexOf(img))}
                         style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                        aria-label={`Ver imagen ${i + 1}`}
+                        aria-label={`Ver imagen ${productoActivo.imagenes.indexOf(img) + 1}`}
                       >
                         <img src={img} alt="" />
                       </button>

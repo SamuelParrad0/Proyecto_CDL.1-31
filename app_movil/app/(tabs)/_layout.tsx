@@ -5,31 +5,37 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Tema, Espaciado } from '@/constants/tema';
 import { CarritoContext } from '@/src/contexto/ContextoCarrito';
 
-// Componentes de íconos definidos fuera del componente padre
-function IconoTienda({ color }: { color: string }) {
-  return <IconSymbol size={28} name="house.fill" color={color} />;
-}
+type TabIconProps = Readonly<{
+  color: string;
+}>;
 
-function IconoExplorar({ color }: { color: string }) {
-  return <IconSymbol size={28} name="sparkles" color={color} />;
-}
+type CarritoIconProps = Readonly<{
+  color: string;
+  totalItems: number;
+}>;
 
-function IconoCarrito({ color, totalItems }: { color: string; totalItems: number }) {
-  return (
-    <View>
-      <IconSymbol size={28} name="cart.fill" color={color} />
-      {totalItems > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{totalItems}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
+const renderIconoTienda = (props: TabIconProps) => (
+  <IconSymbol size={28} name="house.fill" color={props.color} />
+);
 
-function IconoCuenta({ color }: { color: string }) {
-  return <IconSymbol size={28} name="person.fill" color={color} />;
-}
+const renderIconoExplorar = (props: TabIconProps) => (
+  <IconSymbol size={28} name="sparkles" color={props.color} />
+);
+
+const renderIconoCarrito = (props: CarritoIconProps) => (
+  <View>
+    <IconSymbol size={28} name="cart.fill" color={props.color} />
+    {props.totalItems > 0 && (
+      <View style={styles.badge}>
+        <Text style={styles.badgeText}>{props.totalItems}</Text>
+      </View>
+    )}
+  </View>
+);
+
+const renderIconoCuenta = (props: TabIconProps) => (
+  <IconSymbol size={28} name="person.fill" color={props.color} />
+);
 
 export default function TabLayout() {
   const { totalItems } = useContext(CarritoContext);
@@ -62,7 +68,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Tienda',
-          tabBarIcon: ({ color }) => <IconoTienda color={color} />,
+          tabBarIcon: (tabProps) => renderIconoTienda({ color: tabProps.color }),
         }}
       />
       
@@ -70,7 +76,7 @@ export default function TabLayout() {
         name="explorar"
         options={{
           title: 'Explorar',
-          tabBarIcon: ({ color }) => <IconoExplorar color={color} />,
+          tabBarIcon: (tabProps) => renderIconoExplorar({ color: tabProps.color }),
         }}
       />
       
@@ -78,7 +84,7 @@ export default function TabLayout() {
         name="carrito"
         options={{
           title: 'Carrito',
-          tabBarIcon: ({ color }) => <IconoCarrito color={color} totalItems={totalItems} />,
+          tabBarIcon: (tabProps) => renderIconoCarrito({ color: tabProps.color, totalItems }),
         }}
       />
 
@@ -86,7 +92,7 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Cuenta',
-          tabBarIcon: ({ color }) => <IconoCuenta color={color} />,
+          tabBarIcon: (tabProps) => renderIconoCuenta({ color: tabProps.color }),
         }}
       />
     </Tabs>

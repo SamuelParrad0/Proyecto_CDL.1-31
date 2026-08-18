@@ -94,15 +94,12 @@ export default function PaginaPedidos() {
         </div>
 
         <form className="contenedor-formulario-pedidos" id="formularioPedidos" onSubmit={enviar}>
-
-          {/* Botón volver */}
           <div style={{ marginBottom: '20px' }}>
             <Link to="/" style={{ display:'inline-flex', alignItems:'center', gap:'8px', color:'var(--color-acento)', textDecoration:'none', fontSize:'0.85rem', fontWeight:600 }}>
               ← Volver al inicio
             </Link>
           </div>
 
-          {/* Paquete preseleccionado */}
           {paquetePrevio && !mostrarProductos && (
             <div id="seccionPaqueteSeleccionado" style={{ display:'block', marginBottom:'45px', paddingBottom:'35px', borderBottom:'1px solid rgba(232,7,52,0.1)' }}>
               <div className="tarjeta-paquete-pedido">
@@ -116,7 +113,6 @@ export default function PaginaPedidos() {
             </div>
           )}
 
-          {/* Selección de Producto */}
           {mostrarProductos && (
             <div className="seccion-seleccion-producto">
               <h3 className="titulo-seccion-pedidos">Selecciona tu Producto</h3>
@@ -190,7 +186,6 @@ export default function PaginaPedidos() {
             </div>
           )}
 
-          {/* Datos del cliente */}
           <div className="seccion-datos-cliente">
             <h3 className="titulo-seccion-pedidos">Datos del Cliente</h3>
             <div className="fila-campos-pedido">
@@ -209,7 +204,6 @@ export default function PaginaPedidos() {
             </div>
           </div>
 
-          {/* Detalles de Entrega */}
           <div className="seccion-detalles-entrega">
             <h3 className="titulo-seccion-pedidos">Detalles de Entrega</h3>
             <div className="grupo-campo-pedido">
@@ -218,7 +212,6 @@ export default function PaginaPedidos() {
             </div>
           </div>
 
-          {/* Personalización */}
           <div className="seccion-personalizacion">
             <h3 className="titulo-seccion-pedidos">Personalización del Pedido</h3>
             <div className="grupo-campo-pedido">

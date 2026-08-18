@@ -396,55 +396,42 @@ export default function PaginaEntrega() {
                 </div>
 
                 <div className="campo-input-direccion" style={{ position: 'relative' }}>
-                  <label htmlFor="form-departamento-trigger">Departamento</label>
-                  <div
-                    id="form-departamento-trigger"
+                  <label htmlFor="btn-entrega-select-departamento">Departamento</label>
+                  <button
+                    type="button"
+                    id="btn-entrega-select-departamento"
                     className={`entrega-dep-select${depAbierto ? ' open' : ''}`}
-                    role="button"
-                    tabIndex={0}
                     onClick={() => setDepAbierto(p => !p)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setDepAbierto(p => !p);
-                      }
-                    }}
+                    style={{ width: '100%', textAlign: 'left', background: 'none', border: '1px solid var(--border)', cursor: 'pointer' }}
                   >
                     <span style={{ color: form.departamento ? '#eae8f2' : '#8484a8' }}>
                       {form.departamento || 'Selecciona tu departamento'}
                     </span>
                     <i className="fas fa-chevron-down entrega-dep-chevron"></i>
-                  </div>
+                  </button>
                   {depAbierto && (
                     <div className="entrega-dep-dropdown">
                       {DEPARTAMENTOS.map(dep => (
-                        <div
+                        <button
+                          type="button"
                           key={dep}
                           className={`entrega-dep-option${form.departamento === dep ? ' selected' : ''}`}
-                          role="button"
-                          tabIndex={0}
                           onClick={() => { setForm(p => ({ ...p, departamento: dep })); setDepAbierto(false); }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              setForm(p => ({ ...p, departamento: dep }));
-                              setDepAbierto(false);
-                            }
-                          }}
+                          style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
                           {form.departamento === dep && <i className="fas fa-check" style={{ color: '#ff0844', fontSize: '0.7rem' }}></i>}
                           {dep}
-                        </div>
+                        </button>
                       ))}
                     </div>
                   )}
                 </div>
 
                 <div className="campo-input-direccion">
-                  <label htmlFor="form-tipo-residencial">Tipo de domicilio</label>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '8px' }}>Tipo de domicilio</span>
                   <div className="entrega-tipo-row">
                     {['residencial', 'laboral'].map(t => (
-                      <label key={t} htmlFor={`form-tipo-${t}`} className={`entrega-tipo-opcion${form.tipo === t ? ' activo' : ''}`}>
+                      <label key={t} htmlFor={`form-tipo-${t}`} className={`entrega-tipo-opcion${form.tipo === t ? ' activo' : ''}`} style={{ cursor: 'pointer' }}>
                         <input
                           id={`form-tipo-${t}`}
                           type="radio"

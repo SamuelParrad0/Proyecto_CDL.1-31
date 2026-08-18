@@ -10,6 +10,22 @@ const DEPARTAMENTOS = [
   'Santander','Sucre','Tolima','Valle del Cauca','Vaupés','Vichada'
 ];
 
+function sanitizarTexto(valor) {
+  if (typeof valor !== 'string') return valor || '';
+  return DOMPurify.sanitize(valor, { ALLOWED_TAGS: [] }).trim();
+}
+
+function sanitizarObjeto(obj) {
+  if (!obj || typeof obj !== 'object') return {};
+  const limpio = {};
+  for (const clave in obj) {
+    if (Object.hasOwn(obj, clave)) {
+      limpio[clave] = sanitizarTexto(obj[clave]);
+    }
+  }
+  return limpio;
+}
+
 function leerDireccion() {
   try {
     const rawData = localStorage.getItem(CLAVE_DIRECCION);
@@ -31,20 +47,26 @@ function textoResumen(datos) {
   return partes.join(' — ') || 'Agregar dirección de entrega';
 }
 
-function sanitizarTexto(valor) {
-  if (typeof valor !== 'string') return valor || '';
-  return DOMPurify.sanitize(valor, { ALLOWED_TAGS: [] }).trim();
+function LabelModal({ htmlFor, children }) {
+  return <label htmlFor={htmlFor} style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.62rem',letterSpacing:'2px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,display:'block',marginBottom:'5px'}}>{children}</label>;
 }
 
-function sanitizarObjeto(obj) {
-  if (!obj || typeof obj !== 'object') return {};
-  const limpio = {};
-  for (const clave in obj) {
-    if (Object.hasOwn(obj, clave)) {
-      limpio[clave] = sanitizarTexto(obj[clave]);
-    }
-  }
-  return limpio;
+function InputModal({ id, label, placeholder, value, onChange, type = 'text' }) {
+  return (
+    <div>
+      {label && <LabelModal htmlFor={id}>{label}</LabelModal>}
+      <input 
+        id={id}
+        type={type} 
+        placeholder={placeholder} 
+        value={value} 
+        onChange={e => onChange(e.target.value)}
+        style={{width:'100%',background:'var(--bg-0)',border:'1px solid var(--border)',color:'#fff',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.9rem',outline:'none'}}
+        onFocus={e => e.target.style.borderColor='var(--red)'} 
+        onBlur={e => e.target.style.borderColor='var(--border)'} 
+      />
+    </div>
+  );
 }
 
 export default function BarraEntrega({ mostrarToast }) {
@@ -112,13 +134,6 @@ export default function BarraEntrega({ mostrarToast }) {
 
   const cambiar = (campo, valor) => setForm(f => ({ ...f, [campo]: valor }));
 
-  const handleKeyDown = (e, callback) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      callback();
-    }
-  };
-
   return (
     <>
       <div className="barra-entrega" id="barraEntrega">
@@ -143,101 +158,92 @@ export default function BarraEntrega({ mostrarToast }) {
       </div>
 
       {/* Modal Dirección */}
-      <div
-        id="modalDireccion"
-        role="button"
-        tabIndex={0}
-        onClick={(e) => e.target === e.currentTarget && cerrarModal()}
-        onKeyDown={(e) => handleKeyDown(e, cerrarModal)}
-        style={{display: modalAbierto ? 'flex' : 'none', position:'fixed', inset:0, background:'rgba(0,0,0,0.88)', zIndex:9998, alignItems:'center', justifyContent:'center', padding:'1.5rem', outline:'none'}}
-      >
-        <div style={{background:'var(--bg-2)', border:'1px solid var(--border-red)', borderRadius:'18px', width:'100%', maxWidth:'500px', maxHeight:'90vh', overflowY:'auto', padding:'2rem 2.2rem', boxShadow:'0 0 60px var(--red-glow)', position:'relative'}}>
-          <button type="button" onClick={cerrarModal} style={{position:'absolute',top:'14px',right:'14px',background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',width:'32px',height:'32px',borderRadius:'50%',cursor:'pointer',fontSize:'1.1rem',display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
-          <div style={{marginBottom:'1.4rem'}}>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.6rem',letterSpacing:'3px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,marginBottom:'4px'}}>— Dirección de entrega</div>
-            <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:'1.7rem',letterSpacing:'2px',color:'#fff'}}>¿A dónde entregamos?</div>
-          </div>
-          <div style={{display:'flex',flexDirection:'column',gap:'0.9rem'}}>
-            <InputModal label="Nombre completo" placeholder="Tu nombre completo" value={form.nombre} onChange={v => cambiar('nombre', v)} />
-            <div>
-              <LabelModal>Dirección o lugar de entrega</LabelModal>
-              <InputModal placeholder="Ej: Carrera 71d #1-14 Sur" value={form.direccion} onChange={v => cambiar('direccion', v)} />
-              <label style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'7px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-secondary)',cursor:'pointer'}}>
-                <input type="checkbox" checked={form.sinComplemento} onChange={e => cambiar('sinComplemento', e.target.checked)} style={{accentColor:'var(--red)',width:'15px',height:'15px'}} /> Sin complemento
-              </label>
+      {modalAbierto && (
+        <div 
+          id="modalDireccion"
+          style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.88)', zIndex:9998, display:'flex', alignItems:'center', justifyContent:'center', padding:'1.5rem'}}
+        >
+          <button 
+            type="button" 
+            onClick={cerrarModal}
+            aria-label="Cerrar modal"
+            style={{position:'absolute', inset:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default'}}
+          />
+          <div style={{background:'var(--bg-2)', border:'1px solid var(--border-red)', borderRadius:'18px', width:'100%', maxWidth:'500px', maxHeight:'90vh', overflowY:'auto', padding:'2rem 2.2rem', boxShadow:'0 0 60px var(--red-glow)', position:'relative', zIndex:1}}>
+            <button type="button" onClick={cerrarModal} aria-label="Cerrar ventana" style={{position:'absolute',top:'14px',right:'14px',background:'none',border:'1px solid var(--border)',color:'var(--text-secondary)',width:'32px',height:'32px',borderRadius:'50%',cursor:'pointer',fontSize:'1.1rem',display:'flex',alignItems:'center',justifyContent:'center'}}>×</button>
+            <div style={{marginBottom:'1.4rem'}}>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.6rem',letterSpacing:'3px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,marginBottom:'4px'}}>— Dirección de entrega</div>
+              <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:'1.7rem',letterSpacing:'2px',color:'#fff'}}>¿A dónde entregamos?</div>
             </div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
-              <div style={{position:'relative'}}>
-                <LabelModal>Departamento</LabelModal>
-                <button type="button"
-                  onClick={() => setDepListaAbierta(p => !p)}
-                  style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none',textAlign:'left'}}
-                >
-                  <span>{form.departamento || 'Selecciona departamento'}</span>
-                  <i className="fas fa-chevron-down" style={{fontSize:'0.65rem',color:'var(--text-muted)',transform: depListaAbierta ? 'rotate(180deg)' : 'rotate(0deg)',transition:'transform 0.3s'}}></i>
-                </button>
-                {depListaAbierta && (
-                  <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,background:'var(--bg-1)',border:'1px solid var(--border-red)',borderRadius:'8px',zIndex:9999,maxHeight:'200px',overflowY:'auto',boxShadow:'0 8px 24px rgba(0,0,0,0.7)'}}>
-                    <div style={{padding:'9px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-muted)',borderBottom:'1px solid var(--border)'}}>— Selecciona un departamento —</div>
-                    {DEPARTAMENTOS.map(dep => (
-                      <button type="button"
-                        key={dep}
-                        className="departamento-opcion"
-                        onClick={() => { cambiar('departamento', dep); setDepListaAbierta(false); }}
-                        style={{width:'100%',textAlign:'left',border:'none',color: form.departamento === dep ? 'var(--red)' : '', background: form.departamento === dep ? 'rgba(255,8,68,0.08)' : 'transparent',cursor:'pointer',padding:'8px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem'}}
-                      >
-                        {dep}
-                      </button>
-                    ))}
-                  </div>
-                )}
+            <div style={{display:'flex',flexDirection:'column',gap:'0.9rem'}}>
+              <InputModal id="barra-input-nombre" label="Nombre completo" placeholder="Tu nombre completo" value={form.nombre} onChange={v => cambiar('nombre', v)} />
+              <div>
+                <LabelModal htmlFor="barra-input-direccion">Dirección o lugar de entrega</LabelModal>
+                <InputModal id="barra-input-direccion" placeholder="Ej: Carrera 71d #1-14 Sur" value={form.direccion} onChange={v => cambiar('direccion', v)} />
+                <label htmlFor="barra-check-sin-complemento" style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'7px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-secondary)',cursor:'pointer'}}>
+                  <input id="barra-check-sin-complemento" type="checkbox" checked={form.sinComplemento} onChange={e => cambiar('sinComplemento', e.target.checked)} style={{accentColor:'var(--red)',width:'15px',height:'15px'}} /> Sin complemento
+                </label>
               </div>
-              <InputModal label="Municipio / Localidad" placeholder="Escribe tu municipio" value={form.municipio} onChange={v => cambiar('municipio', v)} />
-            </div>
-            <InputModal label="Barrio" placeholder="Nombre del barrio" value={form.barrio} onChange={v => cambiar('barrio', v)} />
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
-              <InputModal label="Apto / Casa (opcional)" placeholder="Ej: 201" value={form.apto} onChange={v => cambiar('apto', v)} />
-              <InputModal label="Teléfono" placeholder="+57 300 123 4567" type="tel" value={form.telefono} onChange={v => cambiar('telefono', v)} />
-            </div>
-            <div>
-              <LabelModal>Indicaciones para la entrega <span style={{color:'var(--text-muted)',fontSize:'0.55rem'}}>(opcional)</span></LabelModal>
-              <textarea value={form.indicaciones} onChange={e => cambiar('indicaciones', e.target.value)} maxLength={128} rows={2} placeholder="Ej: Entre calles, color del edificio, no tiene timbre..." style={{width:'100%',background:'var(--bg-0)',border:'1px solid var(--border)',color:'#fff',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',outline:'none',resize:'none',lineHeight:1.5}} onFocus={e => e.target.style.borderColor='var(--red)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
-              <div style={{textAlign:'right',fontSize:'0.68rem',color:'var(--text-muted)',fontFamily:"'Rajdhani',sans-serif",marginTop:'2px'}}>{form.indicaciones.length} / 128</div>
-            </div>
-            <div>
-              <LabelModal>Tipo de domicilio</LabelModal>
-              <div style={{display:'flex',gap:'10px'}}>
-                {['residencial','laboral'].map(tipo => (
-                  <label key={tipo} style={{flex:1,display:'flex',alignItems:'center',gap:'8px',background:'var(--bg-0)',border:`1px solid ${form.tipo===tipo ? 'var(--red)' : 'var(--border)'}`,borderRadius:'8px',padding:'10px 14px',cursor:'pointer',fontFamily:"'DM Sans',sans-serif",fontSize:'0.85rem',color:'var(--text-secondary)'}}>
-                    <input type="radio" name="tipoDomicilio" value={tipo} checked={form.tipo===tipo} onChange={() => cambiar('tipo', tipo)} style={{accentColor:'var(--red)'}} />
-                    <i className={`fas fa-${tipo==='residencial' ? 'home' : 'briefcase'}`} style={{color:'var(--red)',fontSize:'0.8rem'}}></i>
-                    {tipo.charAt(0).toUpperCase()+tipo.slice(1)}
-                  </label>
-                ))}
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
+                <div style={{position:'relative'}}>
+                  <LabelModal htmlFor="btn-barra-select-departamento">Departamento</LabelModal>
+                  <button 
+                    type="button"
+                    id="btn-barra-select-departamento"
+                    onClick={() => setDepListaAbierta(p => !p)}
+                    style={{width:'100%',background:'var(--bg-0)',border:`1px solid ${depListaAbierta ? 'var(--red)' : 'var(--border)'}`,color: form.departamento ? '#fff' : 'var(--text-secondary)',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between',userSelect:'none',textAlign:'left'}}
+                  >
+                    <span>{form.departamento || 'Selecciona departamento'}</span>
+                    <i className="fas fa-chevron-down" style={{fontSize:'0.65rem',color:'var(--text-muted)',transform: depListaAbierta ? 'rotate(180deg)' : 'rotate(0deg)',transition:'transform 0.3s'}}></i>
+                  </button>
+                  {depListaAbierta && (
+                    <div style={{position:'absolute',top:'calc(100% + 4px)',left:0,right:0,background:'var(--bg-1)',border:'1px solid var(--border-red)',borderRadius:'8px',zIndex:9999,maxHeight:'200px',overflowY:'auto',boxShadow:'0 8px 24px rgba(0,0,0,0.7)'}}>
+                      <div style={{padding:'9px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.82rem',color:'var(--text-muted)',borderBottom:'1px solid var(--border)'}}>— Selecciona un departamento —</div>
+                      {DEPARTAMENTOS.map(dep => (
+                        <button type="button"
+                          key={dep}
+                          className="departamento-opcion"
+                          onClick={() => { cambiar('departamento', dep); setDepListaAbierta(false); }}
+                          style={{width:'100%',textAlign:'left',border:'none',color: form.departamento === dep ? 'var(--red)' : '', background: form.departamento === dep ? 'rgba(255,8,68,0.08)' : 'transparent',cursor:'pointer',padding:'8px 14px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem'}}
+                        >
+                          {dep}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <InputModal id="barra-input-municipio" label="Municipio / Localidad" placeholder="Escribe tu municipio" value={form.municipio} onChange={v => cambiar('municipio', v)} />
+              </div>
+              <InputModal id="barra-input-barrio" label="Barrio" placeholder="Nombre del barrio" value={form.barrio} onChange={v => cambiar('barrio', v)} />
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.9rem'}}>
+                <InputModal id="barra-input-apto" label="Apto / Casa (opcional)" placeholder="Ej: 201" value={form.apto} onChange={v => cambiar('apto', v)} />
+                <InputModal id="barra-input-telefono" label="Teléfono" placeholder="+57 300 123 4567" type="tel" value={form.telefono} onChange={v => cambiar('telefono', v)} />
+              </div>
+              <div>
+                <LabelModal htmlFor="barra-input-indicaciones">Indicaciones para la entrega <span style={{color:'var(--text-muted)',fontSize:'0.55rem'}}>(opcional)</span></LabelModal>
+                <textarea id="barra-input-indicaciones" value={form.indicaciones} onChange={e => cambiar('indicaciones', e.target.value)} maxLength={128} rows={2} placeholder="Ej: Entre calles, color del edificio, no tiene timbre..." style={{width:'100%',background:'var(--bg-0)',border:'1px solid var(--border)',color:'#fff',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.88rem',outline:'none',resize:'none',lineHeight:1.5}} onFocus={e => e.target.style.borderColor='var(--red)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
+                <div style={{textAlign:'right',fontSize:'0.68rem',color:'var(--text-muted)',fontFamily:"'Rajdhani',sans-serif",marginTop:'2px'}}>{form.indicaciones.length} / 128</div>
+              </div>
+              <div>
+                <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.62rem',letterSpacing:'2px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,display:'block',marginBottom:'5px'}}>Tipo de domicilio</span>
+                <div style={{display:'flex',gap:'10px'}}>
+                  {['residencial','laboral'].map(tipo => (
+                    <label key={tipo} htmlFor={`barra-tipo-${tipo}`} style={{flex:1,display:'flex',alignItems:'center',gap:'8px',background:'var(--bg-0)',border:`1px solid ${form.tipo===tipo ? 'var(--red)' : 'var(--border)'}`,borderRadius:'8px',padding:'10px 14px',cursor:'pointer',fontFamily:"'DM Sans',sans-serif",fontSize:'0.85rem',color:'var(--text-secondary)'}}>
+                      <input id={`barra-tipo-${tipo}`} type="radio" name="tipoDomicilio" value={tipo} checked={form.tipo===tipo} onChange={() => cambiar('tipo', tipo)} style={{accentColor:'var(--red)'}} />
+                      <i className={`fas fa-${tipo==='residencial' ? 'home' : 'briefcase'}`} style={{color:'var(--red)',fontSize:'0.8rem'}}></i>
+                      {tipo.charAt(0).toUpperCase()+tipo.slice(1)}
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
+            <button type="button" onClick={guardar} disabled={guardando} style={{width:'100%',marginTop:'1.3rem',background:'var(--red)',border:'none',color:'#fff',padding:'13px',borderRadius:'10px',fontFamily:"'Rajdhani',sans-serif",fontSize:'0.88rem',fontWeight:700,letterSpacing:'2.5px',textTransform:'uppercase',cursor:'pointer',transition:'var(--transition)',boxShadow:'0 4px 18px var(--red-glow)',opacity: guardando ? 0.7 : 1}}>
+              <i className="fas fa-map-marker-alt" style={{marginRight:'8px'}}></i>
+              {guardando ? 'Guardando...' : 'Guardar dirección'}
+            </button>
           </div>
-          <button type="button" onClick={guardar} disabled={guardando} style={{width:'100%',marginTop:'1.3rem',background:'var(--red)',border:'none',color:'#fff',padding:'13px',borderRadius:'10px',fontFamily:"'Rajdhani',sans-serif",fontSize:'0.88rem',fontWeight:700,letterSpacing:'2.5px',textTransform:'uppercase',cursor:'pointer',transition:'var(--transition)',boxShadow:'0 4px 18px var(--red-glow)',opacity: guardando ? 0.7 : 1}}>
-            <i className="fas fa-map-marker-alt" style={{marginRight:'8px'}}></i>
-            {guardando ? 'Guardando...' : 'Guardar dirección'}
-          </button>
         </div>
-      </div>
+      )}
     </>
-  );
-}
-
-function LabelModal({ children }) {
-  return <label style={{fontFamily:"'Rajdhani',sans-serif",fontSize:'0.62rem',letterSpacing:'2px',textTransform:'uppercase',color:'var(--red)',fontWeight:700,display:'block',marginBottom:'5px'}}>{children}</label>;
-}
-
-function InputModal({ label, placeholder, value, onChange, type = 'text' }) {
-  return (
-    <div>
-      {label && <LabelModal>{label}</LabelModal>}
-      <input type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)}
-        style={{width:'100%',background:'var(--bg-0)',border:'1px solid var(--border)',color:'#fff',padding:'10px 14px',borderRadius:'8px',fontFamily:"'DM Sans',sans-serif",fontSize:'0.9rem',outline:'none'}}
-        onFocus={e => e.target.style.borderColor='var(--red)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
-    </div>
   );
 }

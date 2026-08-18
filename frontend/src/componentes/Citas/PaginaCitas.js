@@ -21,7 +21,6 @@ export default function PaginaCitas() {
   const toastBarRef = useRef(null);
   const toastRef = useRef(null);
 
-  // Efecto de escritura en el título
   useEffect(() => {
     let idx = 0;
     const interval = setInterval(() => {
@@ -35,7 +34,6 @@ export default function PaginaCitas() {
     return () => clearInterval(interval);
   }, []);
 
-  // Cargar paquetes desde la API
   useEffect(() => {
     const cargarPaquetes = async () => {
       try {
@@ -55,7 +53,6 @@ export default function PaginaCitas() {
     cargarPaquetes();
   }, []);
 
-  // Preseleccionar paquete desde localStorage
   useEffect(() => {
     const raw = localStorage.getItem('cdl_cita_previa');
     if (!raw) return;
@@ -136,7 +133,6 @@ export default function PaginaCitas() {
 
   return (
     <div className="pagina-citas">
-      {/* Toast */}
       <div
         ref={toastRef}
         style={{
@@ -156,7 +152,6 @@ export default function PaginaCitas() {
         <div ref={toastBarRef} style={{height:'2px',background:'linear-gradient(90deg,#ff0032,#ff6688)',borderRadius:'2px',width: toastVisible ? '100%' : '0%',transition: toastVisible ? 'width 3s linear 0.4s' : 'none'}}></div>
       </div>
 
-      {/* Botón volver */}
       <div style={{position:'fixed',top:'20px',left:'20px',zIndex:9999}}>
         <Link to="/" style={{display:'inline-flex',alignItems:'center',gap:'8px',background:'rgba(10,10,10,0.92)',border:'1.5px solid rgba(255,0,50,0.45)',color:'#ff0032',padding:'10px 20px',borderRadius:'10px',fontFamily:'Arial,sans-serif',fontSize:'0.85rem',fontWeight:700,textDecoration:'none',backdropFilter:'blur(12px)',boxShadow:'0 4px 20px rgba(255,0,50,0.2)',letterSpacing:'0.5px'}}>
           ← Volver al inicio
@@ -173,8 +168,6 @@ export default function PaginaCitas() {
 
         <div className="contenedor-formulario-servicios">
           <form id="formularioFotografia" onSubmit={enviar}>
-
-            {/* Paquete preseleccionado */}
             {paquetePrevio && (
               <div id="seccionPaqueteCita" style={{marginBottom:'30px'}}>
                 <div style={{display:'grid',gridTemplateColumns:'180px 1fr',gap:'28px',alignItems:'center',background:'linear-gradient(135deg,rgba(255,0,50,0.06),rgba(10,10,10,0.7))',border:'2px solid rgba(255,0,50,0.35)',borderRadius:'16px',padding:'24px',boxShadow:'0 0 35px rgba(255,0,50,0.1)'}}>
@@ -190,7 +183,6 @@ export default function PaginaCitas() {
               </div>
             )}
 
-            {/* Información Personal */}
             <div className="seccion-formulario">
               <h3 className="titulo-seccion-formulario">Información Personal</h3>
               <div className="fila-campos-formulario">
@@ -209,7 +201,6 @@ export default function PaginaCitas() {
               </div>
             </div>
 
-            {/* Detalles del Evento */}
             <div className="seccion-formulario">
               <h3 className="titulo-seccion-formulario">Detalles del Evento</h3>
               <div className="fila-campos-formulario">
@@ -255,40 +246,40 @@ export default function PaginaCitas() {
               </div>
             </div>
 
-            {/* Paquetes Disponibles */}
             <div className="seccion-formulario">
               <h3 className="titulo-seccion-formulario">Paquetes Disponibles</h3>
               <div className="cuadricula-servicios">
                 {paquetesCita.length === 0 ? (
                   <div style={{gridColumn:'1/-1',textAlign:'center',color:'#999',padding:'20px'}}>Cargando paquetes...</div>
-                ) : paquetesCita.map(p => (
-                  <label
-                    key={p.id}
-                    htmlFor={p.id}
-                    className="item-servicio"
-                    style={{
-                      cursor: 'pointer',
-                      ...(paquetesSeleccionados[p.id] ? { background:'linear-gradient(135deg,rgba(255,0,50,0.15),rgba(255,0,50,0.05))', borderColor:'rgba(255,0,50,0.6)', boxShadow:'0 10px 25px rgba(255,0,50,0.25)', transform:'translateY(-3px)' } : {})
-                    }}
-                  >
-                    <input 
-                      type="checkbox" 
-                      id={p.id} 
-                      name="servicios[]" 
-                      value={p.value}
-                      checked={!!paquetesSeleccionados[p.id]}
-                      onChange={() => togglePaquete(p.id)}
-                    />
-                    <span>{p.icono} {p.label}</span>
-                  </label>
-                ))}
+                ) : (
+                  paquetesCita.map(p => (
+                    <label
+                      key={p.id}
+                      htmlFor={p.id}
+                      className="item-servicio"
+                      style={{
+                        cursor: 'pointer',
+                        ...(paquetesSeleccionados[p.id] ? { background:'linear-gradient(135deg,rgba(255,0,50,0.15),rgba(255,0,50,0.05))', borderColor:'rgba(255,0,50,0.6)', boxShadow:'0 10px 25px rgba(255,0,50,0.25)', transform:'translateY(-3px)' } : {})
+                      }}
+                    >
+                      <input 
+                        type="checkbox" 
+                        id={p.id} 
+                        name="servicios[]" 
+                        value={p.value}
+                        checked={Boolean(paquetesSeleccionados[p.id])}
+                        onChange={() => togglePaquete(p.id)}
+                      />
+                      <span>{p.icono} {p.label}</span>
+                    </label>
+                  ))
+                )}
               </div>
               <div className="texto-informativo">
                 💡 <strong>Consejo:</strong> Selecciona al menos un servicio. Los paquetes combinados ofrecen mejor precio y cobertura completa de tu evento.
               </div>
             </div>
 
-            {/* Información Adicional */}
             <div className="seccion-formulario">
               <h3 className="titulo-seccion-formulario">Información Adicional</h3>
               <div className="grupo-campo-formulario">
@@ -306,4 +297,4 @@ export default function PaginaCitas() {
       </div>
     </div>
   );
-}x  
+}
