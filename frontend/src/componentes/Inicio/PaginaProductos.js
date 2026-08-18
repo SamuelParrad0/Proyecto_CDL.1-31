@@ -18,17 +18,13 @@ const MAPA_IMAGENES_PRODUCTO = {
 };
 
 const obtenerImagenProducto = (producto) => {
-  // 1. Si el backend devuelve una URL válida, usarla
   if (producto.imagenUrl && !producto.imagenUrl.includes('/null')) return producto.imagenUrl;
-  // 2. Si tiene Imagen_Producto con ruta, usarla
   if (producto.Imagen_Producto) return producto.Imagen_Producto;
   if (producto.Imagen) return producto.Imagen;
-  // 3. Buscar por nombre en el mapa local
   const nombreLower = (producto.Nombre_Producto || '').toLowerCase();
   for (const [clave, ruta] of Object.entries(MAPA_IMAGENES_PRODUCTO)) {
     if (nombreLower.includes(clave)) return ruta;
   }
-  // 4. Fallback genérico
   return 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80';
 };
 
@@ -44,8 +40,6 @@ export default function PaginaProductos() {
   const [modalProductoAbierto, setModalProductoAbierto] = useState(false);
   const [productoActivo, setProductoActivo] = useState(null);
   const [indiceImagenProducto, setIndiceImagenProducto] = useState(0);
-  const [modalFormularioPedido, setModalFormularioPedido] = useState(false);
-  const [productoPedido, setProductoPedido] = useState(null);
   const [enviandoPedido, setEnviandoPedido] = useState(false);
 
   // Estados para filtros
@@ -108,7 +102,9 @@ export default function PaginaProductos() {
 
           {/* Barra de Búsqueda y Filtro */}
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '4rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <label htmlFor="input-busqueda-productos-vista" style={{ display: 'none' }}>Buscar producto por nombre</label>
             <input 
+              id="input-busqueda-productos-vista"
               type="text" 
               placeholder="Buscar producto por nombre..." 
               value={busqueda}
@@ -124,7 +120,9 @@ export default function PaginaProductos() {
                 fontFamily: "'DM Sans', sans-serif"
               }}
             />
+            <label htmlFor="select-filtro-categoria-vista" style={{ display: 'none' }}>Filtrar por categoría</label>
             <select 
+              id="select-filtro-categoria-vista"
               value={categoriaFiltro}
               onChange={(e) => setCategoriaFiltro(e.target.value)}
               style={{
@@ -166,7 +164,13 @@ export default function PaginaProductos() {
                   <div className="productos-cuadricula">
                     {productosDeCat.map(p => (
                       <div key={p.Id_Producto} className="tarjeta-producto animar-entrada">
-                        <div className="producto-imagen-contenedor" onClick={() => p.Stock > 0 && abrirModalProducto(p.Id_Producto)}>
+                        <button
+                          type="button"
+                          className="producto-imagen-contenedor"
+                          onClick={() => p.Stock > 0 && abrirModalProducto(p.Id_Producto)}
+                          style={{ background: 'none', border: 'none', padding: 0, width: '100%', cursor: p.Stock > 0 ? 'pointer' : 'default', display: 'block', position: 'relative' }}
+                          aria-label={`Ver detalles de ${p.Nombre_Producto}`}
+                        >
                           <img className="producto-imagen" src={obtenerImagenProducto(p)} alt={p.Nombre_Producto} loading="lazy" onError={e => { e.target.src = 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80'; }} />
                           <div className="producto-imagen-overlay"></div>
                           {p.Stock <= 0 ? (
@@ -174,7 +178,7 @@ export default function PaginaProductos() {
                           ) : (
                             <div className="producto-precio-etiqueta"><span className="producto-precio-monto">${Number(p.Precio_Producto).toLocaleString('es-CO')}</span></div>
                           )}
-                        </div>
+                        </button>
                         <div className="producto-informacion">
                           <div className="producto-nombre">{p.Nombre_Producto}</div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '0.8rem' }}>
@@ -200,13 +204,13 @@ export default function PaginaProductos() {
       {/* Modal Producto */}
       <div className={`modal-producto-fondo${modalProductoAbierto ? ' active' : ''}`}>
         <div className="modal-producto-caja">
-          <button type="button" className="modal-boton-cerrar" onClick={cerrarModalProducto}><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
+          <button type="button" className="modal-boton-cerrar" onClick={cerrarModalProducto} aria-label="Cerrar modal"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
           {productoActivo && (
             <div className="modal-disposicion">
               <div className="modal-galeria">
                 <img className="modal-imagen-principal" src={productoActivo.imagenes[indiceImagenProducto]} alt={productoActivo.nombre} />
-                <button type="button" className="modal-boton-navegacion prev" onClick={() => navImagenProducto(-1)}><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg></button>
-                <button type="button" className="modal-boton-navegacion next" onClick={() => navImagenProducto(1)}><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg></button>
+                <button type="button" className="modal-boton-navegacion prev" onClick={() => navImagenProducto(-1)} aria-label="Imagen anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" /></svg></button>
+                <button type="button" className="modal-boton-navegacion next" onClick={() => navImagenProducto(1)} aria-label="Imagen siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg></button>
                 <div className="modal-contador-imagenes">{indiceImagenProducto + 1} / {productoActivo.imagenes.length}</div>
               </div>
               <div className="modal-detalles">
@@ -221,7 +225,16 @@ export default function PaginaProductos() {
                   </div>
                   <div className="modal-miniaturas">
                     {productoActivo.imagenes.map((img, i) => (
-                      <div key={i} className={`modal-miniatura${i === indiceImagenProducto ? ' active' : ''}`} onClick={() => setIndiceImagenProducto(i)}><img src={img} alt="" /></div>
+                      <button 
+                        type="button" 
+                        key={i} 
+                        className={`modal-miniatura${i === indiceImagenProducto ? ' active' : ''}`} 
+                        onClick={() => setIndiceImagenProducto(i)}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                        aria-label={`Ver imagen ${i + 1}`}
+                      >
+                        <img src={img} alt="" />
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -235,7 +248,6 @@ export default function PaginaProductos() {
           )}
         </div>
       </div>
-
 
       <RedesSocialesFlotantes />
       <div className={`notificacion-emergente${toastVisible ? ' show' : ''}`}>

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { crearReservaAPI, haySesionActiva, obtenerPaquetesAPI } from '../../servicios/api';
 import '../../estilos/citas.css';
 
-
 export default function PaginaCitas() {
   const navigate = useNavigate();
   const [paquetePrevio, setPaquetePrevio] = useState(null);
@@ -64,7 +63,6 @@ export default function PaginaCitas() {
       const paquete = JSON.parse(raw);
       localStorage.removeItem('cdl_cita_previa');
       setPaquetePrevio(paquete);
-      // Intentar preseleccionar el paquete por nombre
       const nombre = (paquete.nombre || '').toLowerCase();
       if (paquetesCita.length > 0) {
         const encontrado = paquetesCita.find(p => (p.label || '').toLowerCase().includes(nombre) || nombre.includes((p.label || '').toLowerCase()));
@@ -264,18 +262,25 @@ export default function PaginaCitas() {
                 {paquetesCita.length === 0 ? (
                   <div style={{gridColumn:'1/-1',textAlign:'center',color:'#999',padding:'20px'}}>Cargando paquetes...</div>
                 ) : paquetesCita.map(p => (
-                  <div
+                  <label
                     key={p.id}
+                    htmlFor={p.id}
                     className="item-servicio"
-                    onClick={() => togglePaquete(p.id)}
-                    style={paquetesSeleccionados[p.id] ? { background:'linear-gradient(135deg,rgba(255,0,50,0.15),rgba(255,0,50,0.05))', borderColor:'rgba(255,0,50,0.6)', boxShadow:'0 10px 25px rgba(255,0,50,0.25)', transform:'translateY(-3px)' } : {}}
+                    style={{
+                      cursor: 'pointer',
+                      ...(paquetesSeleccionados[p.id] ? { background:'linear-gradient(135deg,rgba(255,0,50,0.15),rgba(255,0,50,0.05))', borderColor:'rgba(255,0,50,0.6)', boxShadow:'0 10px 25px rgba(255,0,50,0.25)', transform:'translateY(-3px)' } : {})
+                    }}
                   >
-                    <input type="checkbox" id={p.id} name="servicios[]" value={p.value}
+                    <input 
+                      type="checkbox" 
+                      id={p.id} 
+                      name="servicios[]" 
+                      value={p.value}
                       checked={!!paquetesSeleccionados[p.id]}
                       onChange={() => togglePaquete(p.id)}
-                      onClick={e => e.stopPropagation()} />
-                    <label htmlFor={p.id}>{p.icono} {p.label}</label>
-                  </div>
+                    />
+                    <span>{p.icono} {p.label}</span>
+                  </label>
                 ))}
               </div>
               <div className="texto-informativo">
@@ -301,4 +306,4 @@ export default function PaginaCitas() {
       </div>
     </div>
   );
-}
+}x  

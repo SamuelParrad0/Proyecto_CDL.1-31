@@ -38,8 +38,8 @@ export default function PaginaRegistro() {
       <form id="formulario-registro" onSubmit={handleSubmit}>
 
         <Link className="nav-logotipo" to="/">
-                        COMMUNICATING DESIGN <span>LION</span>
-                      </Link>
+          COMMUNICATING DESIGN <span>LION</span>
+        </Link>
 
         <div className="auth-encabezado">
           <div className="auth-subtitulo">
@@ -98,7 +98,15 @@ export default function PaginaRegistro() {
           <label htmlFor="campo-contrasena">Contraseña</label>
           <div className="campo-formulario__contenedor-con-icono">
             <input type={mostrarPass ? 'text' : 'password'} id="campo-contrasena" placeholder="Mínimo 6 caracteres" required value={form.contrasena} onChange={e => cambiar('contrasena', e.target.value)} />
-            <span className="campo-formulario__icono" onClick={() => setMostrarPass(p => !p)}>👁</span>
+            <button 
+              type="button" 
+              className="campo-formulario__icono boton-icono-transparente" 
+              onClick={() => setMostrarPass(p => !p)}
+              aria-label={mostrarPass ? "Ocultar contraseña" : "Ver contraseña"}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              👁
+            </button>
           </div>
         </div>
 

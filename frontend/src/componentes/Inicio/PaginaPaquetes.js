@@ -59,7 +59,9 @@ export default function PaginaPortafolio() {
 
         {/* Barra de Búsqueda y Filtro para Paquetes */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '3rem', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', padding: '0 1rem' }}>
+          <label htmlFor="input-busqueda-paquetes" style={{ display: 'none' }}>Buscar paquete</label>
           <input 
+            id="input-busqueda-paquetes"
             type="text" 
             placeholder="Buscar paquete..." 
             value={busqueda}
@@ -75,7 +77,9 @@ export default function PaginaPortafolio() {
               fontFamily: "'DM Sans', sans-serif"
             }}
           />
+          <label htmlFor="select-filtro-paquetes" style={{ display: 'none' }}>Filtrar paquetes</label>
           <select 
+            id="select-filtro-paquetes"
             value={paqueteFiltro}
             onChange={(e) => setPaqueteFiltro(e.target.value)}
             style={{
@@ -109,7 +113,14 @@ export default function PaginaPortafolio() {
             <div key={p.nombre} className="paquete-fila" style={esDerecha ? { flexDirection: 'row' } : {}}>
               {esDerecha && <div style={{ flex: 1, maxWidth: '80px' }}></div>}
               {esDerecha && <div className="nodo-linea-tiempo"><div className="nodo-circulo">{p.numero}</div><div className="nodo-conector"></div></div>}
-              <div className={`tarjeta-paquete${p.destacado ? ' destacado' : ''}`} onClick={() => seleccionarPaquete(p)}>
+              <div 
+                className={`tarjeta-paquete${p.destacado ? ' destacado' : ''}`} 
+                onClick={() => seleccionarPaquete(p)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); seleccionarPaquete(p); } }}
+                style={{ cursor: 'pointer' }}
+              >
                 {p.destacado && <div className="insignia-destacado">Más Popular</div>}
                 <div className="tarjeta-imagen">
                   <img src={p.imagen} alt={p.nombre} />

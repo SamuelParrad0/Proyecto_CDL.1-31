@@ -78,21 +78,21 @@ export default function PaginaOpiniones() {
           <div className="formulario-reseña animar-entrada">
             <h3>Comparte Tu Experiencia</h3>
             <p className="formulario-reseña-subtitulo">Tu opinión nos ayuda a crecer.</p>
-            <label className="campo-checkbox">
-              <input type="checkbox" checked={mostrarNombre} onChange={e => setMostrarNombre(e.target.checked)} />
+            <label className="campo-checkbox" htmlFor="check-mostrar-nombre">
+              <input id="check-mostrar-nombre" type="checkbox" checked={mostrarNombre} onChange={e => setMostrarNombre(e.target.checked)} />
               <span>Quiero que aparezca mi nombre</span>
             </label>
             {mostrarNombre ? (
               <div className="campo-formulario">
-                <label>Tu Nombre</label>
-                <input type="text" placeholder="Escribe tu nombre completo..." value={formReseña.nombre} onChange={e => setFormReseña(f => ({ ...f, nombre: e.target.value }))} />
+                <label htmlFor="opinion-nombre-cliente">Tu Nombre</label>
+                <input id="opinion-nombre-cliente" type="text" placeholder="Escribe tu nombre completo..." value={formReseña.nombre} onChange={e => setFormReseña(f => ({ ...f, nombre: e.target.value }))} />
               </div>
             ) : (
               <div className="aviso-anonimo">😶‍🌫️ Comentario enviado de forma anónima</div>
             )}
             <div className="campo-formulario">
-              <label>Calificación</label>
-              <select value={formReseña.calificacion} onChange={e => setFormReseña(f => ({ ...f, calificacion: e.target.value }))}>
+              <label htmlFor="opinion-calificacion-select">Calificación</label>
+              <select id="opinion-calificacion-select" value={formReseña.calificacion} onChange={e => setFormReseña(f => ({ ...f, calificacion: e.target.value }))}>
                 <option value="">Selecciona tu calificación...</option>
                 <option value="5">★★★★★ Excelente</option>
                 <option value="4">★★★★☆ Muy Bueno</option>
@@ -102,8 +102,8 @@ export default function PaginaOpiniones() {
               </select>
             </div>
             <div className="campo-formulario">
-              <label>Tu Opinión</label>
-              <textarea rows={4} placeholder="Cuéntanos sobre tu experiencia..." maxLength={500} value={formReseña.texto}
+              <label htmlFor="opinion-texto-comentario">Tu Opinión</label>
+              <textarea id="opinion-texto-comentario" rows={4} placeholder="Cuéntanos sobre tu experiencia..." maxLength={500} value={formReseña.texto}
                 onChange={e => { setFormReseña(f => ({ ...f, texto: e.target.value })); setContadorTexto(e.target.value.length); }} />
               <div className="contadorCaracteres" style={{ color: contadorTexto > 450 ? 'var(--red)' : contadorTexto > 350 ? '#ffaa00' : 'var(--text-muted)' }}>{contadorTexto} / 500</div>
             </div>

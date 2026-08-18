@@ -34,8 +34,6 @@ export default function NavegacionPrincipal() {
     document.body.style.overflow = '';
   };
 
-  // Si hay sesión, el navbar va debajo de la barra de entrega (top: 36px)
-  // Si no hay sesión, el navbar va arriba del todo (top: 0)
   const topNavbar = sesionActiva ? '36px' : '0px';
   const topMenuMovil = sesionActiva ? '100px' : '64px';
 
@@ -73,6 +71,8 @@ export default function NavegacionPrincipal() {
       <div
         className={`menu-movil-desplegable${menuMovilAbierto ? ' open' : ''}`}
         id="menuMovilDesplegable"
+        role="navigation"
+        aria-label="Menú móvil"
         onClick={e => e.stopPropagation()}
         style={{ top: topMenuMovil }}
       >

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../../contexto/CarritoContexto';
 import '../../estilos/pedidos.css';
 
 const PRODUCTOS_PEDIDO = [
-  { id:'producto1', value:'cajita-corazon',     nombre:'Cajita Corazón Personalizado',      precio:'20.000', descripcion:'Dulces variados como Choco Ball, Choco Break Cookies y Bianchi.',                              imagen:'Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png' },
+  { id:'producto1', value:'cajita-corazon',     nombre:'Cajita Corazón Personalizado',      precio:'20.000', descripcion:'Dulces variados como Choco Ball, Choco Break Cookies y Bianchi.',                               imagen:'Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png' },
   { id:'producto2', value:'bolsa-sorpresa',      nombre:'Bolsa Sorpresa Personalizado',       precio:'35.000', descripcion:'Incluye 1 cóctel con tequila de 269 ml, 1 Jumbo Flow y galletas.',                           imagen:'Imagenes_Videos/Imagenes_Videos/Img-Productos/Bolsa-Sorpresa.png' },
   { id:'producto3', value:'caja-multifotografia',nombre:'Caja Multifotográfica Personalizada',precio:'65.000', descripcion:'Incluye 1 caja de chocolate Moments, galletas y 3 fotografías personalizadas.',               imagen:'Imagenes_Videos/Imagenes_Videos/Img-Productos/Caja-multifotografia.png' },
   { id:'producto4', value:'libro-emocion',        nombre:'Libro Emoción Personalizado',        precio:'95.000', descripcion:'Incluye 1 caja de chocolate Moments y 1 lata de dulces Cavendish & Harvey.',                  imagen:'Imagenes_Videos/Imagenes_Videos/Img-Productos/Libro-emocion.png' },
@@ -162,22 +162,29 @@ export default function PaginaPedidos() {
 
               <div className="galeria-productos">
                 {PRODUCTOS_PEDIDO.map((prod, i) => (
-                  <div key={prod.id} className={`miniatura-producto${productoSeleccionado === prod.value ? ' active' : ''}`}
-                    onClick={() => { setProductoSeleccionado(prod.value); seleccionarVista(prod); }}
-                    style={{ opacity: 0, transform: 'translateY(20px)', animation: `fadeInUp 0.5s ${i * 0.1}s forwards` }}>
-                    <input type="radio" id={prod.id} name="producto" value={prod.value}
-                      checked={productoSeleccionado === prod.value} onChange={() => { setProductoSeleccionado(prod.value); seleccionarVista(prod); }} />
-                    <label htmlFor={prod.id}>
-                      <div className="contenido-miniatura">
-                        <div className="imagen-miniatura"><img src={prod.imagen} alt={prod.nombre} /></div>
-                        <div className="info-miniatura">
-                          <span className="nombre-mini">{prod.nombre.split(' ').slice(0,2).join(' ')}</span>
-                          <span className="precio-mini">${prod.precio}</span>
-                        </div>
-                        <div className="indicador-check"></div>
+                  <label
+                    key={prod.id}
+                    htmlFor={prod.id}
+                    className={`miniatura-producto${productoSeleccionado === prod.value ? ' active' : ''}`}
+                    style={{ opacity: 0, transform: 'translateY(20px)', animation: `fadeInUp 0.5s ${i * 0.1}s forwards`, cursor: 'pointer', display: 'block' }}
+                  >
+                    <input 
+                      type="radio" 
+                      id={prod.id} 
+                      name="producto" 
+                      value={prod.value}
+                      checked={productoSeleccionado === prod.value} 
+                      onChange={() => { setProductoSeleccionado(prod.value); seleccionarVista(prod); }} 
+                    />
+                    <div className="contenido-miniatura">
+                      <div className="imagen-miniatura"><img src={prod.imagen} alt={prod.nombre} /></div>
+                      <div className="info-miniatura">
+                        <span className="nombre-mini">{prod.nombre.split(' ').slice(0,2).join(' ')}</span>
+                        <span className="precio-mini">${prod.precio}</span>
                       </div>
-                    </label>
-                  </div>
+                      <div className="indicador-check"></div>
+                    </div>
+                  </label>
                 ))}
               </div>
             </div>

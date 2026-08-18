@@ -81,7 +81,13 @@ export default function PaginaGaleria() {
           <div className="galeria-mosaico">
             {itemsFiltrados.map((item, idx) => {
               if (item.type === 'video') return (
-                <div key={idx} className="galeria-item item-video" onClick={() => abrirModalVideo(item.src, item.title, item.category)}>
+                <button 
+                  type="button"
+                  key={idx} 
+                  className="galeria-item item-video" 
+                  onClick={() => abrirModalVideo(item.src, item.title, item.category)}
+                  style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
+                >
                   <div className="video-miniatura-contenedor">
                     <video src={`${item.src}#t=0.5`} preload="metadata" muted playsInline></video>
                     <div className="video-boton-reproducir"><i className="fas fa-play"></i></div>
@@ -91,23 +97,35 @@ export default function PaginaGaleria() {
                     <div className="galeria-item-categoria">{item.category}</div>
                     <div className="galeria-item-titulo">{item.title}</div>
                   </div>
-                </div>
+                </button>
               );
               const lbIdx = itemsLightbox.indexOf(item);
               if (item.type === 'especial') return (
-                <div key={idx} className="galeria-item item-especial" onClick={() => abrirLightbox(lbIdx)}>
+                <button 
+                  type="button"
+                  key={idx} 
+                  className="galeria-item item-especial" 
+                  onClick={() => abrirLightbox(lbIdx)}
+                  style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
+                >
                   <img src={item.src} alt={item.title} loading="lazy" />
                   <div className="insignia-especial"><i className="fas fa-heart"></i> Especial</div>
                   <div className="galeria-item-overlay"><div className="galeria-item-categoria">{item.category}</div><div className="galeria-item-titulo">{item.title}</div></div>
                   <div className="galeria-icono-expandir"><i className="fas fa-expand-alt"></i></div>
-                </div>
+                </button>
               );
               return (
-                <div key={idx} className="galeria-item" onClick={() => abrirLightbox(lbIdx)}>
+                <button 
+                  type="button"
+                  key={idx} 
+                  className="galeria-item" 
+                  onClick={() => abrirLightbox(lbIdx)}
+                  style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
+                >
                   <img src={item.src} alt={item.title} loading="lazy" />
                   <div className="galeria-item-overlay"><div className="galeria-item-categoria">{item.category}</div><div className="galeria-item-titulo">{item.title}</div></div>
                   <div className="galeria-icono-expandir"><i className="fas fa-expand-alt"></i></div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -138,7 +156,12 @@ export default function PaginaGaleria() {
       </div>
 
       {/* Modal Video */}
-      <div className={`modal-video-fondo${modalVideoAbierto ? ' open' : ''}`} onClick={(e) => e.target.className.includes('modal-video-fondo') && cerrarModalVideo()}>
+      <div 
+        className={`modal-video-fondo${modalVideoAbierto ? ' open' : ''}`} 
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.target.className.includes('modal-video-fondo') && cerrarModalVideo()}
+      >
         <div className="modal-video-caja">
           <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}>×</button>
           <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata"></video>

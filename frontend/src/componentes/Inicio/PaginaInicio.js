@@ -60,8 +60,8 @@ export default function PaginaInicio() {
           </h1>
           <p className="hero-descripcion">No solo capturamos momentos, los convertimos en experiencias únicas con fotografía y video.</p>
           <div className="hero-botones">
-            <a className="boton-primario" onClick={() => navigate('/paquetes')} style={{ cursor: 'pointer' }}>Ver Paquetes</a>
-            <a className="boton-secundario" onClick={() => navigate('/galeria')} style={{ cursor: 'pointer' }}>Explorar Galería</a>
+            <button type="button" className="boton-primario" onClick={() => navigate('/paquetes')} style={{ cursor: 'pointer' }}>Ver Paquetes</button>
+            <button type="button" className="boton-secundario" onClick={() => navigate('/galeria')} style={{ cursor: 'pointer' }}>Explorar Galería</button>
           </div>
         </div>
         <div className="hero-indicador-scroll"><span className="indicador-scroll-texto"></span><div className="indicador-scroll-barra"></div></div>
@@ -104,7 +104,7 @@ export default function PaginaInicio() {
                 <li><a href="https://wa.me/573132741001" target="_blank" rel="noreferrer">📱 +57 313 274 1001</a></li>
                 <li><a href="https://www.instagram.com/communicatingdesignlion" target="_blank" rel="noreferrer">📷 Instagram</a></li>
                 <li><a href="https://www.facebook.com/share/1EnQZv6zX4/" target="_blank" rel="noreferrer">👥 Facebook</a></li>
-                <li><a>📍 Bogotá, Colombia</a></li>
+                <li><span>📍 Bogotá, Colombia</span></li>
               </ul>
             </div>
           </div>

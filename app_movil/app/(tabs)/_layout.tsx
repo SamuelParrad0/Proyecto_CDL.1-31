@@ -5,6 +5,32 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Tema, Espaciado } from '@/constants/tema';
 import { CarritoContext } from '@/src/contexto/ContextoCarrito';
 
+// Componentes de íconos definidos fuera del componente padre
+function IconoTienda({ color }: { color: string }) {
+  return <IconSymbol size={28} name="house.fill" color={color} />;
+}
+
+function IconoExplorar({ color }: { color: string }) {
+  return <IconSymbol size={28} name="sparkles" color={color} />;
+}
+
+function IconoCarrito({ color, totalItems }: { color: string; totalItems: number }) {
+  return (
+    <View>
+      <IconSymbol size={28} name="cart.fill" color={color} />
+      {totalItems > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{totalItems}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function IconoCuenta({ color }: { color: string }) {
+  return <IconSymbol size={28} name="person.fill" color={color} />;
+}
+
 export default function TabLayout() {
   const { totalItems } = useContext(CarritoContext);
 
@@ -36,7 +62,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Tienda',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconoTienda color={color} />,
         }}
       />
       
@@ -44,7 +70,7 @@ export default function TabLayout() {
         name="explorar"
         options={{
           title: 'Explorar',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="sparkles" color={color} />,
+          tabBarIcon: ({ color }) => <IconoExplorar color={color} />,
         }}
       />
       
@@ -52,24 +78,15 @@ export default function TabLayout() {
         name="carrito"
         options={{
           title: 'Carrito',
-          tabBarIcon: ({ color }) => (
-            <View>
-              <IconSymbol size={28} name="cart.fill" color={color} />
-              {totalItems > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{totalItems}</Text>
-                </View>
-              )}
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <IconoCarrito color={color} totalItems={totalItems} />,
         }}
       />
 
       <Tabs.Screen
-        name="explore" // Mantengo el nombre del archivo para Cuenta para no romper cosas si el enrutador de expo depende de esto, pero la etiqueta será "Cuenta"
+        name="explore"
         options={{
           title: 'Cuenta',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconoCuenta color={color} />,
         }}
       />
     </Tabs>

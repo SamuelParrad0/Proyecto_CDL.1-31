@@ -22,18 +22,15 @@ import '../../estilos/perfil.css';
 const DEPARTAMENTOS = ['Amazonas','Antioquia','Arauca','Atlántico','Bogotá','Bolívar','Boyacá','Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo','Quindío','Risaralda','San Andrés y Providencia','Santander','Sucre','Tolima','Valle del Cauca','Vaupés','Vichada'];
 
 const ESTADOS_INFO = {
-  // PAQUETES (Citas)
   'pendiente': { label: 'Pendiente', color: '#f59e0b' },
   'en_contacto': { label: 'En contacto contigo', color: '#3b82f6' },
   'agendada': { label: 'Agendada', color: '#a855f7' },
   'mision_cumplida': { label: '¡Misión cumplida!', color: '#22c55e' },
   'cancelada': { label: 'Cancelada', color: '#ef4444' },
-  // PRODUCTOS (Pedidos)
   'pagado': { label: '¡Manos a la obra!', color: '#3b82f6' },
   'enviado': { label: 'Viajando hacia ti', color: '#00d9ff' },
   'entregado': { label: '¡Ya contigo!', color: '#22c55e' },
   'cancelado': { label: 'Cancelado', color: '#ef4444' },
-  // PERSONALIZADO
   'en-revision': { label: 'Analizando tu idea', color: '#3b82f6' },
   'aprobado': { label: 'Creando tu idea junto a ti', color: '#a855f7' },
   'rechazado': { label: 'Dando vida a tu idea', color: '#ff0844' },
@@ -58,9 +55,9 @@ export default function PaginaPerfil() {
   const [vista, setVista] = useState('grid');
   const [usuario, setUsuario] = useState({ nombre:'', apellido:'', email:'', telefono:'', rol: 'cliente' });
   const [dirs, setDirs] = useState([]);
-  const [compras, setCompras] = useState({ productos:[], paquetes:[], personalizado:[] });
+  const [compras] = useState({ productos:[], paquetes:[], personalizado:[] });
   const [solicitudes, setSolicitudes] = useState({ productos:[], paquetes:[], personalizado:[] });
-  const [cargando, setCargando] = useState(true);
+  const [, setCargando] = useState(true);
   const [tabCompras, setTabCompras] = useState('productos');
   const [tabSolicitudes, setTabSolicitudes] = useState('productos');
   const [toast, setToast] = useState({ msg:'', visible:false, warn:false });
@@ -71,12 +68,10 @@ export default function PaginaPerfil() {
   const [modalConfirm, setModalConfirm] = useState({ open:false, icono:'', titulo:'', desc:'', btnLabel:'', color:'', cb:null });
   const [formDir, setFormDir] = useState({ direccion:'', departamento:'', municipio:'', barrio:'', apto:'', nombre:'', telefono:'', tipo:'residencial' });
   const [depListaAbierta, setDepListaAbierta] = useState(false);
-  // Direcciones — Ver detalle / Editar
-  const [dirDetalleIdx, setDirDetalleIdx] = useState(null); // índice del panel abierto
-  const [modalEditDir, setModalEditDir] = useState(null);   // { idx, formData }
+  const [dirDetalleIdx, setDirDetalleIdx] = useState(null);
+  const [modalEditDir, setModalEditDir] = useState(null);
   const [depEditAbierto, setDepEditAbierto] = useState(false);
 
-  // Cargar datos reales desde el API
   useEffect(() => {
     if (!haySesionActiva()) { navigate('/login'); return; }
 
@@ -98,7 +93,6 @@ export default function PaginaPerfil() {
         const s = sRes.status === 'fulfilled' ? sRes.value : [];
         const r = rRes.status === 'fulfilled' ? rRes.value : [];
         const p = pRes.status === 'fulfilled' ? pRes.value : [];
-
         
         const dataUsuario = u.usuario && u.usuario.Nombre ? u.usuario : getUsuarioLocal() || {};
         const rolUsuario = String(dataUsuario.Rol?.Nombre_Rol || dataUsuario.rol || 'cliente')
@@ -114,7 +108,6 @@ export default function PaginaPerfil() {
           rol: rolNormalizado
         });
 
-        // Normalizar direcciones
         setDirs(d.map(item => ({
           id: item.Id_Direccion,
           direccion: item.Direccion,
@@ -127,12 +120,11 @@ export default function PaginaPerfil() {
           tipo: item.Residencia_Laboral
         })));
 
-        // Normalizar solicitudes (Personalizado + Reservas + Pedidos)
         setSolicitudes({
           productos: p.map(ped => ({
-            ...ped, // Guardamos el objeto completo para renderizar detalles
+            ...ped,
             id: `PED-${ped.id}`,
-            _rawId: ped.id, // Id real
+            _rawId: ped.id,
             nombre: 'Pedido de Productos',
             precio: ped.total,
             fecha: new Date(ped.createdAt).toLocaleDateString(),
@@ -193,7 +185,7 @@ export default function PaginaPerfil() {
           const nd=[...dirs]; nd.splice(i,1); setDirs(nd);
           if (dirDetalleIdx === i) setDirDetalleIdx(null);
           mostrarToast('📍 Dirección eliminada',true); 
-        } catch (e) {
+        } catch {
           mostrarToast('❌ Error al eliminar', true);
         }
       }
@@ -257,11 +249,9 @@ export default function PaginaPerfil() {
       cb: async () => {
         try {
           await apiCall();
-          
           const s = { ...solicitudes };
           s[cat] = (s[cat]||[]).map(i => i.id === id ? { ...i, estado: 'Cancelada' } : i);
           setSolicitudes(s);
-          
           mostrarToast(successMsg, false);
         } catch (e) {
           mostrarToast('❌ Error: ' + e.message, true);
@@ -271,24 +261,24 @@ export default function PaginaPerfil() {
   };
 
   const CFG_EDICION = {
-    email:    { titulo:'Correo electrónico', campos:[{id:'nuevo',label:'Nuevo correo',type:'email',ph:'nuevo@correo.com'},{id:'confirmar',label:'Confirmar correo',type:'email',ph:'nuevo@correo.com'}] },
-    telefono: { titulo:'Teléfono',           campos:[{id:'nuevo',label:'Nuevo teléfono',type:'tel',ph:'+57 300 123 4567'}] },
-    password: { titulo:'Contraseña',         campos:[{id:'actual',label:'Contraseña actual',type:'password',ph:'••••••••'},{id:'nueva',label:'Nueva contraseña',type:'password',ph:'Mínimo 8 caracteres'},{id:'confirmar',label:'Confirmar contraseña',type:'password',ph:'Repite la contraseña'}] }
+    email:    { titulo:'Correo electrónico', campos:[{id:'email-nuevo',label:'Nuevo correo',type:'email',ph:'nuevo@correo.com'},{id:'email-confirmar',label:'Confirmar correo',type:'email',ph:'nuevo@correo.com'}] },
+    telefono: { titulo:'Teléfono',           campos:[{id:'telefono-nuevo',label:'Nuevo teléfono',type:'tel',ph:'+57 300 123 4567'}] },
+    password: { titulo:'Contraseña',         campos:[{id:'pass-actual',label:'Contraseña actual',type:'password',ph:'••••••••'},{id:'pass-nueva',label:'Nueva contraseña',type:'password',ph:'Mínimo 8 caracteres'},{id:'pass-confirmar',label:'Confirmar contraseña',type:'password',ph:'Repite la contraseña'}] }
   };
 
   const abrirEdicion = (campo) => { setCampoEdicion(campo); setEditVals({}); setModalEdicion(true); };
 
   const confirmarEdicion = () => {
     if (campoEdicion === 'email') {
-      if (!editVals.nuevo) { mostrarToast('⚠️ Ingresa el nuevo correo', true); return; }
-      if (editVals.nuevo !== editVals.confirmar) { mostrarToast('⚠️ Los correos no coinciden', true); return; }
+      if (!editVals['email-nuevo']) { mostrarToast('⚠️ Ingresa el nuevo correo', true); return; }
+      if (editVals['email-nuevo'] !== editVals['email-confirmar']) { mostrarToast('⚠️ Los correos no coinciden', true); return; }
       setModalEdicion(false);
       abrirConfirm({
         icono: '✉️', titulo: '¿Cambiar correo?', desc: 'Se actualizará tu correo electrónico. ¿Confirmas?', btnLabel: 'Sí, cambiar', color: 'rojo',
         cb: async () => {
           try {
-            await actualizarPerfilAPI({ correo: editVals.nuevo });
-            setUsuario(prev => ({ ...prev, email: editVals.nuevo }));
+            await actualizarPerfilAPI({ correo: editVals['email-nuevo'] });
+            setUsuario(prev => ({ ...prev, email: editVals['email-nuevo'] }));
             mostrarToast('✅ Correo actualizado');
           } catch (e) {
             mostrarToast(e.message, true);
@@ -296,14 +286,14 @@ export default function PaginaPerfil() {
         }
       });
     } else if (campoEdicion === 'telefono') {
-      if (!editVals.nuevo) { mostrarToast('⚠️ Ingresa el nuevo teléfono', true); return; }
+      if (!editVals['telefono-nuevo']) { mostrarToast('⚠️ Ingresa el nuevo teléfono', true); return; }
       setModalEdicion(false);
       abrirConfirm({
         icono: '📞', titulo: '¿Cambiar teléfono?', desc: 'Se actualizará el número de celular. ¿Confirmas?', btnLabel: 'Sí, cambiar', color: 'rojo',
         cb: async () => {
           try {
-            await actualizarPerfilAPI({ celular: editVals.nuevo });
-            setUsuario(prev => ({ ...prev, telefono: editVals.nuevo }));
+            await actualizarPerfilAPI({ celular: editVals['telefono-nuevo'] });
+            setUsuario(prev => ({ ...prev, telefono: editVals['telefono-nuevo'] }));
             mostrarToast('✅ Teléfono actualizado');
           } catch (e) {
             mostrarToast(e.message, true);
@@ -311,17 +301,17 @@ export default function PaginaPerfil() {
         }
       });
     } else if (campoEdicion === 'password') {
-      if (!editVals.actual) { mostrarToast('⚠️ Ingresa la contraseña actual', true); return; }
-      if ((editVals.nueva || '').length < 6) { mostrarToast('⚠️ Mínimo 6 caracteres', true); return; }
-      if (editVals.nueva !== editVals.confirmar) { mostrarToast('⚠️ Las contraseñas no coinciden', true); return; }
+      if (!editVals['pass-actual']) { mostrarToast('⚠️ Ingresa la contraseña actual', true); return; }
+      if ((editVals['pass-nueva'] || '').length < 6) { mostrarToast('⚠️ Mínimo 6 caracteres', true); return; }
+      if (editVals['pass-nueva'] !== editVals['pass-confirmar']) { mostrarToast('⚠️ Las contraseñas no coinciden', true); return; }
       setModalEdicion(false);
       abrirConfirm({
         icono: '🔒', titulo: '¿Cambiar contraseña?', desc: 'Se actualizará tu clave de acceso. ¿Confirmas?', btnLabel: 'Sí, cambiar', color: 'rojo',
         cb: async () => {
           try {
             await actualizarPerfilAPI({ 
-              passwordActual: editVals.actual,
-              passwordNuevo: editVals.nueva 
+              passwordActual: editVals['pass-actual'],
+              passwordNuevo: editVals['pass-nueva'] 
             });
             mostrarToast('✅ Contraseña actualizada');
           } catch (e) {
@@ -333,9 +323,7 @@ export default function PaginaPerfil() {
   };
 
   const guardarDir = async () => {
-  console.log('formDir:', formDir);
-  if (!formDir.direccion.trim()) { mostrarToast('⚠️ Ingresa la dirección',true); return; }
-    
+    if (!formDir.direccion.trim()) { mostrarToast('⚠️ Ingresa la dirección',true); return; }
     try {
       const res = await crearDireccionAPI(formDir);
       const nueva = {
@@ -406,11 +394,17 @@ export default function PaginaPerfil() {
               { id:'solicitudes', icono:'fa-file-alt',     titulo:'Mis solicitudes',       desc:'Solicitudes enviadas en proceso.' },
               ...((usuario.rol === 'admin' || usuario.rol === 'Administrador' || usuario.rol === 'auxiliar' || usuario.rol === 'Auxiliar' || usuario.rol === 'administrador') ? [{ id:'admin', icono:'fa-user-shield', titulo: usuario.rol === 'auxiliar' || usuario.rol === 'Auxiliar' ? 'Panel de Auxiliar' : 'Panel de Control', desc: usuario.rol === 'auxiliar' || usuario.rol === 'Auxiliar' ? 'Revisar pedidos, citas y solicitudes.' : 'Gestión de usuarios, catálogo y solicitudes.' }] : [])
             ].map(m => (
-              <div key={m.id} className="tarjeta-menu-item" onClick={() => irA(m.id)}>
+              <button 
+                type="button" 
+                key={m.id} 
+                className="tarjeta-menu-item" 
+                onClick={() => irA(m.id)}
+                style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
+              >
                 <i className={`fas ${m.icono} tarjeta-menu-icono`}></i>
                 <div className="tarjeta-menu-titulo">{m.titulo}</div>
                 <div className="tarjeta-menu-descripcion">{m.desc}</div>
-              </div>
+              </button>
             ))}
           </div>
           <div className="footer-opciones-peligro">
@@ -438,11 +432,11 @@ export default function PaginaPerfil() {
 
             <div className="premium-data-grid">
               <div className="premium-data-item">
-                <label className="premium-data-label">Nombre</label>
+                <span className="premium-data-label">Nombre</span>
                 <div className="premium-data-value">{usuario.nombre||'—'}</div>
               </div>
               <div className="premium-data-item">
-                <label className="premium-data-label">Apellido</label>
+                <span className="premium-data-label">Apellido</span>
                 <div className="premium-data-value">{usuario.apellido||'—'}</div>
               </div>
             </div>
@@ -456,9 +450,9 @@ export default function PaginaPerfil() {
             ].map(f => (
               <div key={f.campo} className="premium-row-editable">
                 <div className="premium-row-info">
-                  <label className="premium-row-label">
+                  <span className="premium-row-label">
                     <i className={`fas ${f.icono}`}></i> {f.label}
-                  </label>
+                  </span>
                   <div className="premium-row-value">{f.valor}</div>
                 </div>
                 <button type="button" className="premium-btn-edit" onClick={() => abrirEdicion(f.campo)}>
@@ -493,7 +487,6 @@ export default function PaginaPerfil() {
               ) : (
                 dirs.map((d, i) => (
                   <div key={d.id||i} className="premium-address-card">
-                    {/* Cabecera: badge + botón eliminar */}
                     <div className="premium-address-header">
                       <div className="premium-address-badge">
                         <i className={`fas fa-${d.tipo==='laboral'?'briefcase':'home'}`}></i>
@@ -504,20 +497,17 @@ export default function PaginaPerfil() {
                       </button>
                     </div>
 
-                    {/* Cuerpo principal */}
                     <div className="premium-address-main">
                       <div className="premium-address-line">{d.direccion}{d.apto?', '+d.apto:''}</div>
                       <div className="premium-address-sub">{d.municipio?d.municipio+' — ':''}{d.departamento}</div>
                       {d.barrio && <div className="premium-address-tag"><i className="fas fa-map-pin"></i> {d.barrio}</div>}
                     </div>
 
-                    {/* Pie: nombre y teléfono */}
                     <div className="premium-address-footer">
                       <div className="premium-footer-item"><i className="fas fa-user"></i> {d.nombre||'—'}</div>
                       <div className="premium-footer-item"><i className="fas fa-phone"></i> {d.telefono||'—'}</div>
                     </div>
 
-                    {/* Botones Ver / Editar */}
                     <div className="premium-address-actions">
                       <button type="button"
                         className="addr-btn-ver"
@@ -534,7 +524,6 @@ export default function PaginaPerfil() {
                       </button>
                     </div>
 
-                    {/* Panel detalle (desplegable) */}
                     {dirDetalleIdx === i && (
                       <div className="addr-detalle-panel">
                         {[
@@ -632,7 +621,6 @@ export default function PaginaPerfil() {
                   (solicitudes[cat]||[]).map((it, i) => (
                     <div key={i} className="historial-tarjeta" style={{borderTop: '3px solid var(--rojo)', padding:'20px', flexDirection:'column', alignItems:'stretch'}}>
                       
-                      {/* ENCABEZADO */}
                       <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'15px', width:'100%'}}>
                         <div>
                           <div style={{fontWeight:700, fontSize:'1.1rem'}}>{it.nombre}</div>
@@ -650,13 +638,10 @@ export default function PaginaPerfil() {
 
                       <hr style={{borderColor: 'rgba(255,255,255,0.05)', margin: '5px 0 15px 0'}} />
 
-                      {/* DETALLES ESPECÍFICOS SEGÚN TIPO */}
                       <div style={{marginBottom:'20px'}}>
 
-                        {/* --- CITAS (PAQUETES) --- */}
                         {cat === 'paquetes' && (
                           <div className="sol-detail-wrapper">
-                            {/* Bloque: Paquete */}
                             <div className="sol-info-block sol-block-highlight">
                               <div className="sol-block-label">🎯 Paquete Reservado</div>
                               <div className="sol-block-title">{it.paquete?.Nombre_Paquete || 'Paquete no encontrado'}</div>
@@ -666,7 +651,6 @@ export default function PaginaPerfil() {
                               <div className="sol-price-tag">{formatearCOP(it.precio)}</div>
                             </div>
 
-                            {/* Grid de datos del evento */}
                             <div className="sol-grid-2">
                               <div className="sol-field-card">
                                 <div className="sol-field-icon"><i className="fas fa-star"></i></div>
@@ -698,7 +682,6 @@ export default function PaginaPerfil() {
                               </div>
                             </div>
 
-                            {/* Datos de contacto */}
                             <div className="sol-section-title"><i className="fas fa-address-card"></i> Datos de Contacto</div>
                             <div className="sol-grid-2">
                               <div className="sol-field-card">
@@ -724,7 +707,6 @@ export default function PaginaPerfil() {
                               </div>
                             </div>
 
-                            {/* Información adicional */}
                             {it.Informacion_Adicional && (
                               <div className="sol-text-block">
                                 <div className="sol-text-label"><i className="fas fa-sticky-note"></i> Información Adicional</div>
@@ -734,10 +716,8 @@ export default function PaginaPerfil() {
                           </div>
                         )}
 
-                        {/* --- PEDIDOS (PRODUCTOS) --- */}
                         {cat === 'productos' && (
                           <div className="sol-detail-wrapper">
-                            {/* Datos de envío */}
                             <div className="sol-info-block sol-block-highlight">
                               <div className="sol-block-label">📍 Datos de Envío</div>
                               <div className="sol-grid-2" style={{marginTop:'8px'}}>
@@ -764,7 +744,6 @@ export default function PaginaPerfil() {
                               )}
                             </div>
 
-                            {/* Productos */}
                             <div className="sol-section-title"><i className="fas fa-shopping-cart"></i> Productos ({it.detalles ? it.detalles.length : 0})</div>
                             <div className="sol-products-list">
                               {it.detalles && it.detalles.length > 0 ? it.detalles.map(d => (
@@ -784,16 +763,13 @@ export default function PaginaPerfil() {
                           </div>
                         )}
 
-                        {/* --- PERSONALIZADO --- */}
                         {cat === 'personalizado' && (
                           <div className="sol-detail-wrapper">
-                            {/* Destinatario */}
                             <div className="sol-info-block sol-block-highlight">
                               <div className="sol-block-label">🎁 Para quién es</div>
                               <div className="sol-block-title">{(it.Destinatario || 'para_mi').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
                             </div>
 
-                            {/* Datos de contacto */}
                             <div className="sol-section-title"><i className="fas fa-address-card"></i> Datos de Contacto</div>
                             <div className="sol-grid-2">
                               <div className="sol-field-card">
@@ -830,19 +806,16 @@ export default function PaginaPerfil() {
                               </div>
                             </div>
 
-                            {/* Descripción / Idea */}
                             <div className="sol-text-block">
                               <div className="sol-text-label"><i className="fas fa-lightbulb"></i> Idea Principal</div>
                               <p className="sol-text-body">{it.Descripcion_Idea || '—'}</p>
                             </div>
 
-                            {/* Elementos esenciales */}
                             <div className="sol-text-block">
                               <div className="sol-text-label"><i className="fas fa-puzzle-piece"></i> Elementos Esenciales</div>
                               <p className="sol-text-body">{it.Elementos_Esenciales || '—'}</p>
                             </div>
 
-                            {/* Comentarios adicionales */}
                             {it.Comentarios_Adicionales && (
                               <div className="sol-text-block">
                                 <div className="sol-text-label"><i className="fas fa-comment-dots"></i> Comentarios Adicionales</div>
@@ -882,7 +855,7 @@ export default function PaginaPerfil() {
             <div className="modal-cuerpo-premium">
               {CFG_EDICION[campoEdicion].campos.map(f => (
                 <div key={f.id} className="modal-campo-premium">
-                  <label className="modal-label-premium">{f.label}</label>
+                  <label htmlFor={f.id} className="modal-label-premium">{f.label}</label>
                   <div className="modal-input-premium-container">
                     <input 
                       id={f.id} 
@@ -933,9 +906,10 @@ export default function PaginaPerfil() {
                   {label:'Indicaciones', campo:'indicaciones', ph:'Ej: Puerta verde, tercer piso', full:true},
                 ].map(f => (
                   <div key={f.campo} className={`modal-campo-premium${f.full?' modal-dir-full':''}`}>
-                    <label className="modal-label-premium">{f.label}</label>
+                    <label htmlFor={`edit-dir-${f.campo}`} className="modal-label-premium">{f.label}</label>
                     <div className="modal-input-premium-container">
                       <input
+                        id={`edit-dir-${f.campo}`}
                         type="text"
                         placeholder={f.ph}
                         className="modal-input-premium-field"
@@ -950,27 +924,32 @@ export default function PaginaPerfil() {
 
               {/* Departamento */}
               <div className="modal-campo-premium" style={{position:'relative'}}>
-                <label className="modal-label-premium">Departamento</label>
-                <div
+                <label htmlFor="btn-select-dep-edit" className="modal-label-premium">Departamento</label>
+                <button
+                  type="button"
+                  id="btn-select-dep-edit"
                   className={`modal-dir-select${depEditAbierto?' open':''}`}
                   onClick={() => setDepEditAbierto(p=>!p)}
+                  style={{ width: '100%', textAlign: 'left', background: 'none', cursor: 'pointer' }}
                 >
                   <span style={{color: modalEditDir.form.departamento ? 'var(--text-primary)' : 'var(--text-secondary)'}}>
                     {modalEditDir.form.departamento || 'Selecciona tu departamento'}
                   </span>
                   <i className="fas fa-chevron-down modal-dir-chevron"></i>
-                </div>
+                </button>
                 {depEditAbierto && (
                   <div className="modal-dir-dropdown">
                     {DEPARTAMENTOS.map(dep => (
-                      <div
+                      <button
+                        type="button"
                         key={dep}
                         className={`modal-dir-option${modalEditDir.form.departamento===dep?' selected':''}`}
                         onClick={() => { setModalEditDir(p=>({...p, form:{...p.form,departamento:dep}})); setDepEditAbierto(false); }}
+                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
                       >
                         {modalEditDir.form.departamento===dep && <i className="fas fa-check"></i>}
                         {dep}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -978,11 +957,12 @@ export default function PaginaPerfil() {
 
               {/* Tipo de domicilio */}
               <div className="modal-campo-premium">
-                <label className="modal-label-premium">Tipo de domicilio</label>
+                <span className="modal-label-premium">Tipo de domicilio</span>
                 <div className="modal-dir-tipo-row">
                   {['residencial','laboral'].map(t => (
-                    <label key={t} className={`modal-dir-tipo-opcion${modalEditDir.form.tipo===t?' activo':''}`}>
+                    <label key={t} htmlFor={`edit-tipo-${t}`} className={`modal-dir-tipo-opcion${modalEditDir.form.tipo===t?' activo':''}`} style={{ cursor: 'pointer' }}>
                       <input
+                        id={`edit-tipo-${t}`}
                         type="radio"
                         name="mdEditTipo"
                         value={t}
@@ -1022,7 +1002,6 @@ export default function PaginaPerfil() {
             </div>
 
             <div className="modal-cuerpo-premium">
-              {/* Grid 2 columnas para campos cortos */}
               <div className="modal-dir-grid">
                 {[
                   {label:'Dirección', campo:'direccion', ph:'Ej: Carrera 71d #1-14 Sur', full:true},
@@ -1033,9 +1012,10 @@ export default function PaginaPerfil() {
                   {label:'Teléfono', campo:'telefono',  ph:'+57 300 000 0000'},
                 ].map(f => (
                   <div key={f.campo} className={`modal-campo-premium${f.full?' modal-dir-full':''}`}>
-                    <label className="modal-label-premium">{f.label}</label>
+                    <label htmlFor={`nueva-dir-${f.campo}`} className="modal-label-premium">{f.label}</label>
                     <div className="modal-input-premium-container">
                       <input
+                        id={`nueva-dir-${f.campo}`}
                         type="text"
                         placeholder={f.ph}
                         className="modal-input-premium-field"
@@ -1050,27 +1030,32 @@ export default function PaginaPerfil() {
 
               {/* Departamento */}
               <div className="modal-campo-premium" style={{position:'relative'}}>
-                <label className="modal-label-premium">Departamento</label>
-                <div
+                <label htmlFor="btn-select-dep-nuevo" className="modal-label-premium">Departamento</label>
+                <button
+                  type="button"
+                  id="btn-select-dep-nuevo"
                   className={`modal-dir-select${depListaAbierta?' open':''}`}
                   onClick={() => setDepListaAbierta(p=>!p)}
+                  style={{ width: '100%', textAlign: 'left', background: 'none', cursor: 'pointer' }}
                 >
                   <span style={{color: formDir.departamento ? 'var(--text-primary)' : 'var(--text-secondary)'}}>
                     {formDir.departamento || 'Selecciona tu departamento'}
                   </span>
                   <i className="fas fa-chevron-down modal-dir-chevron"></i>
-                </div>
+                </button>
                 {depListaAbierta && (
                   <div className="modal-dir-dropdown">
                     {DEPARTAMENTOS.map(dep => (
-                      <div
+                      <button
+                        type="button"
                         key={dep}
                         className={`modal-dir-option${formDir.departamento===dep?' selected':''}`}
                         onClick={() => { setFormDir(p=>({...p,departamento:dep})); setDepListaAbierta(false); }}
+                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
                       >
                         {formDir.departamento===dep && <i className="fas fa-check"></i>}
                         {dep}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -1078,11 +1063,12 @@ export default function PaginaPerfil() {
 
               {/* Tipo de domicilio */}
               <div className="modal-campo-premium">
-                <label className="modal-label-premium">Tipo de domicilio</label>
+                <span className="modal-label-premium">Tipo de domicilio</span>
                 <div className="modal-dir-tipo-row">
                   {['residencial','laboral'].map(t => (
-                    <label key={t} className={`modal-dir-tipo-opcion${formDir.tipo===t?' activo':''}`}>
+                    <label key={t} htmlFor={`nuevo-tipo-${t}`} className={`modal-dir-tipo-opcion${formDir.tipo===t?' activo':''}`} style={{ cursor: 'pointer' }}>
                       <input
+                        id={`nuevo-tipo-${t}`}
                         type="radio"
                         name="mdTipo"
                         value={t}
