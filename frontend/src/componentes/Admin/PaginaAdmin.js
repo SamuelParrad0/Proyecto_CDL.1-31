@@ -100,7 +100,6 @@ const PaginaAdmin = () => {
         data = await listarUsuariosAPI();
         setUsuarios(data);
       } else if (vistaActiva === 'productos') {
-        // Al cargar productos para admin, usamos la ruta que trae TODOS (incluidos ocultos)
         const [resProd, resCat] = await Promise.all([listarProductosAdminAPI(), obtenerCategoriasAPI()]);
         setProductos(resProd);
         setCategorias(resCat);
@@ -165,7 +164,6 @@ const PaginaAdmin = () => {
 
   // --- HANDLERS USUARIOS ---
   const cambiarRolUsuario = (id, rolActual) => {
-    // Solo admin puede abrir selector avanzado; auxiliar no debe ver el control (ya controlado en render)
     pedirSeleccionRol(id, rolActual);
   };
 
@@ -222,7 +220,7 @@ const PaginaAdmin = () => {
         precio: Number(datos.precio),
         stock: Number(datos.stock || 0),
         imagen: datos.imagen,
-        categoriaId: Number(datos.categoriaId), // Añadido para que coincida con la API
+        categoriaId: Number(datos.categoriaId),
         Activo: true
       };
       if (elementoEditable) {
@@ -482,23 +480,23 @@ const PaginaAdmin = () => {
           <p style={{fontSize:'0.6rem', opacity:0.5, letterSpacing:'2px'}}>CONTROL PANEL</p>
         </div>
         <nav className="menu-lateral__navegacion">
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'usuarios' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('usuarios')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'usuarios' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('usuarios')}>
             <i className="fas fa-users"></i> Usuarios
           </button>
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'paquetes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('paquetes')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'paquetes' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('paquetes')}>
             <i className="fas fa-camera"></i> Paquetes
           </button>
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'productos' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('productos')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'productos' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('productos')}>
             <i className="fas fa-box"></i> Productos
           </button>
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'categorias' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('categorias')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'categorias' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('categorias')}>
             <i className="fas fa-tags"></i> Categorías
           </button>
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'solicitudes' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('solicitudes')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'solicitudes' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('solicitudes')}>
             <i className="fas fa-envelope-open-text"></i> Solicitudes
             {countSolicitudes > 0 && <span className="menu-lateral__contador-pendientes">{countSolicitudes}</span>}
           </button>
-          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'opiniones' && 'menu-lateral__enlace--activo'}`} onClick={() => setVistaActiva('opiniones')}>
+          <button type="button" className={`menu-lateral__enlace ${vistaActiva === 'opiniones' ? 'menu-lateral__enlace--activo' : ''}`} onClick={() => setVistaActiva('opiniones')}>
             <i className="fas fa-star"></i> Opiniones
           </button>
         </nav>
@@ -766,9 +764,9 @@ const PaginaAdmin = () => {
                 <div>
                   <div className="barra-busqueda-filtros" style={{marginBottom:'1.5rem', display:'flex', flexWrap:'wrap', gap:'1rem', justifyContent:'space-between', alignItems:'center'}}>
                     <div className="barra-pestanas" style={{margin:0}}>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'paquetes' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('paquetes'); setFiltroEstadoSolicitud('');}}>Citas</button>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'productos' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('productos'); setFiltroEstadoSolicitud('');}}>Pedidos</button>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'personalizado' && 'pestana-boton--activa'}`} onClick={() => {setPestanaSolicitudes('personalizado'); setFiltroEstadoSolicitud('');}}>Personalizado</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'paquetes' ? 'pestana-boton--activa' : ''}`} onClick={() => {setPestanaSolicitudes('paquetes'); setFiltroEstadoSolicitud('');}}>Citas</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'productos' ? 'pestana-boton--activa' : ''}`} onClick={() => {setPestanaSolicitudes('productos'); setFiltroEstadoSolicitud('');}}>Pedidos</button>
+                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'personalizado' ? 'pestana-boton--activa' : ''}`} onClick={() => {setPestanaSolicitudes('personalizado'); setFiltroEstadoSolicitud('');}}>Personalizado</button>
                     </div>
                     <div style={{display:'flex', gap:'1rem', flexWrap:'wrap'}}>
                       <div className="contenedor-campo-busqueda" style={{flex:1}}>
@@ -893,10 +891,11 @@ const PaginaAdmin = () => {
                             </div>
 
                             {/* SELECTOR DE ESTADO */}
-                            <div style={{fontSize:'0.75rem', fontWeight:'bold', marginBottom:'5px', color:'var(--rojo)'}}>ACTUALIZAR ESTADO:</div>
+                            <label htmlFor={`estado-solicitud-${id}`} style={{fontSize:'0.75rem', fontWeight:'bold', marginBottom:'5px', color:'var(--rojo)', display:'block'}}>ACTUALIZAR ESTADO:</label>
                             <select 
+                              id={`estado-solicitud-${id}`}
                               className="selector-estado-solicitud"
-                              value={estado}
+                              value={estado} 
                               onChange={(e) => handleCambiarEstadoSolicitud(id, e.target.value)}
                               style={{width:'100%', padding:'10px', background: (pestanaSolicitudes === 'paquetes' ? ESTADOS_PAQUETE : pestanaSolicitudes === 'productos' ? ESTADOS_PRODUCTO : ESTADOS_PERSONAL).find(x => x.value === estado)?.color + '20' || 'var(--bg-1)', color: (pestanaSolicitudes === 'paquetes' ? ESTADOS_PAQUETE : pestanaSolicitudes === 'productos' ? ESTADOS_PRODUCTO : ESTADOS_PERSONAL).find(x => x.value === estado)?.color || '#fff', border: `1px solid ${(pestanaSolicitudes === 'paquetes' ? ESTADOS_PAQUETE : pestanaSolicitudes === 'productos' ? ESTADOS_PRODUCTO : ESTADOS_PERSONAL).find(x => x.value === estado)?.color || 'var(--borde)'}`, borderRadius:'6px'}}
                             >
@@ -993,20 +992,20 @@ const PaginaAdmin = () => {
            <form className="modal-caja" onSubmit={handleGuardarPaquete}>
               <div className="modal__titulo">{elementoEditable ? 'Editar' : 'Nuevo'} <span>Paquete</span></div>
               <div className="modal__campo">
-                <label>Nombre del Paquete</label>
-                <input name="nombre" defaultValue={elementoEditable?.Nombre_Paquete} required />
+                <label htmlFor="paquete-nombre">Nombre del Paquete</label>
+                <input id="paquete-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Paquete} required />
               </div>
               <div className="modal__campo">
-                <label>Precio (COP)</label>
-                <input name="precio" type="number" defaultValue={elementoEditable?.Precio_Paquete} required />
+                <label htmlFor="paquete-precio">Precio (COP)</label>
+                <input id="paquete-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Paquete} required />
               </div>
               <div className="modal__campo">
-                <label>Imagen URL</label>
-                <input name="imagen" defaultValue={elementoEditable?.Imagen_Paquete} placeholder="https://..." />
+                <label htmlFor="paquete-imagen">Imagen URL</label>
+                <input id="paquete-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Paquete} placeholder="https://..." />
               </div>
               <div className="modal__campo">
-                <label>Descripción</label>
-                <textarea name="descripcion" defaultValue={elementoEditable?.Descripcion_Paquete} rows="4" required></textarea>
+                <label htmlFor="paquete-descripcion">Descripción</label>
+                <textarea id="paquete-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Paquete} rows="4" required></textarea>
               </div>
               <div className="modal__fila-acciones">
                 <button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button>
@@ -1022,24 +1021,24 @@ const PaginaAdmin = () => {
            <form className="modal-caja" onSubmit={handleGuardarProducto}>
               <div className="modal__titulo" style={{color:'var(--cian)'}}>{elementoEditable ? 'Editar' : 'Nuevo'} <span>Producto</span></div>
               <div className="modal__campo">
-                <label>Nombre del Producto</label>
-                <input name="nombre" defaultValue={elementoEditable?.Nombre_Producto} required />
+                <label htmlFor="producto-nombre">Nombre del Producto</label>
+                <input id="producto-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Producto} required />
               </div>
               <div className="modal__campo">
-                <label>Precio (COP)</label>
-                <input name="precio" type="number" defaultValue={elementoEditable?.Precio_Producto} required />
+                <label htmlFor="producto-precio">Precio (COP)</label>
+                <input id="producto-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Producto} required />
               </div>
               <div className="modal__campo">
-                <label>Stock Disponible</label>
-                <input name="stock" type="number" min="0" defaultValue={elementoEditable?.Stock !== undefined ? elementoEditable.Stock : 0} required />
+                <label htmlFor="producto-stock">Stock Disponible</label>
+                <input id="producto-stock" name="stock" type="number" min="0" defaultValue={elementoEditable?.Stock !== undefined ? elementoEditable.Stock : 0} required />
               </div>
               <div className="modal__campo">
-                <label>Imagen URL</label>
-                <input name="imagen" defaultValue={elementoEditable?.Imagen_Producto} placeholder="https://..." />
+                <label htmlFor="producto-imagen">Imagen URL</label>
+                <input id="producto-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Producto} placeholder="https://..." />
               </div>
               <div className="modal__campo">
-                <label>Categoría</label>
-                <select name="categoriaId" defaultValue={elementoEditable?.Id_Categoria} required>
+                <label htmlFor="producto-categoria">Categoría</label>
+                <select id="producto-categoria" name="categoriaId" defaultValue={elementoEditable?.Id_Categoria} required>
                   <option value="">Selecciona una categoría</option>
                   {categorias.map(c => (
                     <option key={c.Id_Categoria} value={c.Id_Categoria}>{c.Nombre_Categoria}</option>
@@ -1047,8 +1046,8 @@ const PaginaAdmin = () => {
                 </select>
               </div>
               <div className="modal__campo">
-                <label>Descripción</label>
-                <textarea name="descripcion" defaultValue={elementoEditable?.Descripcion_Producto} rows="4" required></textarea>
+                <label htmlFor="producto-descripcion">Descripción</label>
+                <textarea id="producto-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Producto} rows="4" required></textarea>
               </div>
               <div className="modal__fila-acciones">
                 <button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button>
@@ -1064,12 +1063,12 @@ const PaginaAdmin = () => {
            <form className="modal-caja" onSubmit={handleGuardarCategoria}>
               <div className="modal__titulo" style={{color:'#DDA0DD'}}>{elementoEditable ? 'Editar' : 'Nueva'} <span>Categoría</span></div>
               <div className="modal__campo">
-                <label>Nombre de la Categoría</label>
-                <input name="nombre" defaultValue={elementoEditable?.Nombre_Categoria} required />
+                <label htmlFor="categoria-nombre">Nombre de la Categoría</label>
+                <input id="categoria-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Categoria} required />
               </div>
               <div className="modal__campo">
-                <label>Descripción</label>
-                <textarea name="descripcion" defaultValue={elementoEditable?.Descripcion_Categoria} rows="3" placeholder="Opcional"></textarea>
+                <label htmlFor="categoria-descripcion">Descripción</label>
+                <textarea id="categoria-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Categoria} rows="3" placeholder="Opcional"></textarea>
               </div>
               <div className="modal__fila-acciones">
                 <button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button>
@@ -1085,24 +1084,24 @@ const PaginaAdmin = () => {
            <form className="modal-caja" onSubmit={handleGuardarUsuario}>
               <div className="modal__titulo">Editar <span>Usuario</span></div>
               <div className="modal__campo">
-                <label>Nombre</label>
-                <input name="nombre" defaultValue={elementoEditable?.Nombre} required />
+                <label htmlFor="usuario-nombre">Nombre</label>
+                <input id="usuario-nombre" name="nombre" defaultValue={elementoEditable?.Nombre} required />
               </div>
               <div className="modal__campo">
-                <label>Apellidos</label>
-                <input name="apellidos" defaultValue={elementoEditable?.Apellidos} />
+                <label htmlFor="usuario-apellidos">Apellidos</label>
+                <input id="usuario-apellidos" name="apellidos" defaultValue={elementoEditable?.Apellidos} />
               </div>
               <div className="modal__campo">
-                <label>Teléfono / Celular</label>
-                <input name="celular" defaultValue={elementoEditable?.Celular} />
+                <label htmlFor="usuario-celular">Teléfono / Celular</label>
+                <input id="usuario-celular" name="celular" defaultValue={elementoEditable?.Celular} />
               </div>
               <div className="modal__campo">
-                <label>Correo Electrónico</label>
-                <input name="correo" type="email" defaultValue={elementoEditable?.Correo} required />
+                <label htmlFor="usuario-correo">Correo Electrónico</label>
+                <input id="usuario-correo" name="correo" type="email" defaultValue={elementoEditable?.Correo} required />
               </div>
               <div className="modal__campo">
-                <label>Nueva Contraseña <span style={{fontSize:'0.7rem', opacity:0.5}}>(dejar vacío para no cambiar)</span></label>
-                <input name="contraseña" type="password" placeholder="••••••••" />
+                <label htmlFor="usuario-password">Nueva Contraseña <span style={{fontSize:'0.7rem', opacity:0.5}}>(dejar vacío para no cambiar)</span></label>
+                <input id="usuario-password" name="contraseña" type="password" placeholder="••••••••" />
               </div>
               <div className="modal__fila-acciones">
                 <button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button>
@@ -1122,32 +1121,32 @@ const PaginaAdmin = () => {
               {pestanaSolicitudes === 'paquetes' && (
                 <>
                   <div className="modal__campo">
-                    <label>Nombre Completo</label>
-                    <input name="Nombre_Completo" defaultValue={elementoEditable?.Nombre_Completo} />
+                    <label htmlFor="cita-nombre-completo">Nombre Completo</label>
+                    <input id="cita-nombre-completo" name="Nombre_Completo" defaultValue={elementoEditable?.Nombre_Completo} />
                   </div>
                   <div className="modal__campo">
-                    <label>Correo</label>
-                    <input name="Correo" type="email" defaultValue={elementoEditable?.Correo} />
+                    <label htmlFor="cita-correo">Correo</label>
+                    <input id="cita-correo" name="Correo" type="email" defaultValue={elementoEditable?.Correo} />
                   </div>
                   <div className="modal__campo">
-                    <label>Teléfono</label>
-                    <input name="Numero_Telefono" defaultValue={elementoEditable?.Numero_Telefono} />
+                    <label htmlFor="cita-telefono">Teléfono</label>
+                    <input id="cita-telefono" name="Numero_Telefono" defaultValue={elementoEditable?.Numero_Telefono} />
                   </div>
                   <div className="modal__campo">
-                    <label>Tipo de Evento</label>
-                    <input name="Tipo_Evento" defaultValue={elementoEditable?.Tipo_Evento} />
+                    <label htmlFor="cita-tipo-evento">Tipo de Evento</label>
+                    <input id="cita-tipo-evento" name="Tipo_Evento" defaultValue={elementoEditable?.Tipo_Evento} />
                   </div>
                   <div className="modal__campo">
-                    <label>Fecha del Evento</label>
-                    <input name="Fecha_Evento" type="date" defaultValue={elementoEditable?.Fecha_Evento} />
+                    <label htmlFor="cita-fecha-evento">Fecha del Evento</label>
+                    <input id="cita-fecha-evento" name="Fecha_Evento" type="date" defaultValue={elementoEditable?.Fecha_Evento} />
                   </div>
                   <div className="modal__campo">
-                    <label>Número de Invitados</label>
-                    <input name="Numero_Invitados" type="number" defaultValue={elementoEditable?.Numero_Invitados} />
+                    <label htmlFor="cita-invitados">Número de Invitados</label>
+                    <input id="cita-invitados" name="Numero_Invitados" type="number" defaultValue={elementoEditable?.Numero_Invitados} />
                   </div>
                   <div className="modal__campo">
-                    <label>Información Adicional</label>
-                    <textarea name="Informacion_Adicional" defaultValue={elementoEditable?.Informacion_Adicional} rows="3"></textarea>
+                    <label htmlFor="cita-info-adicional">Información Adicional</label>
+                    <textarea id="cita-info-adicional" name="Informacion_Adicional" defaultValue={elementoEditable?.Informacion_Adicional} rows="3"></textarea>
                   </div>
                 </>
               )}
@@ -1156,12 +1155,12 @@ const PaginaAdmin = () => {
               {pestanaSolicitudes === 'productos' && (
                 <>
                   <div className="modal__campo">
-                    <label>Dirección de Envío</label>
-                    <input name="direccionEnvio" defaultValue={elementoEditable?.direccionEnvio} />
+                    <label htmlFor="pedido-direccion-envio">Dirección de Envío</label>
+                    <input id="pedido-direccion-envio" name="direccionEnvio" defaultValue={elementoEditable?.direccionEnvio} />
                   </div>
                   <div className="modal__campo">
-                    <label>Notas</label>
-                    <textarea name="notas" defaultValue={elementoEditable?.notas} rows="3"></textarea>
+                    <label htmlFor="pedido-notas">Notas</label>
+                    <textarea id="pedido-notas" name="notas" defaultValue={elementoEditable?.notas} rows="3"></textarea>
                   </div>
                 </>
               )}
@@ -1170,28 +1169,28 @@ const PaginaAdmin = () => {
               {pestanaSolicitudes === 'personalizado' && (
                 <>
                   <div className="modal__campo">
-                    <label>Destinatario</label>
-                    <input name="Destinatario" defaultValue={elementoEditable?.Destinatario} />
+                    <label htmlFor="personalizado-destinatario">Destinatario</label>
+                    <input id="personalizado-destinatario" name="Destinatario" defaultValue={elementoEditable?.Destinatario} />
                   </div>
                   <div className="modal__campo">
-                    <label>Descripción de la Idea</label>
-                    <textarea name="Descripcion_Idea" defaultValue={elementoEditable?.Descripcion_Idea} rows="3"></textarea>
+                    <label htmlFor="personalizado-descripcion-idea">Descripción de la Idea</label>
+                    <textarea id="personalizado-descripcion-idea" name="Descripcion_Idea" defaultValue={elementoEditable?.Descripcion_Idea} rows="3"></textarea>
                   </div>
                   <div className="modal__campo">
-                    <label>Elementos Esenciales</label>
-                    <textarea name="Elementos_Esenciales" defaultValue={elementoEditable?.Elementos_Esenciales} rows="3"></textarea>
+                    <label htmlFor="personalizado-elementos-esenciales">Elementos Esenciales</label>
+                    <textarea id="personalizado-elementos-esenciales" name="Elementos_Esenciales" defaultValue={elementoEditable?.Elementos_Esenciales} rows="3"></textarea>
                   </div>
                   <div className="modal__campo">
-                    <label>Prioridad</label>
-                    <select name="Prioridad_Cliente" defaultValue={elementoEditable?.Prioridad_Cliente || 'normal'}>
+                    <label htmlFor="personalizado-prioridad">Prioridad</label>
+                    <select id="personalizado-prioridad" name="Prioridad_Cliente" defaultValue={elementoEditable?.Prioridad_Cliente || 'normal'}>
                       <option value="baja">Baja</option>
                       <option value="normal">Normal</option>
                       <option value="alta">Alta</option>
                     </select>
                   </div>
                   <div className="modal__campo">
-                    <label>Comentarios Adicionales</label>
-                    <textarea name="Comentarios_Adicionales" defaultValue={elementoEditable?.Comentarios_Adicionales} rows="3"></textarea>
+                    <label htmlFor="personalizado-comentarios">Comentarios Adicionales</label>
+                    <textarea id="personalizado-comentarios" name="Comentarios_Adicionales" defaultValue={elementoEditable?.Comentarios_Adicionales} rows="3"></textarea>
                   </div>
                 </>
               )}
@@ -1210,12 +1209,12 @@ const PaginaAdmin = () => {
            <form className="modal-caja" onSubmit={handleGuardarOpinion}>
               <div className="modal__titulo">Editar <span>Opinión</span></div>
               <div className="modal__campo">
-                <label>Nombre del Usuario</label>
-                <input name="nombre" defaultValue={elementoEditable?.Nombre_Usuario} required />
+                <label htmlFor="opinion-nombre-usuario">Nombre del Usuario</label>
+                <input id="opinion-nombre-usuario" name="nombre" defaultValue={elementoEditable?.Nombre_Usuario} required />
               </div>
               <div className="modal__campo">
-                <label>Calificación (1-5)</label>
-                <select name="calificacion" defaultValue={elementoEditable?.Calificacion} required>
+                <label htmlFor="opinion-calificacion">Calificación (1-5)</label>
+                <select id="opinion-calificacion" name="calificacion" defaultValue={elementoEditable?.Calificacion} required>
                   <option value="5">5 ★★★★★</option>
                   <option value="4">4 ★★★★</option>
                   <option value="3">3 ★★★</option>
@@ -1224,8 +1223,8 @@ const PaginaAdmin = () => {
                 </select>
               </div>
               <div className="modal__campo">
-                <label>Comentario</label>
-                <textarea name="comentario" defaultValue={elementoEditable?.Comentario} rows="4" required></textarea>
+                <label htmlFor="opinion-comentario">Comentario</label>
+                <textarea id="opinion-comentario" name="comentario" defaultValue={elementoEditable?.Comentario} rows="4" required></textarea>
               </div>
               <div className="modal__fila-acciones">
                 <button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button>
@@ -1264,7 +1263,6 @@ const PaginaAdmin = () => {
              <div className="dialogo__fila-botones">
                 <button type="button" className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
                 {dialogo.opciones ? (
-                  // Mostrar botones por cada opción (ej. roles)
                   dialogo.opciones.map(op => (
                     <button type="button" key={op} className="boton-accion boton-accion--editar" onClick={async () => { if (dialogo.onSelect) await dialogo.onSelect(op); else if (dialogo.onConfirm) { await dialogo.onConfirm(op); } }}>
                       {String(op).toUpperCase()}

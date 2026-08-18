@@ -28,11 +28,23 @@ function FormTarjeta() {
   return (
     <>
       <h3 className="titulo-form">Información de Tarjeta</h3>
-      <div className="grupo-campo"><label>Número de Tarjeta <span className="requerido">*</span></label><input type="text" placeholder="1234 5678 9012 3456" maxLength={19} required /></div>
-      <div className="grupo-campo"><label>Titular <span className="requerido">*</span></label><input type="text" placeholder="Nombre completo" required /></div>
+      <div className="grupo-campo">
+        <label htmlFor="tarjeta-numero">Número de Tarjeta <span className="requerido">*</span></label>
+        <input id="tarjeta-numero" type="text" placeholder="1234 5678 9012 3456" maxLength={19} required />
+      </div>
+      <div className="grupo-campo">
+        <label htmlFor="tarjeta-titular">Titular <span className="requerido">*</span></label>
+        <input id="tarjeta-titular" type="text" placeholder="Nombre completo" required />
+      </div>
       <div className="fila-campos">
-        <div className="grupo-campo"><label>Expiración <span className="requerido">*</span></label><input type="text" placeholder="MM/AA" maxLength={5} required /></div>
-        <div className="grupo-campo"><label>CVV <span className="requerido">*</span></label><input type="text" placeholder="123" maxLength={4} required /></div>
+        <div className="grupo-campo">
+          <label htmlFor="tarjeta-expiracion">Expiración <span className="requerido">*</span></label>
+          <input id="tarjeta-expiracion" type="text" placeholder="MM/AA" maxLength={5} required />
+        </div>
+        <div className="grupo-campo">
+          <label htmlFor="tarjeta-cvv">CVV <span className="requerido">*</span></label>
+          <input id="tarjeta-cvv" type="text" placeholder="123" maxLength={4} required />
+        </div>
       </div>
     </>
   );
@@ -45,8 +57,14 @@ function FormNequi() {
       <div className="info-pago-movil">
         <p>Envía el pago a: <strong>312 245 7008</strong></p>
         <p>Nombre: <strong>Communicating Design Lion</strong></p>
-        <div className="grupo-campo" style={{marginTop:'15px'}}><label>Tu número Nequi <span className="requerido">*</span></label><input type="tel" placeholder="+57 300 000 0000" required /></div>
-        <div className="grupo-campo"><label>Número de referencia <span className="requerido">*</span></label><input type="text" placeholder="Comprobante de pago" required /></div>
+        <div className="grupo-campo" style={{marginTop:'15px'}}>
+          <label htmlFor="nequi-numero">Tu número Nequi <span className="requerido">*</span></label>
+          <input id="nequi-numero" type="tel" placeholder="+57 300 000 0000" required />
+        </div>
+        <div className="grupo-campo">
+          <label htmlFor="nequi-referencia">Número de referencia <span className="requerido">*</span></label>
+          <input id="nequi-referencia" type="text" placeholder="Comprobante de pago" required />
+        </div>
       </div>
     </>
   );
@@ -59,8 +77,14 @@ function FormDaviplata() {
       <div className="info-pago-movil">
         <p>Envía el pago a: <strong>312 987 6543</strong></p>
         <p>Nombre: <strong>Communicating Design Lion</strong></p>
-        <div className="grupo-campo" style={{marginTop:'15px'}}><label>Tu número Daviplata <span className="requerido">*</span></label><input type="tel" placeholder="+57 300 000 0000" required /></div>
-        <div className="grupo-campo"><label>Número de referencia <span className="requerido">*</span></label><input type="text" placeholder="Comprobante de pago" required /></div>
+        <div className="grupo-campo" style={{marginTop:'15px'}}>
+          <label htmlFor="daviplata-numero">Tu número Daviplata <span className="requerido">*</span></label>
+          <input id="daviplata-numero" type="tel" placeholder="+57 300 000 0000" required />
+        </div>
+        <div className="grupo-campo">
+          <label htmlFor="daviplata-referencia">Número de referencia <span className="requerido">*</span></label>
+          <input id="daviplata-referencia" type="text" placeholder="Comprobante de pago" required />
+        </div>
       </div>
     </>
   );
@@ -75,8 +99,14 @@ function FormTransferencia() {
         <p>Tipo de cuenta: <strong>Ahorros</strong></p>
         <p>Número de cuenta: <strong>204-123456-78</strong></p>
         <p>Titular: <strong>Communicating Design Lion</strong></p>
-        <div className="grupo-campo" style={{marginTop:'15px'}}><label>Número de referencia <span className="requerido">*</span></label><input type="text" placeholder="Número de comprobante" required /></div>
-        <div className="grupo-campo"><label>Correo de confirmación <span className="requerido">*</span></label><input type="email" placeholder="tu@correo.com" required /></div>
+        <div className="grupo-campo" style={{marginTop:'15px'}}>
+          <label htmlFor="transferencia-referencia">Número de referencia <span className="requerido">*</span></label>
+          <input id="transferencia-referencia" type="text" placeholder="Número de comprobante" required />
+        </div>
+        <div className="grupo-campo">
+          <label htmlFor="transferencia-correo">Correo de confirmación <span className="requerido">*</span></label>
+          <input id="transferencia-correo" type="email" placeholder="tu@correo.com" required />
+        </div>
       </div>
     </>
   );
@@ -171,11 +201,16 @@ export default function PaginaPago() {
               { id:'daviplata', icono:'💰', nombre:'Daviplata', desc:'Billetera digital' },
               { id:'transferencia', icono:'🏦', nombre:'Transferencia', desc:'Bancaria' },
             ].map(m => (
-              <div key={m.id} className={`opcion-pago${metodo === m.id ? ' seleccionada' : ''}`} onClick={() => setMetodo(m.id)}>
+              <button 
+                type="button" 
+                key={m.id} 
+                className={`opcion-pago${metodo === m.id ? ' seleccionada' : ''}`} 
+                onClick={() => setMetodo(m.id)}
+              >
                 <div className="icono-pago">{m.icono}</div>
                 <div className="nombre-pago">{m.nombre}</div>
                 <div className="descripcion-pago">{m.desc}</div>
-              </div>
+              </button>
             ))}
           </div>
 

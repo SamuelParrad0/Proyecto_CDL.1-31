@@ -48,8 +48,8 @@ export default function PaginaLogin() {
       )}
 
       <Link className="nav-logotipo" to="/">
-                COMMUNICATING DESIGN <span>LION</span>
-              </Link>
+        COMMUNICATING DESIGN <span>LION</span>
+      </Link>
 
       <form id="formulario-inicio-sesion" onSubmit={handleSubmit}>
 
@@ -89,7 +89,15 @@ export default function PaginaLogin() {
             <input type={mostrarPass ? 'text' : 'password'} id="campo-contrasena" placeholder="Tu contraseña" required value={password}
               onChange={e => { setPassword(e.target.value); setPassError(false); }}
               style={passError ? { borderColor: 'rgba(255,8,68,0.6)' } : {}} />
-            <span className="campo-formulario__icono" onClick={() => setMostrarPass(p => !p)}>👁</span>
+            <button 
+              type="button" 
+              className="campo-formulario__icono boton-icono-transparente" 
+              onClick={() => setMostrarPass(p => !p)}
+              aria-label={mostrarPass ? "Ocultar contraseña" : "Ver contraseña"}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              👁
+            </button>
           </div>
         </div>
 

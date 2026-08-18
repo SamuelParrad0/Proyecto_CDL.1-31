@@ -60,7 +60,8 @@ export default function PaginaPersonalizado() {
       document.getElementById(primerError)?.focus();
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // RegEx lineal y segura contra backtracking
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(form.correoElectronico.trim())) {
       setErrores(p => ({ ...p, correoElectronico: true }));
       mostrarToastError('Ingresa un correo electrónico válido.');
@@ -160,7 +161,9 @@ export default function PaginaPersonalizado() {
                   onChange={e => cambiar('numeroTelefono', e.target.value)} style={inputStyle('numeroTelefono')} />
               </div>
               <div className="grupo-campo-formulario grupo-campo-formulario--sin-margen">
-                <label>¿Es para ti o para alguien más? <span className="indicador-campo-obligatorio">*</span></label>
+                <span className="etiqueta-formulario-destinatario" style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+                  ¿Es para ti o para alguien más? <span className="indicador-campo-obligatorio">*</span>
+                </span>
                 <div className="contenedor-opciones-destinatario">
                   <div className="opcion-destinatario">
                     <input type="radio" id="radio-para-mi" name="destinatario" value="para_mi"
@@ -228,8 +231,13 @@ export default function PaginaPersonalizado() {
 
       {/* Modal éxito */}
       {modalExito && (
-        <div className="fondo-modal-exito modal-fondo--visible" id="fondo-modal-exito"
-          onClick={e => e.target === e.currentTarget && cerrarModal()}>
+        <div 
+          className="fondo-modal-exito modal-fondo--visible" 
+          id="fondo-modal-exito"
+          role="dialog"
+          aria-modal="true"
+          onClick={e => e.target === e.currentTarget && cerrarModal()}
+        >
           <div className="tarjeta-modal-exito">
             <div className="particula-decorativa-modal particula-decorativa-modal--superior-derecha"></div>
             <div className="particula-decorativa-modal particula-decorativa-modal--inferior-izquierda"></div>
