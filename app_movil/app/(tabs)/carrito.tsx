@@ -32,6 +32,386 @@ const obtenerImagenProducto = (producto: any) => {
 
 const formatPrecio = (precio: number | string) => Number(precio).toLocaleString('es-CO');
 
+function ItemCarritoRow({ item, onActualizar, onEliminar }: { item: any; onActualizar: (id: any, cant: number) => void; onEliminar: (item: any) => void }) {
+  return (
+    <View style={styles.itemCarrito}>
+      <View style={styles.imagenPlaceholder}>
+        <Image source={obtenerImagenProducto(item)} style={styles.imagen} />
+      </View>
+      <View style={styles.itemInfoContenedor}>
+        <View style={styles.itemInfo}>
+          <Text style={styles.nombre} numberOfLines={2}>{item.nombre}</Text>
+          <Text style={styles.precio}>${formatPrecio(item.precioUnitario)} c/u</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Text style={{ color: Tema.dark.textSecondary, fontSize: 13, marginRight: 8 }}>Cantidad:</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 4 }}>
+              <TouchableOpacity 
+                onPress={() => item.cantidad > 1 ? onActualizar(item.id, item.cantidad - 1) : onEliminar(item)}
+                style={{ paddingHorizontal: 12, paddingVertical: 4 }}
+              >
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>-</Text>
+              </TouchableOpacity>
+              <TextInput
+                style={{ color: '#fff', fontSize: 14, fontWeight: 'bold', marginHorizontal: 8, width: 35, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.2)' }}
+                keyboardType="number-pad"
+                value={item.cantidad.toString()}
+                onChangeText={(text) => {
+                  let cant = Number.parseInt(text, 10);
+                  if (Number.isNaN(cant) || cant < 1) cant = 1;
+                  const maxStock = item.stock || 1;
+                  if (cant > maxStock) {
+                    Alert.alert('Aviso', `Solo hay ${maxStock} unidades disponibles.`);
+                    cant = maxStock;
+                  }
+                  onActualizar(item.id, cant);
+                }}
+              />
+              <TouchableOpacity 
+                onPress={() => onActualizar(item.id, item.cantidad + 1)}
+                style={{ paddingHorizontal: 12, paddingVertical: 4, opacity: item.cantidad >= (item.stock || 1) ? 0.3 : 1 }}
+                disabled={item.cantidad >= (item.stock || 1)}
+              >
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.subtotalEtiqueta}>Subtotal: </Text>
+            <Text style={styles.subtotalMonto}>${formatPrecio(item.subtotal)}</Text>
+          </View>
+        </View>
+
+        <View style={styles.controlesContenedor}>
+          <TouchableOpacity style={styles.botonCancelarSolicitud} onPress={() => onEliminar(item)}>
+            <Text style={styles.textoCancelarSolicitud}>Cancelar Solicitud</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function VistaFactura({ items, totalPrecio, datosPago, datosCheckout, orderIdFactura, onNuevaCompra }: any) {
+  return (
+    <View style={styles.facturaContenedorPrincipal}>
+      <View style={styles.facturaNotificacion}>
+        <IconSymbol name="checkmark.circle.fill" size={36} color="#00E676" />
+        <Text style={styles.facturaNotiTitulo}>¡Pedido Confirmado!</Text>
+        <Text style={styles.facturaNotiSub}>Tu pedido ha sido procesado exitosamente</Text>
+      </View>
+
+      <View style={styles.facturaCard}>
+        <View style={styles.facturaHeaderRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.facturaLogoTexto}>Communicating Design</Text>
+            <Text style={styles.facturaLogoTexto}>Lion</Text>
+            <Text style={styles.facturaInfoEmpresa}>📍 Bogotá D.C., Colombia</Text>
+            <Text style={styles.facturaInfoEmpresa}>🏢 NIT: 9012355862-2</Text>
+            <Text style={styles.facturaInfoEmpresa}>✉️ c.designlion025@gmail.com</Text>
+            <Text style={styles.facturaInfoEmpresa}>📞 +57 313 274 1001</Text>
+          </View>
+          <View style={styles.facturaHeaderDerecha}>
+            <View style={styles.badgePagado}><Text style={styles.badgePagadoTexto}>PAGADO</Text></View>
+            <Text style={styles.facturaNumeroTexto}>Factura #{orderIdFactura}</Text>
+            <View style={styles.badgeConfirmado}><Text style={styles.badgeConfirmadoTexto}>✓ CONFIRMADO</Text></View>
+          </View>
+        </View>
+
+        <View style={styles.facturaSeccion}>
+          <Text style={styles.facturaSeccionTitulo}>👤 Datos del Cliente</Text>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>NOMBRE:</Text><Text style={styles.facturaValor}>{datosPago.titular || 'Cliente'}</Text></View>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>TELÉFONO:</Text><Text style={styles.facturaValor}>{datosCheckout.telefono}</Text></View>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>DESTINATARIO:</Text><Text style={styles.facturaValor}>{datosCheckout.notas || (datosPago.titular || 'Mismo cliente')}</Text></View>
+        </View>
+
+        <View style={styles.facturaSeccion}>
+          <Text style={styles.facturaSeccionTitulo}>🚚 Dirección de Entrega</Text>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>DIRECCIÓN:</Text><Text style={styles.facturaValor}>{datosCheckout.direccion}</Text></View>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>CIUDAD:</Text><Text style={styles.facturaValor}>Bogotá</Text></View>
+          <View style={styles.facturaFila}><Text style={styles.facturaLabel}>TELÉFONO:</Text><Text style={styles.facturaValor}>{datosCheckout.telefono}</Text></View>
+        </View>
+
+        <View style={styles.facturaSeccion}>
+          <Text style={styles.facturaSeccionTitulo}>🛍️ Detalle del Pedido</Text>
+          <View style={styles.facturaTablaHeader}>
+            <Text style={styles.facturaTablaHeaderTexto}>PRODUCTO</Text>
+            <Text style={styles.facturaTablaHeaderTexto}>PRECIO</Text>
+          </View>
+          {items.map((it: any) => (
+            <View key={it.id} style={styles.facturaTablaFila}>
+              <Text style={styles.facturaTablaProducto}>■ {it.nombre}</Text>
+              <Text style={styles.facturaTablaPrecio}>${formatPrecio(it.subtotal)}</Text>
+            </View>
+          ))}
+          
+          <View style={styles.facturaTotalesBox}>
+            <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaSubtotalLabel}>Subtotal</Text><Text style={styles.facturaSubtotalValor}>${formatPrecio(totalPrecio)}</Text></View>
+            <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaSubtotalLabel}>IVA (10%)</Text><Text style={styles.facturaSubtotalValor}>${formatPrecio(totalPrecio * 0.1)}</Text></View>
+            <View style={styles.facturaTotalLinea} />
+            <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaTotalLabel}>TOTAL</Text><Text style={styles.facturaTotalValor}>${formatPrecio(totalPrecio * 1.1)}</Text></View>
+          </View>
+        </View>
+
+        <View style={styles.facturaFilaMetodo}>
+          <Text style={styles.facturaMetodoLabel}>💳 Método de Pago:</Text>
+          <Text style={styles.facturaMetodoValor}>{datosPago.metodo.toUpperCase()} ({datosPago.numero || '...' })</Text>
+        </View>
+
+        <View style={styles.facturaBotones}>
+          <TouchableOpacity style={styles.facturaBtnImprimir}><IconSymbol name="bag.fill" size={16} color="#fff" /><Text style={styles.facturaBtnImprimirTexto}>Imprimir Factura</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.facturaBtnNueva} onPress={onNuevaCompra}>
+            <IconSymbol name="cart.fill" size={16} color={Tema.dark.tint} />
+            <Text style={styles.facturaBtnNuevaTexto}>Nueva Compra</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function VistaSeleccionarDireccion({ cargando, direcciones, seleccionada, onSelect, onNueva, onCancelar, onContinuar }: any) {
+  if (cargando) {
+    return <ActivityIndicator size="large" color={Tema.dark.tint} style={{ marginVertical: Espaciado.xl }} />;
+  }
+
+  return (
+    <>
+      <Text style={styles.modalTitle}>Dirección de Entrega</Text>
+      <Text style={styles.modalSubtitle}>Paso 1 de 2: Selecciona dónde recibir tu pedido</Text>
+
+      <ScrollView style={{ maxHeight: 300, marginBottom: Espaciado.md }}>
+        {direcciones.length === 0 ? (
+          <Text style={{ color: Tema.dark.textSecondary, textAlign: 'center', marginVertical: Espaciado.lg }}>No tienes direcciones guardadas.</Text>
+        ) : (
+          direcciones.map((dir: any) => (
+            <TouchableOpacity
+              key={dir.Id_Direccion}
+              style={[styles.direccionCard, seleccionada?.Id_Direccion === dir.Id_Direccion && styles.direccionCardActiva]}
+              onPress={() => onSelect(dir)}
+            >
+              <View style={styles.direccionCardHeader}>
+                <IconSymbol name={dir.Residencia_Laboral === 'Residencia' ? 'house.fill' : 'building.2.fill'} size={14} color={Tema.dark.tint} />
+                <Text style={styles.direccionCardTipo}>{dir.Residencia_Laboral}</Text>
+              </View>
+              <Text style={styles.direccionCardNombre}>{dir.Nombre_Completo}</Text>
+              <Text style={styles.direccionCardDir}>{dir.Direccion_Completa}</Text>
+              <Text style={styles.direccionCardLoc}>{dir.Barrio}, {dir.Municipio_Localidad}</Text>
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
+
+      <TouchableOpacity style={styles.btnAgregarDireccion} onPress={onNueva}>
+        <IconSymbol name="plus" size={16} color={Tema.dark.tint} />
+        <Text style={styles.btnAgregarDireccionTexto}>AGREGAR NUEVA DIRECCIÓN</Text>
+      </TouchableOpacity>
+
+      <View style={styles.modalActions}>
+        <TouchableOpacity style={styles.btnCancelarModal} onPress={onCancelar}><Text style={styles.btnCancelarModalTexto}>Cancelar</Text></TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.btnConfirmarModal, !seleccionada && { opacity: 0.5 }]} 
+          onPress={onContinuar} 
+          disabled={!seleccionada}
+        >
+          <Text style={styles.btnConfirmarModalTexto}>Continuar Pago</Text>
+          <IconSymbol name="arrow.right" size={16} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+}
+
+function VistaNuevaDireccion({ data, onChange, onGuardar, onCancelar, cargando }: any) {
+  return (
+    <>
+      <View style={styles.headerFormularioNuevaDir}>
+        <IconSymbol name="mappin.and.ellipse" size={20} color={Tema.dark.tint} />
+        <Text style={styles.modalTitleForm}>NUEVA DIRECCIÓN</Text>
+      </View>
+
+      <View style={styles.inputGroupForm}>
+        <Text style={styles.labelForm}>DIRECCIÓN *</Text>
+        <TextInput style={styles.inputForm} placeholder="Ej: Carrera 71d #1-14 Sur" placeholderTextColor={Tema.dark.textSecondary} value={data.direccion} onChangeText={(t) => onChange({ ...data, direccion: t })} />
+      </View>
+
+      <View style={styles.rowForm}>
+        <View style={[styles.inputGroupForm, { flex: 1, marginRight: 8 }]}>
+          <Text style={styles.labelForm}>MUNICIPIO / CIUDAD *</Text>
+          <TextInput style={styles.inputForm} placeholder="Tu municipio" placeholderTextColor={Tema.dark.textSecondary} value={data.municipio} onChangeText={(t) => onChange({ ...data, municipio: t })} />
+        </View>
+        <View style={[styles.inputGroupForm, { flex: 1, marginLeft: 8 }]}>
+          <Text style={styles.labelForm}>BARRIO *</Text>
+          <TextInput style={styles.inputForm} placeholder="Nombre del barrio" placeholderTextColor={Tema.dark.textSecondary} value={data.barrio} onChangeText={(t) => onChange({ ...data, barrio: t })} />
+        </View>
+      </View>
+
+      <View style={styles.rowForm}>
+        <View style={[styles.inputGroupForm, { flex: 1, marginRight: 8 }]}>
+          <Text style={styles.labelForm}>APTO / CASA</Text>
+          <TextInput style={styles.inputForm} placeholder="Ej: Apto 201" placeholderTextColor={Tema.dark.textSecondary} value={data.apartCasa} onChangeText={(t) => onChange({ ...data, apartCasa: t })} />
+        </View>
+        <View style={[styles.inputGroupForm, { flex: 1, marginLeft: 8 }]}>
+          <Text style={styles.labelForm}>NOMBRE DE QUIEN RECIBE *</Text>
+          <TextInput style={styles.inputForm} placeholder="Nombre completo" placeholderTextColor={Tema.dark.textSecondary} value={data.nombreCompleto} onChangeText={(t) => onChange({ ...data, nombreCompleto: t })} />
+        </View>
+      </View>
+
+      <View style={styles.inputGroupForm}>
+        <Text style={styles.labelForm}>TELÉFONO DE CONTACTO *</Text>
+        <TextInput style={styles.inputForm} placeholder="+57 300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" value={data.telefono} onChangeText={(t) => onChange({ ...data, telefono: t })} />
+      </View>
+
+      <View style={styles.inputGroupForm}>
+        <Text style={styles.labelForm}>INDICACIONES ADICIONALES</Text>
+        <TextInput style={styles.inputForm} placeholder="Ej: Puerta verde, tercer piso" placeholderTextColor={Tema.dark.textSecondary} value={data.indicaciones} onChangeText={(t) => onChange({ ...data, indicaciones: t })} />
+      </View>
+
+      <View style={styles.inputGroupForm}>
+        <Text style={styles.labelForm}>DEPARTAMENTO *</Text>
+        <View style={styles.pickerContainerForm}>
+          <Picker selectedValue={data.departamento} onValueChange={(val) => onChange({ ...data, departamento: val })} style={styles.pickerForm} dropdownIconColor={Tema.dark.tint}>
+            <Picker.Item label="Selecciona tu departamento" value="" color={Tema.dark.textSecondary} />
+            <Picker.Item label="Antioquia" value="Antioquia" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
+            <Picker.Item label="Bogotá D.C." value="Bogotá D.C." color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
+            <Picker.Item label="Cundinamarca" value="Cundinamarca" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
+            <Picker.Item label="Valle del Cauca" value="Valle del Cauca" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.inputGroupForm}>
+        <Text style={styles.labelForm}>TIPO DE DOMICILIO</Text>
+        <View style={styles.rowFormBotones}>
+          <TouchableOpacity style={[styles.btnTipoDomicilio, data.residenciaLaboral === 'Residencia' && styles.btnTipoDomicilioActivo]} onPress={() => onChange({ ...data, residenciaLaboral: 'Residencia' })}>
+            <IconSymbol name="house.fill" size={16} color={data.residenciaLaboral === 'Residencia' ? '#fff' : Tema.dark.tint} />
+            <Text style={[styles.btnTipoDomicilioTexto, data.residenciaLaboral === 'Residencia' && { color: '#fff' }]}>RESIDENCIAL</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.btnTipoDomicilio, data.residenciaLaboral === 'Laboral' && styles.btnTipoDomicilioActivo]} onPress={() => onChange({ ...data, residenciaLaboral: 'Laboral' })}>
+            <IconSymbol name="building.2.fill" size={16} color={data.residenciaLaboral === 'Laboral' ? '#fff' : Tema.dark.tint} />
+            <Text style={[styles.btnTipoDomicilioTexto, data.residenciaLaboral === 'Laboral' && { color: '#fff' }]}>LABORAL</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.modalActions}>
+        <TouchableOpacity style={[styles.btnGuardarForm, cargando && { opacity: 0.7 }]} onPress={onGuardar} disabled={cargando}>
+          {cargando ? <ActivityIndicator color="#fff" /> : <><IconSymbol name="mappin.and.ellipse" size={16} color="#fff" /><Text style={styles.btnGuardarFormTexto}>GUARDAR DIRECCIÓN</Text></>}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btnCancelarForm} onPress={onCancelar}><Text style={styles.btnCancelarFormTexto}>CANCELAR</Text></TouchableOpacity>
+      </View>
+    </>
+  );
+}
+
+function VistaMetodosPago({ datosPago, setDatosPago, onVolver, items, totalPrecio, onConfirmar }: any) {
+  return (
+    <>
+      <View style={styles.headerPasoVolver}>
+        <TouchableOpacity style={styles.btnVolverLinea} onPress={onVolver}>
+          <IconSymbol name="arrow.left" size={14} color={Tema.dark.tint} />
+          <Text style={styles.textoVolver}>VOLVER A ENTREGA</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.modalTitlePago}>MÉTODOS DE PAGO</Text>
+      
+      <View style={styles.metodosPagoColumna}>
+        <View style={styles.metodosPagoFila}>
+          <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'tarjeta' && styles.metodoPagoActivo]} onPress={() => setDatosPago({ ...datosPago, metodo: 'tarjeta' })}>
+            <IconSymbol name="creditcard.fill" size={28} color={datosPago.metodo === 'tarjeta' ? Tema.dark.tint : Tema.dark.textSecondary} />
+            <Text style={styles.metodoPagoNombre}>TARJETA</Text>
+            <Text style={styles.metodoPagoSub}>Crédito/Débito</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'nequi' && styles.metodoPagoActivo]} onPress={() => setDatosPago({ ...datosPago, metodo: 'nequi' })}>
+            <IconSymbol name="iphone" size={28} color={datosPago.metodo === 'nequi' ? Tema.dark.tint : Tema.dark.textSecondary} />
+            <Text style={styles.metodoPagoNombre}>NEQUI</Text>
+            <Text style={styles.metodoPagoSub}>Pago móvil</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.metodosPagoFila}>
+          <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'daviplata' && styles.metodoPagoActivo]} onPress={() => setDatosPago({ ...datosPago, metodo: 'daviplata' })}>
+            <IconSymbol name="bag.fill" size={28} color={datosPago.metodo === 'daviplata' ? Tema.dark.tint : Tema.dark.textSecondary} />
+            <Text style={styles.metodoPagoNombre}>DAVIPLATA</Text>
+            <Text style={styles.metodoPagoSub}>Billetera digital</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'transferencia' && styles.metodoPagoActivo]} onPress={() => setDatosPago({ ...datosPago, metodo: 'transferencia' })}>
+            <IconSymbol name="building.columns.fill" size={28} color={datosPago.metodo === 'transferencia' ? Tema.dark.tint : Tema.dark.textSecondary} />
+            <Text style={styles.metodoPagoNombre}>TRANSFERENCIA</Text>
+            <Text style={styles.metodoPagoSub}>Bancaria</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {datosPago.metodo === 'tarjeta' && (
+        <View style={styles.formularioTarjeta}>
+          <Text style={styles.labelSeccion}>INFORMACIÓN DE TARJETA</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>NÚMERO DE TARJETA *</Text>
+            <TextInput style={styles.input} placeholder="1234 5678 9012 3456" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" value={datosPago.numero} onChangeText={(text) => setDatosPago({ ...datosPago, numero: text })} />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>TITULAR *</Text>
+            <TextInput style={styles.input} placeholder="Nombre completo" placeholderTextColor={Tema.dark.textSecondary} value={datosPago.titular} onChangeText={(text) => setDatosPago({ ...datosPago, titular: text })} />
+          </View>
+          <View style={styles.filaInputs}>
+            <View style={[styles.inputGroup, { flex: 1, marginRight: Espaciado.md }]}>
+              <Text style={styles.label}>EXPIRACIÓN *</Text>
+              <TextInput style={styles.input} placeholder="MM/AA" placeholderTextColor={Tema.dark.textSecondary} value={datosPago.expiracion} onChangeText={(text) => setDatosPago({ ...datosPago, expiracion: text })} />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>CVV *</Text>
+              <TextInput style={styles.input} placeholder="123" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" secureTextEntry value={datosPago.cvv} onChangeText={(text) => setDatosPago({ ...datosPago, cvv: text })} />
+            </View>
+          </View>
+        </View>
+      )}
+
+      {datosPago.metodo === 'nequi' && (
+        <View style={styles.formularioTarjeta}>
+          <Text style={styles.labelSeccion}>INFORMACIÓN DE NEQUI</Text>
+          <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE CELULAR *</Text><TextInput style={styles.input} placeholder="300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" /></View>
+        </View>
+      )}
+
+      {datosPago.metodo === 'daviplata' && (
+        <View style={styles.formularioTarjeta}>
+          <Text style={styles.labelSeccion}>INFORMACIÓN DE DAVIPLATA</Text>
+          <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE CELULAR *</Text><TextInput style={styles.input} placeholder="300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" /></View>
+        </View>
+      )}
+
+      {datosPago.metodo === 'transferencia' && (
+        <View style={styles.formularioTarjeta}>
+          <Text style={styles.labelSeccion}>INFORMACIÓN DE TRANSFERENCIA</Text>
+          <Text style={{ color: Tema.dark.textSecondary, fontSize: 13, marginBottom: 15 }}>Transfiere el total a la cuenta Bancolombia Ahorros #123-456789-00 y anota la referencia.</Text>
+          <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE REFERENCIA / COMPROBANTE *</Text><TextInput style={styles.input} placeholder="Ej: 987654321" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" /></View>
+        </View>
+      )}
+
+      <View style={styles.resumenPedido}>
+        <Text style={styles.resumenTitulo}>RESUMEN DEL PEDIDO</Text>
+        {items.map((it: any) => (
+          <View key={it.id} style={styles.resumenFila}>
+            <Text style={styles.resumenItem}>{it.nombre}</Text>
+            <Text style={styles.resumenValor}>${formatPrecio(it.subtotal)}</Text>
+          </View>
+        ))}
+        <View style={styles.separadorResumen} />
+        <View style={styles.resumenFila}><Text style={styles.resumenLabel}>SUBTOTAL</Text><Text style={styles.resumenValor}>${formatPrecio(totalPrecio)}</Text></View>
+        <View style={styles.resumenFila}><Text style={styles.resumenLabel}>IVA (10%)</Text><Text style={styles.resumenValor}>${formatPrecio(totalPrecio * 0.1)}</Text></View>
+        <View style={styles.separadorResumen} />
+        <View style={styles.resumenFilaTotal}><Text style={styles.resumenTotalLabel}>TOTAL</Text><Text style={styles.resumenTotalValor}>${formatPrecio(totalPrecio * 1.1)}</Text></View>
+      </View>
+
+      <TouchableOpacity style={styles.btnPagarFull} onPress={onConfirmar}>
+        <IconSymbol name="lock.fill" size={16} color="#fff" />
+        <Text style={styles.btnPagarFullTexto}>CONFIRMAR Y PAGAR ${formatPrecio(totalPrecio * 1.1)}</Text>
+      </TouchableOpacity>
+    </>
+  );
+}
+
 export default function CarritoScreen() {
   const router = useRouter();
   const { items, totalPrecio, totalItems, cargando, eliminarItem, vaciarCarrito, actualizarCantidad } = useContext(CarritoContext);
@@ -156,63 +536,6 @@ export default function CarritoScreen() {
     }
   };
 
-  const renderItemCarrito = ({ item }: { item: any }) => (
-    <View style={styles.itemCarrito}>
-      <View style={styles.imagenPlaceholder}>
-        <Image source={obtenerImagenProducto(item)} style={styles.imagen} />
-      </View>
-      <View style={styles.itemInfoContenedor}>
-        <View style={styles.itemInfo}>
-          <Text style={styles.nombre} numberOfLines={2}>{item.nombre}</Text>
-          <Text style={styles.precio}>${formatPrecio(item.precioUnitario)} c/u</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-            <Text style={{ color: Tema.dark.textSecondary, fontSize: 13, marginRight: 8 }}>Cantidad:</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 4 }}>
-              <TouchableOpacity 
-                onPress={() => item.cantidad > 1 ? actualizarCantidad(item.id, item.cantidad - 1) : eliminarItem(item.id)}
-                style={{ paddingHorizontal: 12, paddingVertical: 4 }}
-              >
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>-</Text>
-              </TouchableOpacity>
-              <TextInput
-                style={{ color: '#fff', fontSize: 14, fontWeight: 'bold', marginHorizontal: 8, width: 35, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.2)' }}
-                keyboardType="number-pad"
-                value={item.cantidad.toString()}
-                onChangeText={(text) => {
-                  let cant = Number.parseInt(text, 10);
-                  if (Number.isNaN(cant) || cant < 1) cant = 1;
-                  const maxStock = item.stock || 1;
-                  if (cant > maxStock) {
-                    Alert.alert('Aviso', `Solo hay ${maxStock} unidades disponibles.`);
-                    cant = maxStock;
-                  }
-                  actualizarCantidad(item.id, cant);
-                }}
-              />
-              <TouchableOpacity 
-                onPress={() => actualizarCantidad(item.id, item.cantidad + 1)}
-                style={{ paddingHorizontal: 12, paddingVertical: 4, opacity: item.cantidad >= (item.stock || 1) ? 0.3 : 1 }}
-                disabled={item.cantidad >= (item.stock || 1)}
-              >
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.subtotalEtiqueta}>Subtotal: </Text>
-            <Text style={styles.subtotalMonto}>${formatPrecio(item.subtotal)}</Text>
-          </View>
-        </View>
-
-        <View style={styles.controlesContenedor}>
-          <TouchableOpacity style={styles.botonCancelarSolicitud} onPress={() => confirmarEliminacionItem(item)}>
-            <Text style={styles.textoCancelarSolicitud}>Cancelar Solicitud</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <View style={styles.header}>
@@ -243,7 +566,13 @@ export default function CarritoScreen() {
         <>
           <FlatList
             data={items}
-            renderItem={renderItemCarrito}
+            renderItem={({ item }) => (
+              <ItemCarritoRow 
+                item={item} 
+                onActualizar={actualizarCantidad} 
+                onEliminar={confirmarEliminacionItem} 
+              />
+            )}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.lista}
           />
@@ -259,7 +588,6 @@ export default function CarritoScreen() {
         </>
       )}
 
-      {/* Modal de Checkout */}
       <Modal animationType="fade" transparent visible={modalCheckoutVisible} onRequestClose={() => setModalCheckoutVisible(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -269,324 +597,57 @@ export default function CarritoScreen() {
 
             <ScrollView contentContainerStyle={styles.modalScroll} bounces={false}>
               {pasoCheckout === 3 && (
-                <View style={styles.facturaContenedorPrincipal}>
-                  <View style={styles.facturaNotificacion}>
-                    <IconSymbol name="checkmark.circle.fill" size={36} color="#00E676" />
-                    <Text style={styles.facturaNotiTitulo}>¡Pedido Confirmado!</Text>
-                    <Text style={styles.facturaNotiSub}>Tu pedido ha sido procesado exitosamente</Text>
-                  </View>
-
-                  <View style={styles.facturaCard}>
-                    <View style={styles.facturaHeaderRow}>
-                      <View style={{flex: 1}}>
-                        <Text style={styles.facturaLogoTexto}>Communicating Design</Text>
-                        <Text style={styles.facturaLogoTexto}>Lion</Text>
-                        <Text style={styles.facturaInfoEmpresa}>📍 Bogotá D.C., Colombia</Text>
-                        <Text style={styles.facturaInfoEmpresa}>🏢 NIT: 9012355862-2</Text>
-                        <Text style={styles.facturaInfoEmpresa}>✉️ c.designlion025@gmail.com</Text>
-                        <Text style={styles.facturaInfoEmpresa}>📞 +57 313 274 1001</Text>
-                      </View>
-                      <View style={styles.facturaHeaderDerecha}>
-                        <View style={styles.badgePagado}><Text style={styles.badgePagadoTexto}>PAGADO</Text></View>
-                        <Text style={styles.facturaNumeroTexto}>Factura #{orderIdFactura}</Text>
-                        <View style={styles.badgeConfirmado}><Text style={styles.badgeConfirmadoTexto}>✓ CONFIRMADO</Text></View>
-                      </View>
-                    </View>
-
-                    <View style={styles.facturaSeccion}>
-                      <Text style={styles.facturaSeccionTitulo}>👤 Datos del Cliente</Text>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>NOMBRE:</Text><Text style={styles.facturaValor}>{datosPago.titular || 'Cliente'}</Text></View>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>TELÉFONO:</Text><Text style={styles.facturaValor}>{datosCheckout.telefono}</Text></View>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>DESTINATARIO:</Text><Text style={styles.facturaValor}>{datosCheckout.notas || (datosPago.titular || 'Mismo cliente')}</Text></View>
-                    </View>
-
-                    <View style={styles.facturaSeccion}>
-                      <Text style={styles.facturaSeccionTitulo}>🚚 Dirección de Entrega</Text>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>DIRECCIÓN:</Text><Text style={styles.facturaValor}>{datosCheckout.direccion}</Text></View>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>CIUDAD:</Text><Text style={styles.facturaValor}>Bogotá</Text></View>
-                      <View style={styles.facturaFila}><Text style={styles.facturaLabel}>TELÉFONO:</Text><Text style={styles.facturaValor}>{datosCheckout.telefono}</Text></View>
-                    </View>
-
-                    <View style={styles.facturaSeccion}>
-                      <Text style={styles.facturaSeccionTitulo}>🛍️ Detalle del Pedido</Text>
-                      <View style={styles.facturaTablaHeader}>
-                        <Text style={styles.facturaTablaHeaderTexto}>PRODUCTO</Text>
-                        <Text style={styles.facturaTablaHeaderTexto}>PRECIO</Text>
-                      </View>
-                      {items.map(it => (
-                        <View key={it.id} style={styles.facturaTablaFila}>
-                          <Text style={styles.facturaTablaProducto}>■ {it.nombre}</Text>
-                          <Text style={styles.facturaTablaPrecio}>${formatPrecio(it.subtotal)}</Text>
-                        </View>
-                      ))}
-                      
-                      <View style={styles.facturaTotalesBox}>
-                        <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaSubtotalLabel}>Subtotal</Text><Text style={styles.facturaSubtotalValor}>${formatPrecio(totalPrecio)}</Text></View>
-                        <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaSubtotalLabel}>IVA (10%)</Text><Text style={styles.facturaSubtotalValor}>${formatPrecio(totalPrecio * 0.1)}</Text></View>
-                        <View style={styles.facturaTotalLinea} />
-                        <View style={styles.facturaFilaSubtotal}><Text style={styles.facturaTotalLabel}>TOTAL</Text><Text style={styles.facturaTotalValor}>${formatPrecio(totalPrecio * 1.1)}</Text></View>
-                      </View>
-                    </View>
-
-                    <View style={styles.facturaFilaMetodo}>
-                      <Text style={styles.facturaMetodoLabel}>💳 Método de Pago:</Text>
-                      <Text style={styles.facturaMetodoValor}>{datosPago.metodo.toUpperCase()} ({datosPago.numero || '...' })</Text>
-                    </View>
-
-                    <View style={styles.facturaBotones}>
-                      <TouchableOpacity style={styles.facturaBtnImprimir}><IconSymbol name="bag.fill" size={16} color="#fff" /><Text style={styles.facturaBtnImprimirTexto}>Imprimir Factura</Text></TouchableOpacity>
-                      <TouchableOpacity style={styles.facturaBtnNueva} onPress={() => { setModalCheckoutVisible(false); vaciarCarrito(); router.push('/(tabs)'); }}>
-                        <IconSymbol name="cart.fill" size={16} color={Tema.dark.tint} />
-                        <Text style={styles.facturaBtnNuevaTexto}>Nueva Compra</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
+                <VistaFactura
+                  items={items}
+                  totalPrecio={totalPrecio}
+                  datosPago={datosPago}
+                  datosCheckout={datosCheckout}
+                  orderIdFactura={orderIdFactura}
+                  onNuevaCompra={() => {
+                    setModalCheckoutVisible(false);
+                    vaciarCarrito();
+                    router.push('/(tabs)');
+                  }}
+                />
               )}
 
               {pasoCheckout === 1 && modoDireccion === 'seleccionar' && (
-                <>
-                  <Text style={styles.modalTitle}>Dirección de Entrega</Text>
-                  <Text style={styles.modalSubtitle}>Paso 1 de 2: Selecciona dónde recibir tu pedido</Text>
-
-                  {cargandoDirecciones ? (
-                    <ActivityIndicator size="large" color={Tema.dark.tint} style={{ marginVertical: Espaciado.xl }} />
-                  ) : (
-                    <>
-                      <ScrollView style={{ maxHeight: 300, marginBottom: Espaciado.md }}>
-                        {direccionesGuardadas.length === 0 ? (
-                          <Text style={{ color: Tema.dark.textSecondary, textAlign: 'center', marginVertical: Espaciado.lg }}>No tienes direcciones guardadas.</Text>
-                        ) : (
-                          direccionesGuardadas.map((dir) => (
-                            <TouchableOpacity
-                              key={dir.Id_Direccion}
-                              style={[styles.direccionCard, direccionSeleccionada?.Id_Direccion === dir.Id_Direccion && styles.direccionCardActiva]}
-                              onPress={() => setDireccionSeleccionada(dir)}
-                            >
-                              <View style={styles.direccionCardHeader}>
-                                <IconSymbol name={dir.Residencia_Laboral === 'Residencia' ? 'house.fill' : 'building.2.fill'} size={14} color={Tema.dark.tint} />
-                                <Text style={styles.direccionCardTipo}>{dir.Residencia_Laboral}</Text>
-                              </View>
-                              <Text style={styles.direccionCardNombre}>{dir.Nombre_Completo}</Text>
-                              <Text style={styles.direccionCardDir}>{dir.Direccion_Completa}</Text>
-                              <Text style={styles.direccionCardLoc}>{dir.Barrio}, {dir.Municipio_Localidad}</Text>
-                            </TouchableOpacity>
-                          ))
-                        )}
-                      </ScrollView>
-
-                      <TouchableOpacity style={styles.btnAgregarDireccion} onPress={() => setModoDireccion('nueva')}>
-                        <IconSymbol name="plus" size={16} color={Tema.dark.tint} />
-                        <Text style={styles.btnAgregarDireccionTexto}>AGREGAR NUEVA DIRECCIÓN</Text>
-                      </TouchableOpacity>
-
-                      <View style={styles.modalActions}>
-                        <TouchableOpacity style={styles.btnCancelarModal} onPress={() => setModalCheckoutVisible(false)}><Text style={styles.btnCancelarModalTexto}>Cancelar</Text></TouchableOpacity>
-                        <TouchableOpacity 
-                          style={[styles.btnConfirmarModal, !direccionSeleccionada && { opacity: 0.5 }]} 
-                          onPress={() => {
-                            if (!direccionSeleccionada) {
-                              Alert.alert('Error', 'Por favor selecciona o agrega una dirección de envío');
-                              return;
-                            }
-                            setPasoCheckout(2);
-                          }} 
-                          disabled={!direccionSeleccionada}
-                        >
-                          <Text style={styles.btnConfirmarModalTexto}>Continuar Pago</Text>
-                          <IconSymbol name="arrow.right" size={16} color="#fff" />
-                        </TouchableOpacity>
-                      </View>
-                    </>
-                  )}
-                </>
+                <VistaSeleccionarDireccion
+                  cargando={cargandoDirecciones}
+                  direcciones={direccionesGuardadas}
+                  seleccionada={direccionSeleccionada}
+                  onSelect={setDireccionSeleccionada}
+                  onNueva={() => setModoDireccion('nueva')}
+                  onCancelar={() => setModalCheckoutVisible(false)}
+                  onContinuar={() => {
+                    if (!direccionSeleccionada) {
+                      Alert.alert('Error', 'Por favor selecciona o agrega una dirección de envío');
+                      return;
+                    }
+                    setPasoCheckout(2);
+                  }}
+                />
               )}
 
               {pasoCheckout === 1 && modoDireccion === 'nueva' && (
-                <>
-                  <View style={styles.headerFormularioNuevaDir}>
-                    <IconSymbol name="mappin.and.ellipse" size={20} color={Tema.dark.tint} />
-                    <Text style={styles.modalTitleForm}>NUEVA DIRECCIÓN</Text>
-                  </View>
-
-                  <View style={styles.inputGroupForm}>
-                    <Text style={styles.labelForm}>DIRECCIÓN *</Text>
-                    <TextInput style={styles.inputForm} placeholder="Ej: Carrera 71d #1-14 Sur" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.direccion} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, direccion: t })} />
-                  </View>
-
-                  <View style={styles.rowForm}>
-                    <View style={[styles.inputGroupForm, { flex: 1, marginRight: 8 }]}>
-                      <Text style={styles.labelForm}>MUNICIPIO / CIUDAD *</Text>
-                      <TextInput style={styles.inputForm} placeholder="Tu municipio" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.municipio} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, municipio: t })} />
-                    </View>
-                    <View style={[styles.inputGroupForm, { flex: 1, marginLeft: 8 }]}>
-                      <Text style={styles.labelForm}>BARRIO *</Text>
-                      <TextInput style={styles.inputForm} placeholder="Nombre del barrio" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.barrio} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, barrio: t })} />
-                    </View>
-                  </View>
-
-                  <View style={styles.rowForm}>
-                    <View style={[styles.inputGroupForm, { flex: 1, marginRight: 8 }]}>
-                      <Text style={styles.labelForm}>APTO / CASA</Text>
-                      <TextInput style={styles.inputForm} placeholder="Ej: Apto 201" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.apartCasa} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, apartCasa: t })} />
-                    </View>
-                    <View style={[styles.inputGroupForm, { flex: 1, marginLeft: 8 }]}>
-                      <Text style={styles.labelForm}>NOMBRE DE QUIEN RECIBE *</Text>
-                      <TextInput style={styles.inputForm} placeholder="Nombre completo" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.nombreCompleto} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, nombreCompleto: t })} />
-                    </View>
-                  </View>
-
-                  <View style={styles.inputGroupForm}>
-                    <Text style={styles.labelForm}>TELÉFONO DE CONTACTO *</Text>
-                    <TextInput style={styles.inputForm} placeholder="+57 300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" value={nuevaDirData.telefono} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, telefono: t })} />
-                  </View>
-
-                  <View style={styles.inputGroupForm}>
-                    <Text style={styles.labelForm}>INDICACIONES ADICIONALES</Text>
-                    <TextInput style={styles.inputForm} placeholder="Ej: Puerta verde, tercer piso" placeholderTextColor={Tema.dark.textSecondary} value={nuevaDirData.indicaciones} onChangeText={(t) => setNuevaDirData({ ...nuevaDirData, indicaciones: t })} />
-                  </View>
-
-                  <View style={styles.inputGroupForm}>
-                    <Text style={styles.labelForm}>DEPARTAMENTO *</Text>
-                    <View style={styles.pickerContainerForm}>
-                      <Picker selectedValue={nuevaDirData.departamento} onValueChange={(val) => setNuevaDirData({ ...nuevaDirData, departamento: val })} style={styles.pickerForm} dropdownIconColor={Tema.dark.tint}>
-                        <Picker.Item label="Selecciona tu departamento" value="" color={Tema.dark.textSecondary} />
-                        <Picker.Item label="Antioquia" value="Antioquia" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
-                        <Picker.Item label="Bogotá D.C." value="Bogotá D.C." color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
-                        <Picker.Item label="Cundinamarca" value="Cundinamarca" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
-                        <Picker.Item label="Valle del Cauca" value="Valle del Cauca" color={Platform.OS === 'ios' ? Tema.dark.text : undefined} />
-                      </Picker>
-                    </View>
-                  </View>
-
-                  <View style={styles.inputGroupForm}>
-                    <Text style={styles.labelForm}>TIPO DE DOMICILIO</Text>
-                    <View style={styles.rowFormBotones}>
-                      <TouchableOpacity style={[styles.btnTipoDomicilio, nuevaDirData.residenciaLaboral === 'Residencia' && styles.btnTipoDomicilioActivo]} onPress={() => setNuevaDirData({ ...nuevaDirData, residenciaLaboral: 'Residencia' })}>
-                        <IconSymbol name="house.fill" size={16} color={nuevaDirData.residenciaLaboral === 'Residencia' ? '#fff' : Tema.dark.tint} />
-                        <Text style={[styles.btnTipoDomicilioTexto, nuevaDirData.residenciaLaboral === 'Residencia' && { color: '#fff' }]}>RESIDENCIAL</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={[styles.btnTipoDomicilio, nuevaDirData.residenciaLaboral === 'Laboral' && styles.btnTipoDomicilioActivo]} onPress={() => setNuevaDirData({ ...nuevaDirData, residenciaLaboral: 'Laboral' })}>
-                        <IconSymbol name="building.2.fill" size={16} color={nuevaDirData.residenciaLaboral === 'Laboral' ? '#fff' : Tema.dark.tint} />
-                        <Text style={[styles.btnTipoDomicilioTexto, nuevaDirData.residenciaLaboral === 'Laboral' && { color: '#fff' }]}>LABORAL</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  <View style={styles.modalActions}>
-                    <TouchableOpacity style={[styles.btnGuardarForm, cargandoDirecciones && {opacity: 0.7}]} onPress={guardarNuevaDireccion} disabled={cargandoDirecciones}>
-                      {cargandoDirecciones ? <ActivityIndicator color="#fff" /> : <><IconSymbol name="mappin.and.ellipse" size={16} color="#fff" /><Text style={styles.btnGuardarFormTexto}>GUARDAR DIRECCIÓN</Text></>}
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.btnCancelarForm} onPress={() => setModoDireccion('seleccionar')}><Text style={styles.btnCancelarFormTexto}>CANCELAR</Text></TouchableOpacity>
-                  </View>
-                </>
+                <VistaNuevaDireccion
+                  data={nuevaDirData}
+                  onChange={setNuevaDirData}
+                  onGuardar={guardarNuevaDireccion}
+                  onCancelar={() => setModoDireccion('seleccionar')}
+                  cargando={cargandoDirecciones}
+                />
               )}
 
               {pasoCheckout === 2 && (
-                <>
-                  <View style={styles.headerPasoVolver}>
-                    <TouchableOpacity style={styles.btnVolverLinea} onPress={() => setPasoCheckout(1)}>
-                      <IconSymbol name="arrow.left" size={14} color={Tema.dark.tint} />
-                      <Text style={styles.textoVolver}>VOLVER A ENTREGA</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <Text style={styles.modalTitlePago}>MÉTODOS DE PAGO</Text>
-                  
-                  <View style={styles.metodosPagoColumna}>
-                    <View style={styles.metodosPagoFila}>
-                      <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'tarjeta' && styles.metodoPagoActivo]} onPress={() => setDatosPago({...datosPago, metodo: 'tarjeta'})}>
-                        <IconSymbol name="creditcard.fill" size={28} color={datosPago.metodo === 'tarjeta' ? Tema.dark.tint : Tema.dark.textSecondary} />
-                        <Text style={styles.metodoPagoNombre}>TARJETA</Text>
-                        <Text style={styles.metodoPagoSub}>Crédito/Débito</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'nequi' && styles.metodoPagoActivo]} onPress={() => setDatosPago({...datosPago, metodo: 'nequi'})}>
-                        <IconSymbol name="iphone" size={28} color={datosPago.metodo === 'nequi' ? Tema.dark.tint : Tema.dark.textSecondary} />
-                        <Text style={styles.metodoPagoNombre}>NEQUI</Text>
-                        <Text style={styles.metodoPagoSub}>Pago móvil</Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.metodosPagoFila}>
-                      <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'daviplata' && styles.metodoPagoActivo]} onPress={() => setDatosPago({...datosPago, metodo: 'daviplata'})}>
-                        <IconSymbol name="bag.fill" size={28} color={datosPago.metodo === 'daviplata' ? Tema.dark.tint : Tema.dark.textSecondary} />
-                        <Text style={styles.metodoPagoNombre}>DAVIPLATA</Text>
-                        <Text style={styles.metodoPagoSub}>Billetera digital</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={[styles.metodoPagoItem, datosPago.metodo === 'transferencia' && styles.metodoPagoActivo]} onPress={() => setDatosPago({...datosPago, metodo: 'transferencia'})}>
-                        <IconSymbol name="building.columns.fill" size={28} color={datosPago.metodo === 'transferencia' ? Tema.dark.tint : Tema.dark.textSecondary} />
-                        <Text style={styles.metodoPagoNombre}>TRANSFERENCIA</Text>
-                        <Text style={styles.metodoPagoSub}>Bancaria</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  {datosPago.metodo === 'tarjeta' && (
-                    <View style={styles.formularioTarjeta}>
-                      <Text style={styles.labelSeccion}>INFORMACIÓN DE TARJETA</Text>
-                      <View style={styles.inputGroup}>
-                        <Text style={styles.label}>NÚMERO DE TARJETA *</Text>
-                        <TextInput style={styles.input} placeholder="1234 5678 9012 3456" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" value={datosPago.numero} onChangeText={(text) => setDatosPago({ ...datosPago, numero: text })} />
-                      </View>
-                      <View style={styles.inputGroup}>
-                        <Text style={styles.label}>TITULAR *</Text>
-                        <TextInput style={styles.input} placeholder="Nombre completo" placeholderTextColor={Tema.dark.textSecondary} value={datosPago.titular} onChangeText={(text) => setDatosPago({ ...datosPago, titular: text })} />
-                      </View>
-                      <View style={styles.filaInputs}>
-                        <View style={[styles.inputGroup, { flex: 1, marginRight: Espaciado.md }]}>
-                          <Text style={styles.label}>EXPIRACIÓN *</Text>
-                          <TextInput style={styles.input} placeholder="MM/AA" placeholderTextColor={Tema.dark.textSecondary} value={datosPago.expiracion} onChangeText={(text) => setDatosPago({ ...datosPago, expiracion: text })} />
-                        </View>
-                        <View style={[styles.inputGroup, { flex: 1 }]}>
-                          <Text style={styles.label}>CVV *</Text>
-                          <TextInput style={styles.input} placeholder="123" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" secureTextEntry value={datosPago.cvv} onChangeText={(text) => setDatosPago({ ...datosPago, cvv: text })} />
-                        </View>
-                      </View>
-                    </View>
-                  )}
-
-                  {datosPago.metodo === 'nequi' && (
-                    <View style={styles.formularioTarjeta}>
-                      <Text style={styles.labelSeccion}>INFORMACIÓN DE NEQUI</Text>
-                      <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE CELULAR *</Text><TextInput style={styles.input} placeholder="300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" /></View>
-                    </View>
-                  )}
-
-                  {datosPago.metodo === 'daviplata' && (
-                    <View style={styles.formularioTarjeta}>
-                      <Text style={styles.labelSeccion}>INFORMACIÓN DE DAVIPLATA</Text>
-                      <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE CELULAR *</Text><TextInput style={styles.input} placeholder="300 000 0000" placeholderTextColor={Tema.dark.textSecondary} keyboardType="phone-pad" /></View>
-                    </View>
-                  )}
-
-                  {datosPago.metodo === 'transferencia' && (
-                    <View style={styles.formularioTarjeta}>
-                      <Text style={styles.labelSeccion}>INFORMACIÓN DE TRANSFERENCIA</Text>
-                      <Text style={{color: Tema.dark.textSecondary, fontSize: 13, marginBottom: 15}}>Transfiere el total a la cuenta Bancolombia Ahorros #123-456789-00 y anota la referencia.</Text>
-                      <View style={styles.inputGroup}><Text style={styles.label}>NÚMERO DE REFERENCIA / COMPROBANTE *</Text><TextInput style={styles.input} placeholder="Ej: 987654321" placeholderTextColor={Tema.dark.textSecondary} keyboardType="number-pad" /></View>
-                    </View>
-                  )}
-
-                  <View style={styles.resumenPedido}>
-                    <Text style={styles.resumenTitulo}>RESUMEN DEL PEDIDO</Text>
-                    {items.map(it => (
-                      <View key={it.id} style={styles.resumenFila}>
-                        <Text style={styles.resumenItem}>{it.nombre}</Text>
-                        <Text style={styles.resumenValor}>${formatPrecio(it.subtotal)}</Text>
-                      </View>
-                    ))}
-                    <View style={styles.separadorResumen} />
-                    <View style={styles.resumenFila}><Text style={styles.resumenLabel}>SUBTOTAL</Text><Text style={styles.resumenValor}>${formatPrecio(totalPrecio)}</Text></View>
-                    <View style={styles.resumenFila}><Text style={styles.resumenLabel}>IVA (10%)</Text><Text style={styles.resumenValor}>${formatPrecio(totalPrecio * 0.1)}</Text></View>
-                    <View style={styles.separadorResumen} />
-                    <View style={styles.resumenFilaTotal}><Text style={styles.resumenTotalLabel}>TOTAL</Text><Text style={styles.resumenTotalValor}>${formatPrecio(totalPrecio * 1.1)}</Text></View>
-                  </View>
-
-                  <TouchableOpacity style={styles.btnPagarFull} onPress={handleConfirmarPedidoCheckout}>
-                    <IconSymbol name="lock.fill" size={16} color="#fff" />
-                    <Text style={styles.btnPagarFullTexto}>CONFIRMAR Y PAGAR ${formatPrecio(totalPrecio * 1.1)}</Text>
-                  </TouchableOpacity>
-                </>
+                <VistaMetodosPago
+                  datosPago={datosPago}
+                  setDatosPago={setDatosPago}
+                  onVolver={() => setPasoCheckout(1)}
+                  items={items}
+                  totalPrecio={totalPrecio}
+                  onConfirmar={handleConfirmarPedidoCheckout}
+                />
               )}
             </ScrollView>
           </View>
