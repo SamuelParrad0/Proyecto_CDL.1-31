@@ -90,7 +90,9 @@ export default function PaginaGaleria() {
                   style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', display: 'block', width: '100%' }}
                 >
                   <div className="video-miniatura-contenedor">
-                    <video src={`${item.src}#t=0.5`} preload="metadata" muted playsInline></video>
+                    <video src={`${item.src}#t=0.5`} preload="metadata" muted playsInline>
+                      <track kind="captions" />
+                    </video>
                     <div className="video-boton-reproducir"><i className="fas fa-play"></i></div>
                     <div className="video-insignia"><i className="fas fa-film"></i> Video</div>
                   </div>
@@ -167,8 +169,10 @@ export default function PaginaGaleria() {
             style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
           />
           <div className="modal-video-caja" style={{ position:'relative', zIndex: 1 }}>
-            <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}></button>
-            <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata"></video>
+            <button type="button" className="modal-video-boton-cerrar" onClick={cerrarModalVideo}>×</button>
+            <video ref={videoRef} src={videoActual.src} controls playsInline preload="metadata">
+              <track kind="captions" />
+            </video>
             <div className="modal-video-informacion">
               <div>
                 <div className="modal-video-categoria">{videoActual.categoria}</div>

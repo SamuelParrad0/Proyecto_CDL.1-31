@@ -199,8 +199,8 @@ export default function PaginaCarrito() {
                     )}
                     <div style={{ marginTop: '15px' }}>
                       <button type="button" onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        onMouseOver={e => e.currentTarget.style.background = 'rgba(255,8,68,0.15)'}
-                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                        onFocus={e => e.currentTarget.style.background = 'rgba(255,8,68,0.15)'}
+                        onBlur={e => e.currentTarget.style.background = 'transparent'}>
                         🗑️ Eliminar
                       </button>
                     </div>

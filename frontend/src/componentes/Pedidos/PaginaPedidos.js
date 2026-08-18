@@ -13,7 +13,7 @@ const PRODUCTOS_PEDIDO = [
 const TEXTO_TITULO = 'Regalos que se convierten en recuerdos';
 
 function parsePrecio(str) {
-  return Number.parseFloat(str.replace(/\./g, '').replace(',', '.'));
+  return Number.parseFloat(str.replaceAll('.', '').replace(',', '.'));
 }
 
 export default function PaginaPedidos() {
@@ -158,11 +158,10 @@ export default function PaginaPedidos() {
 
               <div className="galeria-productos">
                 {PRODUCTOS_PEDIDO.map((prod, i) => (
-                  <label
+                  <div
                     key={prod.id}
-                    htmlFor={prod.id}
                     className={`miniatura-producto${productoSeleccionado === prod.value ? ' active' : ''}`}
-                    style={{ opacity: 0, transform: 'translateY(20px)', animation: `fadeInUp 0.5s ${i * 0.1}s forwards`, cursor: 'pointer', display: 'block' }}
+                    style={{ opacity: 0, transform: 'translateY(20px)', animation: `fadeInUp 0.5s ${i * 0.1}s forwards` }}
                   >
                     <input 
                       type="radio" 
@@ -172,15 +171,17 @@ export default function PaginaPedidos() {
                       checked={productoSeleccionado === prod.value} 
                       onChange={() => { setProductoSeleccionado(prod.value); seleccionarVista(prod); }} 
                     />
-                    <div className="contenido-miniatura">
-                      <div className="imagen-miniatura"><img src={prod.imagen} alt={prod.nombre} /></div>
-                      <div className="info-miniatura">
-                        <span className="nombre-mini">{prod.nombre.split(' ').slice(0,2).join(' ')}</span>
-                        <span className="precio-mini">${prod.precio}</span>
+                    <label htmlFor={prod.id} style={{ cursor: 'pointer', display: 'block' }}>
+                      <div className="contenido-miniatura">
+                        <div className="imagen-miniatura"><img src={prod.imagen} alt={prod.nombre} /></div>
+                        <div className="info-miniatura">
+                          <span className="nombre-mini">{prod.nombre.split(' ').slice(0,2).join(' ')}</span>
+                          <span className="precio-mini">${prod.precio}</span>
+                        </div>
+                        <div className="indicador-check"></div>
                       </div>
-                      <div className="indicador-check"></div>
-                    </div>
-                  </label>
+                    </label>
+                  </div>
                 ))}
               </div>
             </div>
@@ -223,7 +224,7 @@ export default function PaginaPedidos() {
 
           <button type="submit" className="boton-enviar-pedido">
             <i className="fas fa-shopping-cart" style={{ marginRight: '10px' }}></i>
-            Confirmar y Agregar al Carrito
+            {' '}Confirmar y Agregar al Carrito
           </button>
         </form>
       </div>

@@ -117,7 +117,7 @@ export default function PaginaPersonalizado() {
       <div className="encabezado-hero">
         <div className="etiqueta-nombre-marca">
           <span className="punto-parpadeante-marca"></span>
-          Communicating Design Lion &nbsp;·&nbsp; Servicio Personalizado
+          {' '}Communicating Design Lion &nbsp;·&nbsp; Servicio Personalizado
         </div>
         <h1 className="titulo-principal-hero">
           {titulo}<span style={{ opacity: 0.7, animation: 'blink 1s step-end infinite' }}>|</span>

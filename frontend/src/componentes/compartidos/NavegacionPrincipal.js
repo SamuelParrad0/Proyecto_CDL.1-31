@@ -45,7 +45,7 @@ export default function NavegacionPrincipal() {
         style={{ top: topNavbar }}
       >
         <Link className="nav-logotipo" to="/">
-          COMMUNICATING DESIGN <span>LION</span>
+          COMMUNICATING DESIGN{' '}<span>LION</span>
         </Link>
         <ul className="nav-enlaces">
           <li><Link to="/">Inicio</Link></li>

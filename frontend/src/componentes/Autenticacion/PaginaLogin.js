@@ -42,17 +42,15 @@ export default function PaginaLogin() {
 
   return (
     <div className="pagina-autenticacion">
-
       {motivo && MENSAJES[motivo] && (
         <div className="aviso-login-motivo">{MENSAJES[motivo]}</div>
       )}
 
       <Link className="nav-logotipo" to="/">
-        COMMUNICATING DESIGN <span>LION</span>
+        COMMUNICATING DESIGN{' '}<span>LION</span>
       </Link>
 
       <form id="formulario-inicio-sesion" onSubmit={handleSubmit}>
-
         <div className="auth-encabezado">
           <div className="auth-subtitulo">
             <span className="auth-punto"></span>
@@ -115,7 +113,6 @@ export default function PaginaLogin() {
         <div className="auth-link-inferior">
           ¿No tienes cuenta? <Link to="/registro">Regístrate gratis</Link>
         </div>
-
       </form>
     </div>
   );
