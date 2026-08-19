@@ -10,10 +10,17 @@ import { ESTADOS_CITA } from '@/src/utilidades/constantes';
 import servicioCitas from '@/src/servicios/servicioCitas';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
+const formatearFechaEvento = (fechaEventoStr?: string) => {
+  if (!fechaEventoStr) return 'No especificada';
+  return new Date(fechaEventoStr).toLocaleDateString('es-CO', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+};
+
 export default function MisSolicitudesScreen() {
   const router = useRouter();
 
-  const [citas, setCitas] = useState([]);
+  const [citas, setCitas] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
 
@@ -21,7 +28,7 @@ export default function MisSolicitudesScreen() {
     try {
       const data = await servicioCitas.obtenerMisCitas();
       setCitas(data);
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'No se pudieron cargar tus reservas de paquetes');
     } finally {
       setCargando(false);
@@ -30,7 +37,7 @@ export default function MisSolicitudesScreen() {
 
   useEffect(() => {
     cargarCitas();
-  }, []);
+  }, [cargarCitas]);
 
   const onRefresh = async () => {
     setRefrescando(true);
@@ -38,7 +45,7 @@ export default function MisSolicitudesScreen() {
     setRefrescando(false);
   };
 
-  const confirmarCancelacion = (id) => {
+  const confirmarCancelacion = (id: any) => {
     Alert.alert(
       'Cancelar Reserva',
       '¿Estás seguro de que deseas cancelar esta reserva de paquete?',
@@ -53,7 +60,7 @@ export default function MisSolicitudesScreen() {
               await servicioCitas.cancelarCita(id);
               await cargarCitas();
               Alert.alert('Cancelada', 'La reserva ha sido cancelada correctamente.');
-            } catch (error) {
+            } catch (error: any) {
               Alert.alert('Error', error.message || 'No se pudo cancelar la reserva');
               setCargando(false);
             }
@@ -63,21 +70,16 @@ export default function MisSolicitudesScreen() {
     );
   };
 
-  const renderCita = ({ item }) => {
+  const renderCita = ({ item }: { item: any }) => {
     const estadoKey = (item.Estado_Reserva_Paquete || 'pendiente').toLowerCase();
     const estado = ESTADOS_CITA[estadoKey] || ESTADOS_CITA.pendiente;
-    const fechaEvento = item.Fecha_Evento
-      ? new Date(item.Fecha_Evento).toLocaleDateString('es-CO', {
-          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-        })
-      : 'No especificada';
+    const fechaEvento = formatearFechaEvento(item.Fecha_Evento);
     const fechaReserva = item.Fecha_Reserva
       ? new Date(item.Fecha_Reserva).toLocaleDateString('es-CO')
       : 'Desconocida';
 
     return (
       <View style={styles.tarjeta}>
-        {/* Header */}
         <View style={styles.tarjetaHeader}>
           <View style={styles.headerIzq}>
             <View style={styles.badgeId}>
@@ -91,14 +93,13 @@ export default function MisSolicitudesScreen() {
           </View>
         </View>
 
-        {/* Nombre del paquete */}
-        {item.paquete && (
+        {Boolean(item.paquete) && (
           <View style={styles.paqueteContenedor}>
             <IconSymbol name="camera.fill" size={16} color={Tema.dark.tint} />
             <Text style={styles.paqueteNombre}>
               {item.paquete?.Nombre_Paquete || 'Paquete fotográfico'}
             </Text>
-            {item.paquete?.Precio_Paquete && (
+            {Boolean(item.paquete?.Precio_Paquete) && (
               <Text style={styles.paquetePrecio}>
                 ${Number(item.paquete.Precio_Paquete).toLocaleString('es-CO')}
               </Text>
@@ -108,7 +109,6 @@ export default function MisSolicitudesScreen() {
 
         <View style={styles.divisor} />
 
-        {/* Datos del evento */}
         <View style={styles.seccion}>
           <Text style={styles.seccionLabel}>DATOS DEL EVENTO</Text>
           <View style={styles.filaDetalle}>
@@ -128,7 +128,7 @@ export default function MisSolicitudesScreen() {
             </View>
           </View>
 
-          {item.Numero_Invitados ? (
+          {Boolean(item.Numero_Invitados) && (
             <View style={[styles.itemDetalle, { marginTop: Espaciado.sm }]}>
               <IconSymbol name="person.2.fill" size={14} color={Tema.dark.textSecondary} />
               <View>
@@ -136,12 +136,11 @@ export default function MisSolicitudesScreen() {
                 <Text style={styles.detalleValor}>{item.Numero_Invitados}</Text>
               </View>
             </View>
-          ) : null}
+          )}
         </View>
 
         <View style={styles.divisor} />
 
-        {/* Datos del cliente */}
         <View style={styles.seccion}>
           <Text style={styles.seccionLabel}>TUS DATOS</Text>
           <View style={[styles.itemDetalle, { marginBottom: Espaciado.xs }]}>
@@ -158,8 +157,7 @@ export default function MisSolicitudesScreen() {
           </View>
         </View>
 
-        {/* Información adicional */}
-        {item.Informacion_Adicional ? (
+        {Boolean(item.Informacion_Adicional) && (
           <>
             <View style={styles.divisor} />
             <View style={styles.seccion}>
@@ -167,10 +165,9 @@ export default function MisSolicitudesScreen() {
               <Text style={styles.infoAdicionalTexto}>{item.Informacion_Adicional}</Text>
             </View>
           </>
-        ) : null}
+        )}
 
-        {/* Cancelar si está pendiente */}
-        {item.Estado_Reserva_Paquete && item.Estado_Reserva_Paquete.toLowerCase() === 'pendiente' && (
+        {Boolean(item.Estado_Reserva_Paquete?.toLowerCase() === 'pendiente') && (
           <View style={styles.tarjetaFooter}>
             <TouchableOpacity
               style={styles.botonCancelar}
@@ -187,7 +184,6 @@ export default function MisSolicitudesScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.botonAtras} onPress={() => router.back()}>
           <IconSymbol name="chevron.left" size={24} color={Tema.dark.text} />
@@ -200,7 +196,6 @@ export default function MisSolicitudesScreen() {
         </View>
       </View>
 
-      {/* Contenido */}
       {cargando && !refrescando ? (
         <View style={styles.cargandoContenedor}>
           <ActivityIndicator size="large" color={Tema.dark.tint} />
@@ -228,7 +223,7 @@ export default function MisSolicitudesScreen() {
         <FlatList
           data={citas}
           renderItem={renderCita}
-          keyExtractor={(item) => item.Id_Reserva_Paquete?.toString()}
+          keyExtractor={(item) => String(item.Id_Reserva_Paquete)}
           contentContainerStyle={styles.lista}
           refreshControl={
             <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />

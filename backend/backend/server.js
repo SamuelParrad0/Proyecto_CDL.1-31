@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const path = require('node:path');
 require('dotenv').config();
 
-const { testConnection, syncDatabase } = require('./config/database');
+const { testConnection } = require('./config/database');
 const { initAssociations } = require('./models');
 const { normalizarBody } = require('./middleware/normalizarBody');
 

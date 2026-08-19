@@ -21,9 +21,6 @@ const handleResponse = async (response) => {
   return data;
 };
 
-// Valida que un ID sea un número entero positivo antes de usarlo
-// para construir una URL de solicitud (evita inyección de datos
-// contaminados en la ruta del lado del cliente).
 const validarId = (id) => {
   const idNum = Number(id);
   if (!Number.isInteger(idNum) || idNum <= 0) {
@@ -44,32 +41,36 @@ export async function loginAPI(correo, password) {
   });
   const data = await handleResponse(response);
   if (data.token && data.usuario) {
-    // Limpiar dirección del usuario anterior
     localStorage.removeItem('cdl_direccion');
     localStorage.removeItem('cdl_dirs_entrega');
     localStorage.setItem('token', data.token);
     localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-    // Cargar dirección guardada del nuevo usuario desde la BD
     try {
       const resDirs = await fetch(`${API_URL}/direcciones`, {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data.token}` }
       });
       const dataDirs = await resDirs.json();
-      const dirs = Array.isArray(dataDirs) ? dataDirs
-        : Array.isArray(dataDirs.direcciones) ? dataDirs.direcciones : [];
+      
+      let dirs = [];
+      if (Array.isArray(dataDirs)) {
+        dirs = dataDirs;
+      } else if (Array.isArray(dataDirs.direcciones)) {
+        dirs = dataDirs.direcciones;
+      }
+
       if (dirs.length > 0) {
         const primera = dirs[0];
         localStorage.setItem('cdl_direccion', JSON.stringify({
-          nombre:      primera.Nombre_Completo || '',
-          direccion:   primera.Direccion || '',
+          nombre:       primera.Nombre_Completo || '',
+          direccion:    primera.Direccion || '',
           departamento: primera.Departamento || '',
-          municipio:   primera.Municipio_Localidad || '',
-          barrio:      primera.Barrio || '',
-          apto:        primera.Apart_Casa || '',
-          telefono:    primera.Telefono || '',
+          municipio:    primera.Municipio_Localidad || '',
+          barrio:       primera.Barrio || '',
+          apto:         primera.Apart_Casa || '',
+          telefono:     primera.Telefono || '',
           indicaciones: primera.Indicaciones || '',
-          tipo:        primera.Residencia_Laboral || 'residencial'
+          tipo:         primera.Residencia_Laboral || 'residencial'
         }));
       }
     } catch (e) {
@@ -531,7 +532,6 @@ export async function obtenerTodasLasSolicitudesAPI(tipo = 'personalizado') {
   });
   const data = await handleResponse(response);
 
-  // Extraer el array según qué devuelva cada endpoint
   if (Array.isArray(data)) return data;
   if (Array.isArray(data.solicitudes)) return data.solicitudes;
   if (Array.isArray(data.citas)) return data.citas;
@@ -579,7 +579,6 @@ export async function eliminarOpinionAPI(id) {
   return handleResponse(response);
 }
 
-// --- Nuevas funciones de edición y toggle ---
 export async function editarCitaAPI(id, datos) {
   const response = await fetch(`${API_URL}/citas/${validarId(id)}`, {
     method: 'PUT',

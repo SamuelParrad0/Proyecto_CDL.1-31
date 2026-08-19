@@ -5,7 +5,6 @@ import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { DATOS_FAQ } from '@/src/utilidades/constantes';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-// Habilitar animaciones en Android
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -13,9 +12,9 @@ if (Platform.OS === 'android') {
 }
 
 export default function FAQScreen() {
-  const [expandido, setExpandido] = useState(null);
+  const [expandido, setExpandido] = useState<number | null>(null);
 
-  const toggleExpandir = (index) => {
+  const toggleExpandir = (index: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandido(expandido === index ? null : index);
   };
@@ -33,7 +32,7 @@ export default function FAQScreen() {
           
           return (
             <TouchableOpacity 
-              key={index} 
+              key={item.pregunta || String(index)} 
               style={[styles.tarjeta, isExpandido && styles.tarjetaExpandida]}
               onPress={() => toggleExpandir(index)}
               activeOpacity={0.8}
@@ -161,7 +160,7 @@ const styles = StyleSheet.create({
     marginBottom: Espaciado.lg,
   },
   botonContacto: {
-    backgroundColor: '#25D366', // Color WhatsApp
+    backgroundColor: '#25D366',
     flexDirection: 'row',
     paddingHorizontal: Espaciado.xl,
     paddingVertical: Espaciado.md,

@@ -3,20 +3,17 @@ import {
     ActivityIndicator,
     Alert,
     FlatList,
-    Pressable, 
     StyleSheet, 
     TextInput,
     View,
     Text,
     TouchableOpacity,
-    Modal,
-    ScrollView
+    Modal
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { ThemedText } from '../../components/themed-text';
 
 import { listarUsuarios, toggleUsuario, cambiarRolUsuario, editarUsuario, eliminarUsuario } from '@/src/servicios/servicioUsuarioAdmin';
 import { AuthContext } from '@/src/contexto/ContextoAuth';
@@ -29,11 +26,11 @@ type Usuario = {
     Rol?: { Nombre_Rol: string } | string;
     Id_Rol?: number;
     Activo?: boolean;
-}
+};
 
 export default function AdminUsuariosScreen() {
     const router = useRouter();
-    const { usuario: user, esAdmin, esAuxiliar } = useContext(AuthContext) as any;
+    const { esAdmin, esAuxiliar } = useContext(AuthContext) as any;
 
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [usuariosFiltrados, setUsuariosFiltrados] = useState<Usuario[]>([]);
@@ -58,6 +55,20 @@ export default function AdminUsuariosScreen() {
         setModalVisible(true);
     };
 
+    const fetchUsuarios = async () => {
+        setLoading(true);
+        setErrorMessage('');
+        try {
+            const data = await listarUsuarios();
+            setUsuarios(data || []);
+            setUsuariosFiltrados(data || []);
+        } catch (error: unknown) {
+            setErrorMessage((error as { message?: string})?.message || 'Error al cargar los usuarios');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleGuardarEdicion = async () => {
         if (!editFormData.nombre.trim() || !editFormData.correo.trim()) {
             Alert.alert('Error', 'Nombre y correo son requeridos.');
@@ -73,24 +84,10 @@ export default function AdminUsuariosScreen() {
             setModalVisible(false);
             Alert.alert('Éxito', 'Usuario actualizado correctamente.');
             fetchUsuarios();
-        } catch (error) {
+        } catch {
             Alert.alert('Error', 'No se pudo actualizar el usuario.');
         } finally {
             setSaving(false);
-        }
-    };
-
-    const fetchUsuarios = async () => {
-        setLoading(true);
-        setErrorMessage('');
-        try {
-            const data = await listarUsuarios();
-            setUsuarios(data || []);
-            setUsuariosFiltrados(data || []);
-        } catch (error: unknown) {
-            setErrorMessage((error as { message?: string})?.message || 'Error al cargar los usuarios');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -525,7 +522,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
         borderColor: Tema.dark.error,
     },
-
     actionBtnText: { 
         fontWeight: 'bold', 
         fontSize: 12,

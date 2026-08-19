@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { 
-  obtenerCarritoAPI, 
-  agregarAlCarritoAPI, 
-  eliminarDelCarritoAPI, 
-  vaciarCarritoAPI,
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  obtenerCarritoAPI,
+  agregarAlCarritoAPI,
+  eliminarDelCarritoAPI,
   actualizarCantidadCarritoAPI,
+  vaciarCarritoAPI,
   haySesionActiva
 } from '../servicios/api';
 
@@ -14,7 +14,7 @@ const CART_LOCAL_KEY = 'cdl_carrito_items';
 
 export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState([]);
-  const [cargando, setCargando] = useState(false);
+  const [, setCargando] = useState(false);
 
   const guardarEnLocal = useCallback((items) => {
     const resumen = items.map(item => ({
@@ -56,7 +56,6 @@ export function CarritoProvider({ children }) {
 
   const agregarItem = useCallback(async (productoId, cantidad = 1, datosCliente = null) => {
     if (!haySesionActiva()) {
-      // Redirigir a login con motivo
       window.location.href = '/login?motivo=compra';
       return false;
     }
@@ -104,23 +103,26 @@ export function CarritoProvider({ children }) {
     }
   }, []);
 
-  const obtenerCarritoConClientes = useCallback(() => {
-    const clientesGuardados = JSON.parse(localStorage.getItem('cdl_clientes_carrito') || '{}');
-    return carrito.map(item => {
-      const prodId = item.Id_Producto || item.producto?.Id_Producto;
-      return {
-        ...item,
-        cliente: clientesGuardados[prodId] || item.cliente || null,
-        personalizacion: clientesGuardados[prodId]?.personalizacion || item.personalizacion || null,
-      };
-    });
+  const totalItems = useMemo(() => {
+    return carrito.reduce((acc, item) => acc + (Number(item.Cantidad_Productos) || 1), 0);
   }, [carrito]);
 
+  const totalPrecio = useMemo(() => {
+    return carrito.reduce((acc, item) => acc + (Number(item.Precio_Total) || 0), 0);
+  }, [carrito]);
+
+  const valorContexto = useMemo(() => ({
+    carrito,
+    agregarItem,
+    eliminarItem,
+    vaciarCarrito,
+    actualizarCantidad,
+    totalItems,
+    totalPrecio
+  }), [carrito, agregarItem, eliminarItem, vaciarCarrito, actualizarCantidad, totalItems, totalPrecio]);
+
   return (
-    <CarritoContexto.Provider value={{ 
-      carrito, cargando, agregarItem, eliminarItem, actualizarCantidad,
-      vaciarCarrito, sincronizar, obtenerCarritoConClientes, guardarEnLocal
-    }}>
+    <CarritoContexto.Provider value={valorContexto}>
       {children}
     </CarritoContexto.Provider>
   );

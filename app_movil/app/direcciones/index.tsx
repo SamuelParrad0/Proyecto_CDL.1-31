@@ -8,7 +8,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function MisDireccionesScreen() {
   const router = useRouter();
-  const [direcciones, setDirecciones] = useState([]);
+  const [direcciones, setDirecciones] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
 
@@ -16,7 +16,7 @@ export default function MisDireccionesScreen() {
     try {
       const data = await servicioDirecciones.obtenerMisDirecciones();
       setDirecciones(data);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error de red:', error?.message || error);
       Alert.alert('Error', 'No se pudieron cargar tus direcciones');
     } finally {
@@ -34,7 +34,7 @@ export default function MisDireccionesScreen() {
     setRefrescando(false);
   };
 
-  const confirmarEliminacion = (id) => {
+  const confirmarEliminacion = (id: any) => {
     Alert.alert(
       'Eliminar Dirección',
       '¿Estás seguro de que deseas eliminar esta dirección?',
@@ -49,7 +49,7 @@ export default function MisDireccionesScreen() {
               await servicioDirecciones.eliminarDireccion(id);
               await cargarDirecciones();
               Alert.alert('Éxito', 'La dirección ha sido eliminada');
-            } catch (error) {
+            } catch (error: any) {
               Alert.alert('Error', error.message || 'No se pudo eliminar la dirección');
               setCargando(false);
             }
@@ -59,7 +59,7 @@ export default function MisDireccionesScreen() {
     );
   };
 
-  const renderDireccion = ({ item }) => {
+  const renderDireccion = ({ item }: { item: any }) => {
     const isResidencia = item.Residencia_Laboral === 'Residencia';
     const icono = isResidencia ? 'house.fill' : 'building.2.fill';
 
@@ -77,18 +77,18 @@ export default function MisDireccionesScreen() {
           <Text style={styles.direccionPrincipal}>{item.Direccion_Completa}</Text>
           <Text style={styles.ubicacion}>{item.Barrio}, {item.Municipio_Localidad} - {item.Departamento}</Text>
           
-          {item.Apartamento_Casa ? (
+          {Boolean(item.Apartamento_Casa) && (
             <Text style={styles.textoSecundario}>Apto/Casa: {item.Apartamento_Casa}</Text>
-          ) : null}
+          )}
           
           <Text style={styles.textoSecundario}>Tel: {item.Telefono_Contacto}</Text>
           
-          {item.Indicaciones_Adicionales ? (
+          {Boolean(item.Indicaciones_Adicionales) && (
             <View style={styles.indicacionesContenedor}>
               <Text style={styles.indicacionesTitulo}>Indicaciones:</Text>
               <Text style={styles.indicacionesTexto}>{item.Indicaciones_Adicionales}</Text>
             </View>
-          ) : null}
+          )}
         </View>
 
         <View style={styles.tarjetaFooter}>
@@ -141,7 +141,7 @@ export default function MisDireccionesScreen() {
         <FlatList
           data={direcciones}
           renderItem={renderDireccion}
-          keyExtractor={(item) => item.Id_Direccion.toString()}
+          keyExtractor={(item) => String(item.Id_Direccion)}
           contentContainerStyle={styles.lista}
           refreshControl={
             <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />

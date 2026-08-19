@@ -8,7 +8,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
-  const { usuario, puedeGestionarPanel, esAdmin, esAuxiliar } = useContext(AuthContext);
+  const { usuario, puedeGestionarPanel } = useContext(AuthContext);
 
   if (!puedeGestionarPanel) {
     return (
@@ -81,7 +81,6 @@ export default function AdminDashboardScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
         <View style={styles.resumenGrid}>
           <View style={styles.resumenTarjeta}>
             <Text style={styles.resumenNumero}>12</Text>
@@ -102,9 +101,9 @@ export default function AdminDashboardScreen() {
         <Text style={styles.seccionTitulo}>Módulos de Gestión</Text>
 
         <View style={styles.listaCategorias}>
-          {categorias.map((cat, index) => (
+          {categorias.map((cat) => (
             <TouchableOpacity
-              key={index}
+              key={cat.ruta}
               style={styles.categoriaBarra}
               onPress={() => router.push(cat.ruta as any)}
               activeOpacity={0.8}
@@ -120,7 +119,6 @@ export default function AdminDashboardScreen() {
             </TouchableOpacity>
           ))}
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -174,26 +172,10 @@ const styles = StyleSheet.create({
     padding: Espaciado.sm,
     marginLeft: -Espaciado.sm,
   },
-  botonTienda: {
-    backgroundColor: 'rgba(201, 160, 96, 0.16)',
-    borderColor: 'rgba(201, 160, 96, 0.35)',
-    borderWidth: 1,
-    paddingHorizontal: Espaciado.sm,
-    paddingVertical: Espaciado.xs,
-    borderRadius: RadioBorde.md,
-  },
-  botonTiendaTexto: {
-    color: Tema.dark.dorado || '#c9a060',
-    fontSize: 12,
-    fontWeight: '700',
-  },
   titulo: {
     fontSize: 28,
     fontWeight: 'bold',
     color: Tema.dark.text,
-  },
-  textoDorado: {
-    color: Tema.dark.dorado || '#c9a060',
   },
   subtitulo: {
     color: Tema.dark.textSecondary,
@@ -216,7 +198,7 @@ const styles = StyleSheet.create({
     padding: Espaciado.lg,
     borderRadius: RadioBorde.lg,
     borderWidth: 1,
-    borderColor: 'rgba(201, 160, 96, 0.3)', // Borde dorado sutil
+    borderColor: 'rgba(201, 160, 96, 0.3)',
     alignItems: 'center',
   },
   resumenTarjetaSecundario: {

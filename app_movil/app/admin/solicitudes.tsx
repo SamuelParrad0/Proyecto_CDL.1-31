@@ -57,9 +57,9 @@ export default function AdminSolicitudesScreen() {
         </View>
 
         <View style={styles.listaModulos}>
-          {modulos.map((modulo, index) => (
+          {modulos.map((modulo) => (
             <TouchableOpacity
-              key={index}
+              key={modulo.ruta}
               style={styles.moduloTarjeta}
               onPress={() => router.push(modulo.ruta as any)}
               activeOpacity={0.7}

@@ -10,29 +10,41 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function AdminPedidosScreen() {
   const router = useRouter();
-  const { puedeGestionarPanel, esAuxiliar } = useContext(AuthContext);
+  const { puedeGestionarPanel } = useContext(AuthContext);
 
-  const [pedidos, setPedidos] = useState([]);
+  const [pedidos, setPedidos] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
+  const [pedidoSeleccionado, setPedidoSeleccionado] = useState<any>(null);
 
   const [filtroEstado, setFiltroEstado] = useState('Todos');
   const [modalFiltroVisible, setModalFiltroVisible] = useState(false);
 
   const [detalleVisible, setDetalleVisible] = useState(false);
-  const [pedidoDetalle, setPedidoDetalle] = useState(null);
+  const [pedidoDetalle, setPedidoDetalle] = useState<any>(null);
 
   const [modalEditVisible, setModalEditVisible] = useState(false);
-  const [pedidoEditando, setPedidoEditando] = useState(null);
+  const [pedidoEditando, setPedidoEditando] = useState<any>(null);
   const [editFormData, setEditFormData] = useState({
     direccionEnvio: '',
     telefono: '',
     notas: '',
   });
   const [saving, setSaving] = useState(false);
+
+  const cargarPedidos = async () => {
+    try {
+      const data = await listarTodosPedidos();
+      setPedidos(data);
+    } catch (error: any) {
+      console.warn('Error de red:', error?.message || error);
+      Alert.alert('Error', 'No se pudieron cargar los pedidos');
+    } finally {
+      setCargando(false);
+    }
+  };
 
   useEffect(() => {
     if (!puedeGestionarPanel) {
@@ -42,30 +54,18 @@ export default function AdminPedidosScreen() {
     cargarPedidos();
   }, [puedeGestionarPanel]);
 
-  const cargarPedidos = async () => {
-    try {
-      const data = await listarTodosPedidos();
-      setPedidos(data);
-    } catch (error) {
-      console.warn('Error de red:', error?.message || error);
-      Alert.alert('Error', 'No se pudieron cargar los pedidos');
-    } finally {
-      setCargando(false);
-    }
-  };
-
   const onRefresh = async () => {
     setRefrescando(true);
     await cargarPedidos();
     setRefrescando(false);
   };
 
-  const abrirOpcionesEstado = (pedido) => {
+  const abrirOpcionesEstado = (pedido: any) => {
     setPedidoSeleccionado(pedido);
     setModalVisible(true);
   };
 
-  const actualizarEstado = async (nuevoEstado) => {
+  const actualizarEstado = async (nuevoEstado: string) => {
     setModalVisible(false);
     if (!pedidoSeleccionado || pedidoSeleccionado.Estado_Pedido === nuevoEstado) return;
 
@@ -74,18 +74,18 @@ export default function AdminPedidosScreen() {
       await cambiarEstadoPedido(pedidoSeleccionado.id, nuevoEstado);
       await cargarPedidos();
       Alert.alert('Éxito', `Estado actualizado a: ${ESTADOS_PEDIDO[nuevoEstado].etiqueta}`);
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'No se pudo actualizar el estado');
       setCargando(false);
     }
   };
 
-  const abrirDetalle = (pedido) => {
+  const abrirDetalle = (pedido: any) => {
     setPedidoDetalle(pedido);
     setDetalleVisible(true);
   };
 
-  const abrirModalEditar = (pedido) => {
+  const abrirModalEditar = (pedido: any) => {
     setPedidoEditando(pedido);
     setEditFormData({
       direccionEnvio: pedido.direccionEnvio || '',
@@ -102,18 +102,17 @@ export default function AdminPedidosScreen() {
       setModalEditVisible(false);
       Alert.alert('Éxito', 'Pedido actualizado correctamente');
       cargarPedidos();
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'No se pudo editar el pedido');
     } finally {
       setSaving(false);
     }
   };
 
-  const renderPedido = ({ item }) => {
+  const renderPedido = ({ item }: { item: any }) => {
     const estadoKey = (item.estado || 'pendiente').toLowerCase();
     const estado = ESTADOS_PEDIDO[estadoKey] || ESTADOS_PEDIDO.pendiente;
     const fecha = item.createdAt ? new Date(item.createdAt).toLocaleDateString('es-CO') : 'Sin fecha';
-    console.log('Renderizando pedido:', item.id);
 
     return (
       <View style={styles.tarjeta}>
@@ -168,8 +167,6 @@ export default function AdminPedidosScreen() {
     const nombreCliente = p.usuario?.Nombre?.toLowerCase() || '';
     const q = searchQuery.toLowerCase();
     const coincideBusqueda = idStr.includes(q) || nombreCliente.includes(q);
-    
-    // El estado del pedido suele venir en p.estado
     const estadoActual = (p.estado || 'pendiente').toLowerCase();
     const coincideEstado = filtroEstado === 'Todos' || estadoActual === filtroEstado;
     
@@ -353,12 +350,15 @@ export default function AdminPedidosScreen() {
                 {pedidoDetalle.notas ? <Text style={styles.textoDetalle}>Notas: {pedidoDetalle.notas}</Text> : null}
                 
                 <Text style={[styles.seccionTitulo, { marginTop: Espaciado.lg }]}>Productos ({pedidoDetalle.detalles?.length || 0})</Text>
-                {pedidoDetalle.detalles?.map((det, index) => (
-                  <View key={index} style={styles.detalleItem}>
-                    <Text style={styles.detalleProductoTexto}>{det.cantidad}x {det.producto?.Nombre_Producto || 'Producto eliminado'}</Text>
-                    <Text style={styles.detallePrecioTexto}>${Number(det.subtotal).toLocaleString('es-CO')}</Text>
-                  </View>
-                ))}
+                {pedidoDetalle.detalles?.map((det: any) => {
+                  const detKey = det.id || `${det.productoId || det.producto?.Nombre_Producto}-${det.cantidad}`;
+                  return (
+                    <View key={detKey} style={styles.detalleItem}>
+                      <Text style={styles.detalleProductoTexto}>{det.cantidad}x {det.producto?.Nombre_Producto || 'Producto eliminado'}</Text>
+                      <Text style={styles.detallePrecioTexto}>${Number(det.subtotal).toLocaleString('es-CO')}</Text>
+                    </View>
+                  );
+                })}
                 
                 <View style={styles.totalRow}>
                   <Text style={styles.totalLabel}>TOTAL</Text>
@@ -586,11 +586,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
-  accionesColumna: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    gap: Espaciado.sm,
-  },
   botonAccionIcono: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -653,7 +648,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 1,
   },
-  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -706,10 +700,6 @@ const styles = StyleSheet.create({
     borderRadius: RadioBorde.md,
     marginBottom: Espaciado.sm,
     backgroundColor: Tema.dark.surface2,
-  },
-  opcionEstadoActiva: {
-    borderWidth: 1,
-    borderColor: Tema.dark.dorado || '#c9a060',
   },
   estadoIconContainer: {
     width: 32,

@@ -7,7 +7,6 @@ function formatearPrecio(p) { return `$${Math.round(p).toLocaleString('es-CO')}`
 export default function PaginaFactura() {
   const navigate = useNavigate();
   
-  // Leer datos de factura guardados desde PaginaPago
   const [datosFactura] = useState(() => {
     try { 
       return JSON.parse(localStorage.getItem('cdl_factura_datos') || 'null'); 
@@ -105,15 +104,18 @@ export default function PaginaFactura() {
             <tr><th style={{width:'60%'}}>Producto</th><th style={{textAlign:'right',width:'40%'}}>Precio</th></tr>
           </thead>
           <tbody id="itemsFactura">
-            {carrito.map((item, i) => (
-              <tr key={i}>
-                <td>
-                  <div className="nombre-producto-tabla"><i className="fas fa-box"></i> {item.nombre || 'Producto'}</div>
-                  {item.personalizacion && <div className="personalizacion-tabla"><i className="fas fa-star"></i> <strong>Personalización:</strong> {item.personalizacion}</div>}
-                </td>
-                <td style={{textAlign:'right',fontWeight:'bold',color:'#ff0040',fontSize:'1.1rem'}}>{formatearPrecio(Number(item.precio) || Number(item.precioTotal) || 0)}</td>
-              </tr>
-            ))}
+            {carrito.map((item) => {
+              const rowKey = `${item.id || item.productoId || item.nombre}-${item.precio || item.precioTotal}`;
+              return (
+                <tr key={rowKey}>
+                  <td>
+                    <div className="nombre-producto-tabla"><i className="fas fa-box"></i> {item.nombre || 'Producto'}</div>
+                    {item.personalizacion && <div className="personalizacion-tabla"><i className="fas fa-star"></i> <strong>Personalización:</strong> {item.personalizacion}</div>}
+                  </td>
+                  <td style={{textAlign:'right',fontWeight:'bold',color:'#ff0040',fontSize:'1.1rem'}}>{formatearPrecio(Number(item.precio) || Number(item.precioTotal) || 0)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

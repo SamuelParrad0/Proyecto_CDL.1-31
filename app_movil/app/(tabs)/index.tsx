@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, Modal, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import servicioCatalogo from '@/src/servicios/servicioCatalogo';
@@ -8,8 +8,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-// Mapeo de nombres de producto a imágenes locales (fallback cuando la BD no tiene imagen)
-const MAPA_IMAGENES_PRODUCTO = {
+const MAPA_IMAGENES_PRODUCTO: Record<string, any> = {
   'cajita corazón': require('../../assets/images/productos/Cajita-corazon.png'),
   'bolsa sorpresa': require('../../assets/images/productos/Bolsa-Sorpresa.png'),
   'caja multifotográfica': require('../../assets/images/productos/Caja-multifotografia.png'),
@@ -17,10 +16,10 @@ const MAPA_IMAGENES_PRODUCTO = {
   'productos amor': require('../../assets/images/productos/Productos-amor.png'),
 };
 
-const obtenerImagenProducto = (producto) => {
+const obtenerImagenProducto = (producto: any) => {
   if (producto.imagenUrl && !producto.imagenUrl.includes('/null')) return { uri: producto.imagenUrl };
-  if (producto.Imagen_Producto && producto.Imagen_Producto.startsWith('http')) return { uri: producto.Imagen_Producto };
-  if (producto.Imagen && producto.Imagen.startsWith('http')) return { uri: producto.Imagen };
+  if (producto.Imagen_Producto?.startsWith('http')) return { uri: producto.Imagen_Producto };
+  if (producto.imagen?.startsWith('http')) return { uri: producto.imagen };
 
   const nombreLower = (producto.Nombre_Producto || '').toLowerCase();
   for (const [clave, req] of Object.entries(MAPA_IMAGENES_PRODUCTO)) {
@@ -29,12 +28,23 @@ const obtenerImagenProducto = (producto) => {
   return { uri: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80' };
 };
 
+const obtenerColorStock = (stock: number) => {
+  if (stock <= 0) return '#ff0844';
+  if (stock <= 5) return '#f59e0b';
+  return '#22c55e';
+};
+
+const obtenerTextoStock = (stock: number) => {
+  if (stock <= 0) return 'Agotado';
+  if (stock <= 5) return `¡Últimas ${stock} uds!`;
+  return `${stock} disponibles`;
+};
 
 export default function TiendaScreen() {
   const router = useRouter();
-  const [productos, setProductos] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [categoriaActiva, setCategoriaActiva] = useState(null);
+  const [productos, setProductos] = useState<any[]>([]);
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [categoriaActiva, setCategoriaActiva] = useState<any>(null);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
   const [busqueda, setBusqueda] = useState('');
@@ -50,7 +60,7 @@ export default function TiendaScreen() {
       ]);
       setCategorias([{ Id_Categoria: null, Nombre_Categoria: 'Todos' }, ...cats]);
       setProductos(prods);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error al cargar productos:', error?.message || error);
     } finally {
       setCargando(false);
@@ -68,21 +78,21 @@ export default function TiendaScreen() {
     setRefrescando(false);
   };
 
-  const filtrarPorCategoria = async (idCat) => {
+  const filtrarPorCategoria = async (idCat: any) => {
     setCategoriaActiva(idCat);
     try {
       setCargando(true);
       const prods = await servicioCatalogo.obtenerProductos(idCat);
       setProductos(prods);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error al filtrar productos:', error?.message || error);
     } finally {
       setCargando(false);
     }
   };
 
-  const handleAgregarAlCarrito = (producto) => {
-    const itemEnCarrito = (items || []).find(i => i.id === producto.Id_Producto || i.Id_Producto === producto.Id_Producto);
+  const handleAgregarAlCarrito = (producto: any) => {
+    const itemEnCarrito = (items || []).find((i: any) => i.id === producto.Id_Producto || i.Id_Producto === producto.Id_Producto);
     const cantidadActual = itemEnCarrito ? itemEnCarrito.cantidad : 0;
     
     if (cantidadActual + 1 > (producto.Stock || 0)) {
@@ -97,13 +107,10 @@ export default function TiendaScreen() {
     ]);
   };
 
-  const renderCategoria = ({ item }) => {
-    return null; // Ya no usamos los botones horizontales
-  };
-
-  const renderProducto = ({ item }) => {
+  const renderProducto = ({ item }: { item: any }) => {
     const imageSource = obtenerImagenProducto(item);
     const precio = Number(item.Precio_Producto).toLocaleString('es-CO');
+    const stock = item.Stock || 0;
 
     return (
       <View style={styles.productoCard}>
@@ -111,25 +118,18 @@ export default function TiendaScreen() {
         <View style={styles.productoInfo}>
           <Text style={styles.productoNombre} numberOfLines={2}>{item.Nombre_Producto}</Text>
           <Text style={styles.productoPrecio}>${precio}</Text>
-          <Text style={[
-            styles.stockTexto,
-            { color: item.Stock <= 0 ? '#ff0844' : item.Stock <= 5 ? '#f59e0b' : '#22c55e' }
-          ]}>
-            {item.Stock <= 0 ? 'Agotado' : item.Stock <= 5 ? `¡Últimas ${item.Stock} uds!` : `${item.Stock} disponibles`}
+          <Text style={[styles.stockTexto, { color: obtenerColorStock(stock) }]}>
+            {obtenerTextoStock(stock)}
           </Text>
           
           <TouchableOpacity 
-            style={[styles.botonAgregar, item.Stock <= 0 && {backgroundColor: '#ff0844', opacity: 0.8}]}
+            style={[styles.botonAgregar, stock <= 0 && { backgroundColor: '#ff0844', opacity: 0.8 }]}
             onPress={() => handleAgregarAlCarrito(item)}
-            disabled={item.Stock <= 0}
+            disabled={stock <= 0}
           >
-            {item.Stock <= 0 ? (
-              <IconSymbol name="xmark.circle" size={18} color="#fff" />
-            ) : (
-              <IconSymbol name="cart.badge.plus" size={18} color="#fff" />
-            )}
+            <IconSymbol name={stock <= 0 ? "xmark.circle" : "cart.badge.plus"} size={18} color="#fff" />
             <Text style={styles.botonAgregarTexto}>
-              {item.Stock <= 0 ? 'AGOTADO' : 'AGREGAR'}
+              {stock <= 0 ? 'AGOTADO' : 'AGREGAR'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -188,7 +188,6 @@ export default function TiendaScreen() {
           }
         />
       )}
-
     </SafeAreaView>
   );
 }
@@ -232,35 +231,6 @@ const styles = StyleSheet.create({
     color: Tema.dark.textSecondary,
     fontSize: 14,
     marginTop: Espaciado.xs,
-  },
-  categoriasContenedor: {
-    marginBottom: Espaciado.md,
-  },
-  categoriasLista: {
-    paddingHorizontal: Espaciado.lg,
-    gap: Espaciado.sm,
-  },
-  categoriaBtn: {
-    paddingHorizontal: Espaciado.lg,
-    paddingVertical: Espaciado.sm,
-    borderRadius: RadioBorde.redondo,
-    borderWidth: 1,
-    borderColor: Tema.dark.border,
-    backgroundColor: Tema.dark.surface,
-  },
-  categoriaBtnActiva: {
-    backgroundColor: Tema.dark.tint,
-    borderColor: Tema.dark.tint,
-  },
-  categoriaTexto: {
-    color: Tema.dark.textSecondary,
-    fontWeight: '600',
-    fontSize: 13,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  categoriaTextoActiva: {
-    color: '#fff',
   },
   cargandoContenedor: {
     flex: 1,

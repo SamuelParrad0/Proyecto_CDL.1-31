@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo, useCallback } from 'react';
 import servicioAuth from '../servicios/servicioAuth';
 import servicioCarrito from '../servicios/servicioCarrito';
 
@@ -9,12 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [estaAutenticado, setEstaAutenticado] = useState(false);
   const [cargando, setCargando] = useState(true);
 
-  // Inicializar sesión al cargar la app
-  useEffect(() => {
-    inicializarSesion();
-  }, []);
-
-  const inicializarSesion = async () => {
+  const inicializarSesion = useCallback(async () => {
     try {
       setCargando(true);
       const sesion = await servicioAuth.obtenerSesion();
@@ -32,7 +27,11 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setCargando(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    inicializarSesion();
+  }, [inicializarSesion]);
 
   const login = async (correo, password) => {
     try {
@@ -41,7 +40,6 @@ export const AuthProvider = ({ children }) => {
       if (datos.usuario) {
         setUsuario(datos.usuario);
         setEstaAutenticado(true);
-        // Intentar migrar carrito local al backend
         await servicioCarrito.migrarCarritoLocal();
       }
       return datos;
@@ -57,7 +55,6 @@ export const AuthProvider = ({ children }) => {
       if (datos.usuario) {
         setUsuario(datos.usuario);
         setEstaAutenticado(true);
-        // Intentar migrar carrito local al backend
         await servicioCarrito.migrarCarritoLocal();
       }
       return datos;
@@ -88,7 +85,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Propiedad derivada para saber si es admin o auxiliar
   const esAdmin = 
     usuario?.Id_Rol === 1 || 
     usuario?.rol === 'admin' || 
@@ -105,22 +101,22 @@ export const AuthProvider = ({ children }) => {
 
   const puedeGestionarPanel = esAdmin || esAuxiliar;
 
+  const authValue = useMemo(() => ({
+    usuario,
+    estaAutenticado,
+    esAdmin,
+    esAuxiliar,
+    puedeGestionarPanel,
+    cargando,
+    login,
+    registro,
+    logout,
+    actualizarPerfil,
+    refrescarSesion: inicializarSesion,
+  }), [usuario, estaAutenticado, esAdmin, esAuxiliar, puedeGestionarPanel, cargando, inicializarSesion]);
+
   return (
-    <AuthContext.Provider
-      value={{
-        usuario,
-        estaAutenticado,
-        esAdmin,
-        esAuxiliar,
-        puedeGestionarPanel,
-        cargando,
-        login,
-        registro,
-        logout,
-        actualizarPerfil,
-        refrescarSesion: inicializarSesion,
-      }}
-    >
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );

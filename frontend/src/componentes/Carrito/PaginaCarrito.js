@@ -7,7 +7,6 @@ function formatearPrecio(precio) {
   return `$${Math.round(precio).toLocaleString('es-CO')}`;
 }
 
-// Mapeo de nombres de producto a imágenes locales (fallback cuando la BD no tiene imagen)
 const MAPA_IMAGENES_PRODUCTO = {
   'cajita corazón': '/Imagenes_Videos/Imagenes_Videos/Img-Productos/Cajita-corazon.png',
   'bolsa sorpresa': '/Imagenes_Videos/Imagenes_Videos/Img-Productos/Bolsa-Sorpresa.png',
@@ -29,6 +28,15 @@ const obtenerImagenProducto = (producto) => {
   return 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=200&q=80';
 };
 
+const calcularPrecioItem = (item) => {
+  if (item.Precio_Total !== undefined && item.Precio_Total !== null) {
+    return Number(item.Precio_Total);
+  }
+  const precioUnitario = Number(item.producto?.Precio_Producto || 0);
+  const cantidad = Number(item.Cantidad_Productos || 0);
+  return precioUnitario * cantidad;
+};
+
 export default function PaginaCarrito() {
   const navigate = useNavigate();
   const [usuario] = React.useState(() => {
@@ -43,7 +51,7 @@ export default function PaginaCarrito() {
   const carritoConClientes = obtenerCarritoConClientes();
 
   const handleCambioCantidad = (itemId, nuevaCantidad, stock) => {
-    let cant = Number.Number.parseInt(nuevaCantidad);
+    let cant = Number.parseInt(nuevaCantidad, 10);
     if (Number.isNaN(cant) || cant < 1) cant = 1;
     if (cant > stock) {
       alert(`Solo hay ${stock} unidades disponibles.`);
@@ -52,14 +60,13 @@ export default function PaginaCarrito() {
     actualizarCantidad(itemId, cant);
   };
 
-  const subtotal = carrito.reduce((s, item) => s + Number(item.Precio_Total || (item.producto?.Precio_Producto * item.Cantidad_Productos) || 0), 0);
+  const subtotal = carrito.reduce((s, item) => s + calcularPrecioItem(item), 0);
   const iva = subtotal * 0.10;
   const total = subtotal + iva;
 
   const procederAlPago = () => {
     if (!carrito.length) { alert('⚠️ No hay productos en el carrito'); return; }
     
-    // Guardar datos del carrito en localStorage para que Entrega/Pago/Factura los lean
     const resumenCarrito = carritoConClientes.map(item => ({
       id: item.Id_Carrito,
       productoId: item.Id_Producto || item.producto?.Id_Producto,
@@ -119,7 +126,7 @@ export default function PaginaCarrito() {
               </div>
             ) : (
               carritoConClientes.map((item) => (
-                <div key={item.Id_Carrito} className="tarjeta-producto-carrito" style={{ marginBottom: '20px' }}>
+                <div key={item.Id_Carrito || item.productoId} className="tarjeta-producto-carrito" style={{ marginBottom: '20px' }}>
                   <div className="imagen-miniatura-producto">
                     <img src={obtenerImagenProducto(item.producto)} alt={item.producto?.Nombre_Producto}
                       onError={e => { e.target.src = 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=200&q=80'; }} />
@@ -144,12 +151,7 @@ export default function PaginaCarrito() {
                           value={item.Cantidad_Productos || 1}
                           min="1"
                           max={item.producto?.Stock || 1}
-                          onChange={(e) => {
-                            // Solo actualizamos el valor visualmente rápido, y enviamos el request onBlur o si presionan enter
-                            // Pero como estamos usando context, la mejor opción es llamar a la API con un ligero debounce o onBlur.
-                            // Para mantenerlo simple y reactivo, llamamos a la API directamente en onChange.
-                            handleCambioCantidad(item.Id_Carrito, e.target.value, item.producto?.Stock || 1);
-                          }}
+                          onChange={(e) => handleCambioCantidad(item.Id_Carrito, e.target.value, item.producto?.Stock || 1)}
                           style={{ 
                             width: '40px', 
                             background: 'transparent', 
@@ -199,8 +201,8 @@ export default function PaginaCarrito() {
                     )}
                     <div style={{ marginTop: '15px' }}>
                       <button type="button" onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        onFocus={e => e.currentTarget.style.background = 'rgba(255,8,68,0.15)'}
-                        onBlur={e => e.currentTarget.style.background = 'transparent'}>
+                        onFocus={e => { e.currentTarget.style.background = 'rgba(255,8,68,0.15)'; }}
+                        onBlur={e => { e.currentTarget.style.background = 'transparent'; }}>
                         🗑️ Eliminar
                       </button>
                     </div>

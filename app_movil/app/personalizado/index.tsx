@@ -9,7 +9,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function MisSolicitudesScreen() {
   const router = useRouter();
-  const [solicitudes, setSolicitudes] = useState([]);
+  const [solicitudes, setSolicitudes] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
 
@@ -17,7 +17,7 @@ export default function MisSolicitudesScreen() {
     try {
       const data = await servicioPersonalizado.obtenerMisSolicitudes();
       setSolicitudes(data);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error de red:', error?.message || error);
       Alert.alert('Error', 'No se pudieron cargar tus solicitudes');
     } finally {
@@ -35,7 +35,7 @@ export default function MisSolicitudesScreen() {
     setRefrescando(false);
   };
 
-  const confirmarCancelacion = (id) => {
+  const confirmarCancelacion = (id: any) => {
     Alert.alert(
       'Cancelar Solicitud',
       '¿Estás seguro de que deseas cancelar esta solicitud? Esta acción no se puede deshacer.',
@@ -50,7 +50,7 @@ export default function MisSolicitudesScreen() {
               await servicioPersonalizado.cancelarSolicitud(id);
               await cargarSolicitudes();
               Alert.alert('Éxito', 'La solicitud ha sido cancelada.');
-            } catch (error) {
+            } catch (error: any) {
               Alert.alert('Error', error.message || 'No se pudo cancelar la solicitud');
               setCargando(false);
             }
@@ -60,10 +60,11 @@ export default function MisSolicitudesScreen() {
     );
   };
 
-  const renderSolicitud = ({ item }) => {
+  const renderSolicitud = ({ item }: { item: any }) => {
     const estadoKey = (item.Estado_Personalizado || 'pendiente').toLowerCase();
     const estado = ESTADOS_PERSONALIZADO[estadoKey] || ESTADOS_PERSONALIZADO.pendiente;
     const fecha = new Date(item.Fecha_Solicitud).toLocaleDateString('es-CO');
+    const esPendiente = estadoKey === 'pendiente';
 
     return (
       <View style={styles.tarjeta}>
@@ -84,7 +85,7 @@ export default function MisSolicitudesScreen() {
           </View>
         </View>
 
-        {item.Estado_Personalizado && item.Estado_Personalizado.toLowerCase() === 'pendiente' && (
+        {esPendiente && (
           <View style={styles.tarjetaFooter}>
             <TouchableOpacity
               style={styles.botonCancelar}
@@ -120,7 +121,7 @@ export default function MisSolicitudesScreen() {
         <FlatList
           data={solicitudes}
           renderItem={renderSolicitud}
-          keyExtractor={(item) => item.Id_Personalizado.toString()}
+          keyExtractor={(item) => String(item.Id_Personalizado)}
           contentContainerStyle={styles.lista}
           refreshControl={
             <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />

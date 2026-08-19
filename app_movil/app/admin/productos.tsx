@@ -8,31 +8,54 @@ import { listarProductosAdmin, toggleProducto, crearProducto, editarProducto } f
 import servicioCatalogo from '@/src/servicios/servicioCatalogo';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
+const obtenerColorStock = (stock: number) => {
+  if (stock <= 0) return '#ff0844';
+  if (stock <= 5) return '#f59e0b';
+  return Tema.dark.textSecondary;
+};
+
+const obtenerTextoStock = (stock: number) => {
+  if (stock <= 0) return 'AGOTADO';
+  if (stock <= 5) return `Stock Bajo: ${stock}`;
+  return `Stock: ${stock || 0}`;
+};
+
 export default function AdminProductosScreen() {
   const router = useRouter();
   const { esAdmin, esAuxiliar } = useContext(AuthContext);
 
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categorias, setCategorias] = useState([]);
+  const [categorias, setCategorias] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
   // Modal State
   const [modalVisible, setModalVisible] = useState(false);
-  const [productoEditando, setProductoEditando] = useState(null);
+  const [productoEditando, setProductoEditando] = useState<any>(null);
   const [formData, setFormData] = useState({ 
     nombre: '', precio: '', descripcion: '', imagen: '', categoriaId: '', stock: '' 
   });
 
-  useEffect(() => {
-    if (!esAdmin && !esAuxiliar) {
-      router.replace('/(tabs)');
-      return;
+  const cargarProductos = async () => {
+    try {
+      const data = await listarProductosAdmin();
+      setProductos(data);
+    } catch (error: any) {
+      console.warn('Error de red:', error?.message || error);
+      Alert.alert('Error', 'No se pudieron cargar los productos');
     }
-    cargarDatosInit();
-  }, [esAdmin, esAuxiliar]);
+  };
+
+  const cargarCategorias = async () => {
+    try {
+      const cats = await servicioCatalogo.obtenerCategorias();
+      setCategorias(cats);
+    } catch (error: any) {
+      console.warn('Error cargando categorías:', error?.message || error);
+    }
+  };
 
   const cargarDatosInit = async () => {
     try {
@@ -43,24 +66,13 @@ export default function AdminProductosScreen() {
     }
   };
 
-  const cargarProductos = async () => {
-    try {
-      const data = await listarProductosAdmin();
-      setProductos(data);
-    } catch (error) {
-      console.warn('Error de red:', error?.message || error);
-      Alert.alert('Error', 'No se pudieron cargar los productos');
+  useEffect(() => {
+    if (!esAdmin && !esAuxiliar) {
+      router.replace('/(tabs)');
+      return;
     }
-  };
-
-  const cargarCategorias = async () => {
-    try {
-      const cats = await servicioCatalogo.obtenerCategorias();
-      setCategorias(cats);
-    } catch (error) {
-      console.warn('Error cargando categorías:', error?.message || error);
-    }
-  };
+    cargarDatosInit();
+  }, [esAdmin, esAuxiliar]);
 
   const onRefresh = async () => {
     setRefrescando(true);
@@ -68,7 +80,7 @@ export default function AdminProductosScreen() {
     setRefrescando(false);
   };
 
-  const abrirModal = (producto = null) => {
+  const abrirModal = (producto: any = null) => {
     if (producto) {
       setProductoEditando(producto);
       setFormData({
@@ -115,22 +127,20 @@ export default function AdminProductosScreen() {
 
       setModalVisible(false);
       await cargarProductos();
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', error.message || 'No se pudo guardar el producto');
     } finally {
       setGuardando(false);
     }
   };
 
-  const manejarToggle = async (id, estadoActual) => {
+  const manejarToggle = async (id: number, estadoActual: any) => {
     try {
-      // Optimistic update
       setProductos(current => 
         current.map(p => p.Id_Producto === id ? { ...p, Activo: !estadoActual } : p)
       );
       await toggleProducto(id);
-    } catch (error) {
-      // Revert on error
+    } catch {
       setProductos(current => 
         current.map(p => p.Id_Producto === id ? { ...p, Activo: estadoActual } : p)
       );
@@ -138,11 +148,10 @@ export default function AdminProductosScreen() {
     }
   };
 
-
-
-  const renderProducto = ({ item }) => {
+  const renderProducto = ({ item }: { item: any }) => {
     const imagenUrl = servicioCatalogo.construirUrlImagen(item.Imagen_Producto);
     const activo = item.Activo === 1 || item.Activo === true;
+    const stockNum = Number(item.Stock || 0);
 
     return (
       <View style={[styles.tarjeta, !activo && styles.tarjetaInactiva]}>
@@ -151,8 +160,8 @@ export default function AdminProductosScreen() {
         <View style={styles.info}>
           <Text style={styles.nombre} numberOfLines={2}>{item.Nombre_Producto}</Text>
           <Text style={styles.precio}>${Number(item.Precio_Producto).toLocaleString('es-CO')}</Text>
-          <Text style={[styles.stock, item.Stock <= 0 ? {color: '#ff0844', fontWeight: 'bold'} : item.Stock <= 5 ? {color: '#f59e0b', fontWeight: 'bold'} : null]}>
-            {item.Stock <= 0 ? 'AGOTADO' : item.Stock <= 5 ? `Stock Bajo: ${item.Stock}` : `Stock: ${item.Stock || 0}`}
+          <Text style={[styles.stock, { color: obtenerColorStock(stockNum), fontWeight: stockNum <= 5 ? 'bold' : 'normal' }]}>
+            {obtenerTextoStock(stockNum)}
           </Text>
         </View>
 
@@ -175,8 +184,6 @@ export default function AdminProductosScreen() {
           >
             <IconSymbol name="pencil" size={20} color={Tema.dark.dorado || '#c9a060'} />
           </TouchableOpacity>
-          
-
         </View>
       </View>
     );
@@ -298,8 +305,6 @@ export default function AdminProductosScreen() {
             />
 
             <Text style={styles.label}>Categoría *</Text>
-            {/* Si no tienes @react-native-picker/picker, usamos TextInput o una vista de seleccion simplificada */}
-            {/* Como fallback en movil, dejaremos que el usuario vea un input, o si es posible mapeamos las opciones */}
             <View style={styles.categorySelectorRow}>
                {categorias.map(c => (
                  <TouchableOpacity 
@@ -453,7 +458,6 @@ const styles = StyleSheet.create({
   botonAccion: {
     padding: Espaciado.sm,
   },
-  // Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',

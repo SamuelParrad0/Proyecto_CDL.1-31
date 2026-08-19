@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const { sequelize } = require('../config/database');
 
 const Usuario = sequelize.define('Usuario', {
-
   Id_Usuario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -70,7 +69,7 @@ const Usuario = sequelize.define('Usuario', {
 
 }, {
   tableName: 'usuarios',
-  timestamps: false, // ⚠️ tu BD no tiene createdAt ni updatedAt
+  timestamps: false,
 
   defaultScope: {
     attributes: { exclude: ['Contraseña'] }
@@ -99,16 +98,12 @@ const Usuario = sequelize.define('Usuario', {
   }
 });
 
-// ==========================================
-// MÉTODOS
-// ==========================================
-
 Usuario.prototype.compararPassword = async function(passwordIngresado) {
   return await bcrypt.compare(passwordIngresado, this.Contraseña);
 };
 
 Usuario.prototype.toJSON = function() {
-  const valores = Object.assign({}, this.get());
+  const valores = { ...this.get() };
   delete valores.Contraseña;
   return valores;
 };

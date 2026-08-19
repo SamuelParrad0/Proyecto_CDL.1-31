@@ -6,6 +6,29 @@ import { AuthContext } from '@/src/contexto/ContextoAuth';
 import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
+type OpcionMenuProps = Readonly<{
+  icono: any;
+  titulo: string;
+  subtitulo?: string;
+  onPress: () => void;
+  colorIcono?: string;
+}>;
+
+function OpcionMenu({ icono, titulo, subtitulo, onPress, colorIcono = Tema.dark.tint }: OpcionMenuProps) {
+  return (
+    <TouchableOpacity style={styles.opcionMenu} onPress={onPress}>
+      <View style={[styles.iconoContenedor, { borderColor: colorIcono === Tema.dark.tint ? Tema.dark.borderRed : Tema.dark.border }]}>
+        <IconSymbol name={icono} size={22} color={colorIcono} />
+      </View>
+      <View style={styles.textoContenedor}>
+        <Text style={styles.opcionTitulo}>{titulo}</Text>
+        {Boolean(subtitulo) && <Text style={styles.opcionSubtitulo}>{subtitulo}</Text>}
+      </View>
+      <IconSymbol name="chevron.right" size={20} color={Tema.dark.textSecondary} />
+    </TouchableOpacity>
+  );
+}
+
 export default function CuentaScreen() {
   const router = useRouter();
   const { usuario, estaAutenticado, esAdmin, esAuxiliar, puedeGestionarPanel, logout } = useContext(AuthContext);
@@ -27,18 +50,6 @@ export default function CuentaScreen() {
       ]
     );
   };
-
-  const OpcionMenu = ({ icono, titulo, subtitulo, onPress, colorIcono = Tema.dark.tint }: { icono: any, titulo: string, subtitulo?: string, onPress: () => void, colorIcono?: string }) => (
-    <TouchableOpacity style={styles.opcionMenu} onPress={onPress}>
-      <View style={[styles.iconoContenedor, { borderColor: colorIcono === Tema.dark.tint ? Tema.dark.borderRed : Tema.dark.border }]}>
-        <IconSymbol name={icono} size={22} color={colorIcono} />
-      </View>
-      <View style={styles.textoContenedor}>
-        <Text style={styles.opcionTitulo}>{titulo}</Text>
-        {Boolean(subtitulo) && <Text style={styles.opcionSubtitulo}>{subtitulo}</Text>}      </View>
-      <IconSymbol name="chevron.right" size={20} color={Tema.dark.textSecondary} />
-    </TouchableOpacity>
-  );
 
   if (!estaAutenticado) {
     return (
@@ -191,7 +202,7 @@ const styles = StyleSheet.create({
   },
   badgeAdmin: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(201, 160, 96, 0.2)', // Dorado semi-transparente
+    backgroundColor: 'rgba(201, 160, 96, 0.2)',
     paddingHorizontal: Espaciado.sm,
     paddingVertical: 2,
     borderRadius: RadioBorde.sm,
@@ -253,7 +264,7 @@ const styles = StyleSheet.create({
   separador: {
     height: 1,
     backgroundColor: Tema.dark.border,
-    marginLeft: 40 + Espaciado.md * 2, // Alinear con el texto
+    marginLeft: 40 + Espaciado.md * 2,
   },
   botonSalir: {
     flexDirection: 'row',
@@ -271,7 +282,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  // Estilos No Autenticado
   noAuthContenedor: {
     flex: 1,
     justifyContent: 'center',

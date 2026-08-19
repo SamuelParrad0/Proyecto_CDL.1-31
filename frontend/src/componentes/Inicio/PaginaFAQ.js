@@ -24,7 +24,7 @@ export default function PaginaFAQ() {
           </div>
           <div className="preguntas-lista">
             {DATOS_FAQ.map((item, i) => (
-              <div key={i} className={`pregunta-item animar-entrada${faqAbierta === i ? ' open' : ''}`}>
+              <div key={item.pregunta || `faq-${i}`} className={`pregunta-item animar-entrada${faqAbierta === i ? ' open' : ''}`}>
                 <button type="button" className="pregunta-boton" onClick={() => setFaqAbierta(faqAbierta === i ? null : i)}>
                   <span>{item.pregunta}</span>
                   <span className="pregunta-icono-expandir">{faqAbierta === i ? '−' : '+'}</span>

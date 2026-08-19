@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { Alert } from 'react-native';
 import servicioCarrito from '../servicios/servicioCarrito';
 import { AuthContext } from './ContextoAuth';
@@ -13,7 +13,7 @@ export const CarritoProvider = ({ children }) => {
   const [totalPrecio, setTotalPrecio] = useState(0);
   const [cargando, setCargando] = useState(true);
 
-  const cargarCarrito = async () => {
+  const cargarCarrito = useCallback(async () => {
     try {
       setCargando(true);
       const resumen = await servicioCarrito.obtenerCarrito(estaAutenticado);
@@ -28,13 +28,12 @@ export const CarritoProvider = ({ children }) => {
     } finally {
       setCargando(false);
     }
-  };
+  }, [estaAutenticado]);
 
-  // Solo cargar el carrito cuando auth haya terminado de inicializar
   useEffect(() => {
     if (cargandoAuth) return;
     cargarCarrito();
-  }, [estaAutenticado, cargandoAuth]);
+  }, [cargarCarrito, cargandoAuth]);
 
   const agregarAlCarrito = async (producto, cantidad = 1) => {
     try {
@@ -78,20 +77,20 @@ export const CarritoProvider = ({ children }) => {
     }
   };
 
+  const carritoValue = useMemo(() => ({
+    items,
+    totalItems,
+    totalPrecio,
+    cargando,
+    agregarAlCarrito,
+    actualizarCantidad,
+    eliminarItem,
+    vaciarCarrito,
+    recargarCarrito: cargarCarrito,
+  }), [items, totalItems, totalPrecio, cargando, cargarCarrito]);
+
   return (
-    <CarritoContext.Provider
-      value={{
-        items,
-        totalItems,
-        totalPrecio,
-        cargando,
-        agregarAlCarrito,
-        actualizarCantidad,
-        eliminarItem,
-        vaciarCarrito,
-        recargarCarrito: cargarCarrito,
-      }}
-    >
+    <CarritoContext.Provider value={carritoValue}>
       {children}
     </CarritoContext.Provider>
   );

@@ -9,7 +9,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function MisCitasScreen() {
   const router = useRouter();
-  const [citas, setCitas] = useState([]);
+  const [citas, setCitas] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [refrescando, setRefrescando] = useState(false);
 
@@ -17,7 +17,7 @@ export default function MisCitasScreen() {
     try {
       const data = await servicioCitas.obtenerMisCitas();
       setCitas(data);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Error de red:', error?.message || error);
       Alert.alert('Error', 'No se pudieron cargar tus citas');
     } finally {
@@ -35,7 +35,7 @@ export default function MisCitasScreen() {
     setRefrescando(false);
   };
 
-  const confirmarCancelacion = (id) => {
+  const confirmarCancelacion = (id: any) => {
     Alert.alert(
       'Cancelar Reserva',
       '¿Estás seguro de que deseas cancelar esta cita?',
@@ -50,7 +50,7 @@ export default function MisCitasScreen() {
               await servicioCitas.cancelarCita(id);
               await cargarCitas();
               Alert.alert('Éxito', 'La cita ha sido cancelada');
-            } catch (error) {
+            } catch (error: any) {
               Alert.alert('Error', error.message || 'No se pudo cancelar la cita');
               setCargando(false);
             }
@@ -60,9 +60,8 @@ export default function MisCitasScreen() {
     );
   };
 
-  const renderCita = ({ item }) => {
+  const renderCita = ({ item }: { item: any }) => {
     const estado = ESTADOS_CITA[item.Estado_Reserva_Paquete] || ESTADOS_CITA.pendiente;
-    // Backend devuelve Fecha_Evento y Fecha_Reserva en formato ISO o YYYY-MM-DD
     const fecha = new Date(item.Fecha_Evento).toLocaleDateString('es-CO', { 
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
@@ -92,7 +91,7 @@ export default function MisCitasScreen() {
             <Text style={styles.detalleValor}>{item.Numero_Invitados || 'No especificado'}</Text>
           </View>
 
-          {item.Precio_Total && (
+          {Boolean(item.Precio_Total) && (
             <View style={styles.detalleFila}>
               <Text style={styles.detalleEtiqueta}>Total Estimado:</Text>
               <Text style={styles.precioValor}>${Number(item.Precio_Total).toLocaleString('es-CO')}</Text>
@@ -141,7 +140,7 @@ export default function MisCitasScreen() {
         <FlatList
           data={citas}
           renderItem={renderCita}
-          keyExtractor={(item) => item.Id_Reserva_Paquete.toString()}
+          keyExtractor={(item) => String(item.Id_Reserva_Paquete)}
           contentContainerStyle={styles.lista}
           refreshControl={
             <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
