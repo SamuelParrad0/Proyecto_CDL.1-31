@@ -37,13 +37,13 @@ export default function PaginaRegistro() {
     <div className="pagina-autenticacion">
       <form id="formulario-registro" onSubmit={handleSubmit}>
         <Link className="nav-logotipo" to="/">
-          COMMUNICATING DESIGN{' '}<span>LION</span>
+          <span>COMMUNICATING DESIGN</span> <span>LION</span>
         </Link>
 
         <div className="auth-encabezado">
           <div className="auth-subtitulo">
             <span className="auth-punto"></span>
-            Communicating Design Lion
+            <span>Communicating Design Lion</span>
             <span className="auth-punto"></span>
           </div>
           <h1 className="titulo-formulario">REGISTRO</h1>
@@ -121,7 +121,7 @@ export default function PaginaRegistro() {
         </button>
 
         <div className="auth-link-inferior">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
+          ¿No tienes cuenta? <Link to="/login">Inicia sesión</Link>
         </div>
       </form>
     </div>

@@ -214,7 +214,7 @@ export default function PaginaEntrega() {
                     borderRadius: '20px', textTransform: 'capitalize'
                   }}>
                     <i className={`fas fa-${esLaboral ? 'briefcase' : 'home'}`} style={{ marginRight: '4px' }}></i>
-                    {dir.tipo || 'Residencial'}
+                    <span>{dir.tipo || 'Residencial'}</span>
                   </span>
                 </div>
               </div>
@@ -227,7 +227,6 @@ export default function PaginaEntrega() {
 
   return (
     <div className="pagina-entrega">
-      {/* HEADER */}
       <header className="encabezado-pagina-entrega">
         <div className="barra-navegacion-entrega">
           <div className="logo-nombre-entrega">
@@ -260,7 +259,6 @@ export default function PaginaEntrega() {
       </div>
 
       <main className="estructura-dos-columnas-entrega">
-        {/* COLUMNA IZQUIERDA */}
         <section className="columna-formulario-entrega">
           <h1 className="titulo-principal-entrega">Elige dónde recibir tus compras</h1>
           <p className="descripcion-entrega">Podrás ver costos y tiempos de entrega precisos en todo lo que busques.</p>
@@ -308,7 +306,6 @@ export default function PaginaEntrega() {
               <i className="fas fa-plus"></i> {mostrarForm ? 'Cancelar' : 'Agregar otra dirección'}
             </button>
 
-            {/* FORMULARIO NUEVA DIRECCIÓN */}
             {mostrarForm && (
               <div className="formulario-nueva-direccion entrega-form-ampliado" style={{ display: 'block' }}>
                 <h4 className="titulo-formulario-direccion">
@@ -420,7 +417,7 @@ export default function PaginaEntrega() {
                           style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
                           {form.departamento === dep && <i className="fas fa-check" style={{ color: '#ff0844', fontSize: '0.7rem' }}></i>}
-                          {dep}
+                          <span>{dep}</span>
                         </button>
                       ))}
                     </div>
@@ -442,7 +439,7 @@ export default function PaginaEntrega() {
                           style={{ display: 'none' }}
                         />
                         <i className={`fas fa-${t === 'residencial' ? 'home' : 'briefcase'}`}></i>
-                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                        <span>{t.charAt(0).toUpperCase() + t.slice(1)}</span>
                       </label>
                     ))}
                   </div>
@@ -473,7 +470,6 @@ export default function PaginaEntrega() {
           </button>
         </section>
 
-        {/* COLUMNA DERECHA — RESUMEN */}
         <aside className="columna-resumen-entrega">
           <h2 className="titulo-resumen-entrega">Resumen del pedido</h2>
           <div id="listaItemsResumen">
@@ -505,7 +501,6 @@ export default function PaginaEntrega() {
         </aside>
       </main>
 
-      {/* TOAST */}
       {toast.visible && (
         <div className={`entrega-toast${toast.warn ? ' warn' : ''}`}>
           {toast.msg}

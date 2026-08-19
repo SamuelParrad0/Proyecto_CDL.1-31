@@ -47,14 +47,14 @@ export default function PaginaLogin() {
       )}
 
       <Link className="nav-logotipo" to="/">
-        COMMUNICATING DESIGN{' '}<span>LION</span>
+        <span>COMMUNICATING DESIGN</span> <span>LION</span>
       </Link>
 
       <form id="formulario-inicio-sesion" onSubmit={handleSubmit}>
         <div className="auth-encabezado">
           <div className="auth-subtitulo">
             <span className="auth-punto"></span>
-            Communicating Design Lion
+            <span>Communicating Design Lion</span>
             <span className="auth-punto"></span>
           </div>
           <h1 className="titulo-formulario">LOGIN</h1>

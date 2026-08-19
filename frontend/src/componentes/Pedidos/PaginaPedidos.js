@@ -171,7 +171,7 @@ export default function PaginaPedidos() {
                       checked={productoSeleccionado === prod.value} 
                       onChange={() => { setProductoSeleccionado(prod.value); seleccionarVista(prod); }} 
                     />
-                    <label htmlFor={prod.id} style={{ cursor: 'pointer', display: 'block' }}>
+                    <label htmlFor={prod.id} aria-label={prod.nombre} style={{ cursor: 'pointer', display: 'block' }}>
                       <div className="contenido-miniatura">
                         <div className="imagen-miniatura"><img src={prod.imagen} alt={prod.nombre} /></div>
                         <div className="info-miniatura">

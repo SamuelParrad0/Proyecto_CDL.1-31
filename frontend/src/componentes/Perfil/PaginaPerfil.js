@@ -360,7 +360,6 @@ export default function PaginaPerfil() {
 
   return (
     <div className="pagina-perfil">
-      {/* NAV */}
       <nav className="nav-barra-principal">
         <Link className="nav-logo" to="/">COMMUNICATING DESIGN <span>LION</span></Link>
         <div className="nav-controles-perfil">
@@ -371,7 +370,6 @@ export default function PaginaPerfil() {
         </div>
       </nav>
 
-      {/* HERO */}
       <div className="hero-perfil">
         <div className="hero-perfil-contenido">
           <div className="hero-avatar-iniciales">{iniciales||'?'}</div>
@@ -383,7 +381,6 @@ export default function PaginaPerfil() {
         </div>
       </div>
 
-      {/* VISTA GRID */}
       {vista==='grid' && (
         <div className="contenedor-seccion" id="vistaGridPrincipal">
           <div className="grid-tarjetas-menu">
@@ -416,7 +413,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* VISTA DATOS PREMIUM */}
       {vista==='datos' && (
         <div className="contenedor-seccion vista-seccion slide-up">
           <button type="button" className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
@@ -464,7 +460,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* VISTA DIRECCIONES PREMIUM */}
       {vista==='direcciones' && (
         <div className="contenedor-seccion vista-seccion slide-up">
           <button type="button" className="btn-volver-grid premium-hover" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver al panel</button>
@@ -557,7 +552,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* VISTA COMPRAS */}
       {vista==='compras' && (
         <div className="contenedor-seccion vista-seccion" id="vistaCompras">
           <button type="button" className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
@@ -597,7 +591,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* VISTA SOLICITUDES */}
       {vista==='solicitudes' && (
         <div className="contenedor-seccion vista-seccion" id="vistaSolicitudes">
           <button type="button" className="btn-volver-grid" onClick={() => irA('grid')}><i className="fas fa-arrow-left"></i> Volver</button>
@@ -767,7 +760,7 @@ export default function PaginaPerfil() {
                           <div className="sol-detail-wrapper">
                             <div className="sol-info-block sol-block-highlight">
                               <div className="sol-block-label">🎁 Para quién es</div>
-                              <div className="sol-block-title">{(it.Destinatario || 'para_mi').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+                              <div className="sol-block-title">{(it.Destinatario || 'para_mi').replaceAll('_', ' ').replaceAll(/\b\w/g, c => c.toUpperCase())}</div>
                             </div>
 
                             <div className="sol-section-title"><i className="fas fa-address-card"></i> Datos de Contacto</div>
@@ -840,7 +833,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* ── MODAL EDICIÓN PREMIUM ── */}
       {modalEdicion && campoEdicion && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEdicion(false)}>
           <div className="modal-caja-edicion-premium">
@@ -882,7 +874,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* ── MODAL EDITAR DIRECCIÓN ── */}
       {modalEditDir && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEditDir(null)}>
           <div className="modal-dir-caja">
@@ -922,7 +913,6 @@ export default function PaginaPerfil() {
                 ))}
               </div>
 
-              {/* Departamento */}
               <div className="modal-campo-premium" style={{position:'relative'}}>
                 <label htmlFor="btn-select-dep-edit" className="modal-label-premium">Departamento</label>
                 <button
@@ -955,7 +945,6 @@ export default function PaginaPerfil() {
                 )}
               </div>
 
-              {/* Tipo de domicilio */}
               <div className="modal-campo-premium">
                 <span className="modal-label-premium">Tipo de domicilio</span>
                 <div className="modal-dir-tipo-row">
@@ -989,7 +978,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* ── MODAL NUEVA DIRECCIÓN ── */}
       {modalDir && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalDir(false)}>
           <div className="modal-dir-caja">
@@ -1028,7 +1016,6 @@ export default function PaginaPerfil() {
                 ))}
               </div>
 
-              {/* Departamento */}
               <div className="modal-campo-premium" style={{position:'relative'}}>
                 <label htmlFor="btn-select-dep-nuevo" className="modal-label-premium">Departamento</label>
                 <button
@@ -1061,7 +1048,6 @@ export default function PaginaPerfil() {
                 )}
               </div>
 
-              {/* Tipo de domicilio */}
               <div className="modal-campo-premium">
                 <span className="modal-label-premium">Tipo de domicilio</span>
                 <div className="modal-dir-tipo-row">
@@ -1097,7 +1083,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* ── MODAL CONFIRMACIÓN ── */}
       {modalConfirm.open && (
         <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&cerrarConfirm()}>
           <div className="modal-caja-confirmacion confirm-box premium-card slide-up">
@@ -1116,7 +1101,6 @@ export default function PaginaPerfil() {
         </div>
       )}
 
-      {/* ── TOAST ── */}
       {toast.visible && (
         <div id="toastNotificacion" className={`toast-notificacion show ${toast.warn ? 'warn' : ''}`}>
           <span id="perfilToastMsg">{toast.msg}</span>
