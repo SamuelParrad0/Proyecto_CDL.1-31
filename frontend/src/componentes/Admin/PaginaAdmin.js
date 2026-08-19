@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../estilos/admin.css';
 import { 
-  listarUsuariosAPI, eliminarUsuarioAPI, actualizarRolAPI, editarUsuarioAPI, toggleUsuarioAPI, listarProductosAdminAPI, crearProductoAPI, actualizarProductoAPI, eliminarProductoAPI, toggleProductoAPI,
+  listarUsuariosAPI, eliminarUsuarioAPI, actualizarRolAPI, editarUsuarioAPI, toggleUsuarioAPI,
+  listarProductosAdminAPI, crearProductoAPI, actualizarProductoAPI, eliminarProductoAPI, toggleProductoAPI,
   obtenerPaquetesAPI, crearPaqueteAPI, actualizarPaqueteAPI, eliminarPaqueteAPI, togglePaqueteAPI,
   obtenerTodasLasSolicitudesAPI, actualizarEstadoSolicitudAPI,
-  editarCitaAPI, toggleCitaAPI, eliminarCitaAPI, editarPedidoAPI, togglePedidoAPI, eliminarPedidoAPI, editarSolicitudAPI, toggleSolicitudAPI, eliminarSolicitudAdminAPI,
+  editarCitaAPI, toggleCitaAPI, eliminarCitaAPI, editarPedidoAPI, togglePedidoAPI, eliminarPedidoAPI,
+  editarSolicitudAPI, toggleSolicitudAPI, eliminarSolicitudAdminAPI,
   obtenerOpinionesAPI, eliminarOpinionAPI, editarOpinionAPI, toggleOpinionAPI,
-  obtenerCategoriasAPI, listarCategoriasAdminAPI, crearCategoriaAPI, actualizarCategoriaAPI, eliminarCategoriaAPI, toggleCategoriaAPI,
+  obtenerCategoriasAPI, listarCategoriasAdminAPI, crearCategoriaAPI, actualizarCategoriaAPI, eliminarCategoriaAPI,
   getUsuarioLocal, cerrarSesion
 } from '../../servicios/api';
 
@@ -38,11 +40,7 @@ const ESTADOS_PERSONAL = [
 
 const formatearCOP = (valor) => {
   if (valor === undefined || valor === null) return '$ 0';
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0
-  }).format(valor);
+  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(valor);
 };
 
 const normalizarRolWeb = (rol) => {
@@ -53,6 +51,7 @@ const normalizarRolWeb = (rol) => {
   return valor;
 };
 
+// --- COMPONENTES AUXILIARES DE DETALLE ---
 function DetalleCita({ solicitud }) {
   return (
     <div style={{ fontSize: '0.85rem' }}>
@@ -129,6 +128,259 @@ function DetallePersonalizado({ solicitud }) {
   );
 }
 
+// --- VISTAS ESPECÍFICAS ---
+function VistaUsuarios({ items, busqueda, setBusqueda, onEditar, onCambiarRol, onEliminar, onToggle, esAuxiliar, esAdminGeneral }) {
+  return (
+    <div>
+      <div className="barra-busqueda-filtros" style={{ marginBottom: '2rem' }}>
+        <div className="contenedor-campo-busqueda">
+          <i className="fas fa-search"></i>
+          <input className="campo-busqueda-texto" type="text" placeholder="Buscar usuario..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+        </div>
+      </div>
+      <div className="cuadricula-general">
+        {items.map((u) => (
+          <div key={u.Id_Usuario} className="tarjeta-admin">
+            <div className="tarjeta-admin__barra"></div>
+            <div className="tarjeta-admin__cuerpo">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                <div className="menu-lateral__avatar-admin" style={{ width: '40px', height: '40px' }}>{u.Nombre ? u.Nombre[0] : 'U'}</div>
+                <div>
+                  <div style={{ fontWeight: 700 }}>{u.Nombre} {u.Apellidos}</div>
+                  <span className={`etiqueta-rol ${u.Rol?.Nombre_Rol === 'admin' ? 'etiqueta-rol--administrador' : 'etiqueta-rol--cliente'}`}>
+                    {u.Rol?.Nombre_Rol || 'cliente'}
+                  </span>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{u.Correo}</div>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{u.Celular}</div>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+              <button type="button" className="boton-accion" onClick={() => onEditar(u)} title="Editar Usuario"><i className="fas fa-pen"></i></button>
+              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--editar" onClick={() => onCambiarRol(u.Id_Usuario, u.Rol?.Nombre_Rol)} title="Cambiar Rol"><i className="fas fa-user-shield"></i></button>}
+              {esAdminGeneral && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(u.Id_Usuario)} title="Eliminar Usuario"><i className="fas fa-trash"></i></button>}
+              <button type="button" className={`boton-accion ${u.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => onToggle(u.Id_Usuario)} title={u.Activo === false ? 'Activar Usuario' : 'Desactivar Usuario'}><i className={`fas fa-${u.Activo === false ? 'user-check' : 'user-times'}`}></i></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VistaPaquetes({ items, busqueda, setBusqueda, onNuevo, onEditar, onToggle, onEliminar, esAuxiliar }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <button type="button" className="boton-accion boton-accion--guardar" onClick={onNuevo}>
+          <i className="fas fa-plus"></i> Nuevo Paquete
+        </button>
+        <div className="contenedor-campo-busqueda">
+          <i className="fas fa-search"></i>
+          <input className="campo-busqueda-texto" type="text" placeholder="Buscar paquete..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+        </div>
+      </div>
+      <div className="cuadricula-general">
+        {items.map((p) => (
+          <div key={p.Id_Paquete} className="tarjeta-admin">
+            <div className="tarjeta-admin__barra"></div>
+            <div className="tarjeta-admin__cuerpo">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{p.Nombre_Paquete}</div>
+                <span className={p.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{p.Activo ? 'ACTIVO' : 'OCULTO'}</span>
+              </div>
+              <div style={{ color: 'var(--rojo)', fontWeight: 700, margin: '5px 0' }}>{formatearCOP(p.Precio_Paquete)}</div>
+              <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{p.Descripcion_Paquete}</p>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
+              <button type="button" className="boton-accion" onClick={() => onEditar(p)}><i className="fas fa-pen"></i></button>
+              <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(p.Id_Paquete)}><i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i></button>
+              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(p.Id_Paquete)}><i className="fas fa-trash"></i></button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VistaProductos({ items, busqueda, setBusqueda, onNuevo, onEditar, onToggle, onEliminar, esAuxiliar }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <button type="button" className="boton-accion boton-accion--guardar" onClick={onNuevo}>
+          <i className="fas fa-plus"></i> Nuevo Producto
+        </button>
+        <div className="contenedor-campo-busqueda">
+          <i className="fas fa-search"></i>
+          <input className="campo-busqueda-texto" type="text" placeholder="Buscar producto..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+        </div>
+      </div>
+      <div className="cuadricula-general">
+        {items.map((p) => (
+          <div key={p.Id_Producto} className="tarjeta-admin">
+            <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, var(--cian), var(--rojo))' }}></div>
+            <div className="tarjeta-admin__cuerpo">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{p.Nombre_Producto}</div>
+                <span className={p.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{p.Activo ? 'ACTIVO' : 'OCULTO'}</span>
+              </div>
+              <div style={{ color: 'var(--cian)', fontWeight: 700, margin: '5px 0' }}>{formatearCOP(p.Precio_Producto)}</div>
+              <div style={{ fontSize: '0.8rem', color: '#ccc', margin: '8px 0' }}>Stock: <span style={{ color: '#fff' }}>{p.Stock || 0}</span></div>
+              <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{p.Descripcion_Producto}</p>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
+              <button type="button" className="boton-accion" onClick={() => onEditar(p)}><i className="fas fa-pen"></i></button>
+              <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(p.Id_Producto)}><i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i></button>
+              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(p.Id_Producto)}><i className="fas fa-trash"></i></button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VistaCategorias({ items, busqueda, setBusqueda, onNuevo, onEditar, onToggle, onEliminar, esAuxiliar }) {
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <button type="button" className="boton-accion boton-accion--guardar" onClick={onNuevo}>
+          <i className="fas fa-plus"></i> Nueva Categoría
+        </button>
+        <div className="contenedor-campo-busqueda">
+          <i className="fas fa-search"></i>
+          <input className="campo-busqueda-texto" type="text" placeholder="Buscar categoría..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+        </div>
+      </div>
+      <div className="cuadricula-general">
+        {items.map((c) => (
+          <div key={c.Id_Categoria} className="tarjeta-admin">
+            <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, #8A2BE2, #FF00FF)' }}></div>
+            <div className="tarjeta-admin__cuerpo">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
+                <span className={p => p.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{c.Activo ? 'ACTIVA' : 'OCULTA'}</span>
+              </div>
+              <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
+              <button type="button" className="boton-accion" onClick={() => onEditar(c)}><i className="fas fa-pen"></i></button>
+              <button type="button" className={`boton-accion ${c.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(c.Id_Categoria)}><i className={`fas fa-${c.Activo ? 'eye-slash' : 'eye'}`}></i></button>
+              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(c.Id_Categoria)}><i className="fas fa-trash"></i></button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VistaSolicitudes({ items, pestanaSolicitudes, setPestanaSolicitudes, busqueda, setBusqueda, filtroEstado, setFiltroEstado, opcionesEstado, onCambiarEstado, onEditar, onToggle, onEliminar, esAuxiliar }) {
+  return (
+    <div>
+      <div className="barra-busqueda-filtros" style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="barra-pestanas" style={{ margin: 0 }}>
+          <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'paquetes' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('paquetes'); setFiltroEstado(''); }}>Citas</button>
+          <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'productos' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('productos'); setFiltroEstado(''); }}>Pedidos</button>
+          <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'personalizado' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('personalizado'); setFiltroEstado(''); }}>Personalizado</button>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="contenedor-campo-busqueda" style={{ flex: 1 }}>
+            <i className="fas fa-search"></i>
+            <input className="campo-busqueda-texto" type="text" placeholder="Buscar por ID, nombre o correo..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+          </div>
+          <select style={{ padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }} value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)}>
+            <option value="" style={{ background: 'var(--bg-1)', color: '#fff' }}>Todos los estados</option>
+            {opcionesEstado.map(e => <option key={e.value} value={e.value} style={{ background: 'var(--bg-1)', color: '#fff' }}>{e.label}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="cuadricula-general">
+        {items.map((s) => {
+          const id = s.Id_Reserva_Paquete || s.id || s.Id_Personalizado;
+          const estado = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
+          return (
+            <div key={id} className="tarjeta-admin" style={{ borderTop: '3px solid var(--rojo)' }}>
+              <div className="tarjeta-admin__cuerpo">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{s.Nombre_Completo || s.usuario?.Nombre || 'Cliente'}</div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}><i className="fas fa-envelope"></i> {s.Correo || s.usuario?.Correo || '—'}</div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}><i className="fas fa-phone"></i> {s.Numero_Telefono || s.telefono || s.usuario?.Celular || '—'}</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,8,68,0.1)', color: 'var(--rojo)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>#{id}</div>
+                </div>
+
+                <hr style={{ borderColor: 'rgba(255,255,255,0.05)', margin: '15px 0' }} />
+
+                <div style={{ marginBottom: '20px' }}>
+                  {pestanaSolicitudes === 'paquetes' && <DetalleCita solicitud={s} />}
+                  {pestanaSolicitudes === 'productos' && <DetallePedidoProd solicitud={s} />}
+                  {pestanaSolicitudes === 'personalizado' && <DetallePersonalizado solicitud={s} />}
+                </div>
+
+                <label htmlFor={`estado-solicitud-${id}`} style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '5px', color: 'var(--rojo)', display: 'block' }}>ACTUALIZAR ESTADO:</label>
+                <select 
+                  id={`estado-solicitud-${id}`}
+                  className="selector-estado-solicitud"
+                  value={estado} 
+                  onChange={(e) => onCambiarEstado(id, e.target.value)}
+                  style={{ width: '100%', padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }}
+                >
+                  {opcionesEstado.map(e => <option key={e.value} value={e.value} style={{ background: 'var(--bg-1)', color: '#fff' }}>{e.label}</option>)}
+                </select>
+                <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
+                  <button type="button" className="boton-accion" style={{ flex: 1 }} onClick={() => onEditar(s)}><i className="fas fa-pen"></i> Editar</button>
+                  <button type="button" className={`boton-accion ${estado === 'cancelado' || estado === 'cancelada' ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{ flex: 1 }} onClick={() => onToggle(id)}><i className="fas fa-ban"></i> {estado === 'cancelado' || estado === 'cancelada' ? 'Restaurar' : 'Cancelar'}</button>
+                  {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" style={{ flex: 1 }} onClick={() => onEliminar(id)}><i className="fas fa-trash"></i> Eliminar</button>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function VistaOpiniones({ items, busqueda, setBusqueda, filtroCalificacion, setFiltroCalificacion, onEditar, onToggle, onEliminar, esAuxiliar }) {
+  return (
+    <div>
+      <div className="barra-busqueda-filtros" style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between' }}>
+        <div className="contenedor-campo-busqueda" style={{ flex: 1 }}>
+          <i className="fas fa-search"></i>
+          <input className="campo-busqueda-texto" type="text" placeholder="Buscar por ID o nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+        </div>
+        <select style={{ padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }} value={filtroCalificacion} onChange={(e) => setFiltroCalificacion(e.target.value)}>
+          <option value="">Todas las calificaciones</option>
+          {[5, 4, 3, 2, 1].map(n => <option key={n} value={n.toString()}>{n} Estrellas</option>)}
+        </select>
+      </div>
+      <div className="cuadricula-general">
+        {items.map((o) => (
+          <div key={o.Id_Reseña} className="tarjeta-admin">
+            <div className="tarjeta-admin__cuerpo">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <div style={{ fontWeight: 700 }}>{o.Nombre_Usuario}</div>
+                <div style={{ color: 'var(--rojo)' }}>{'★'.repeat(o.Calificacion)}</div>
+              </div>
+              <p style={{ fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.8 }}>"{o.Comentario}"</p>
+            </div>
+            <div style={{ padding: '0.8rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '5px' }}>
+              <button type="button" className="boton-accion" onClick={() => onEditar(o)}><i className="fas fa-pen"></i></button>
+              <button type="button" className={`boton-accion ${o.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => onToggle(o.Id_Reseña)}><i className={`fas fa-${o.Activo === false ? 'eye' : 'eye-slash'}`}></i></button>
+              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(o.Id_Reseña)}><i className="fas fa-trash"></i> Eliminar</button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- COMPONENTE PRINCIPAL (Complejidad < 10) ---
 const PaginaAdmin = () => {
   const navigate = useNavigate();
   const [userLocal] = useState(getUsuarioLocal());
@@ -431,8 +683,7 @@ const PaginaAdmin = () => {
 
   const itemsActuales = dataFiltrada();
   const opcionesEstado = pestanaSolicitudes === 'paquetes' ? ESTADOS_PAQUETE : pestanaSolicitudes === 'productos' ? ESTADOS_PRODUCTO : ESTADOS_PERSONAL;
-
-  const primeraLetraAdmin = userLocal && userLocal.Nombre ? userLocal.Nombre.charAt(0) : 'A';
+  const primeraLetraAdmin = userLocal?.Nombre ? userLocal.Nombre.charAt(0) : 'A';
 
   return (
     <div className="pagina-admin-root">
@@ -500,250 +751,96 @@ const PaginaAdmin = () => {
           ) : (
             <>
               {vistaActiva === 'usuarios' && (
-                <div>
-                  <div className="barra-busqueda-filtros" style={{ marginBottom: '2rem' }}>
-                    <div className="contenedor-campo-busqueda">
-                      <i className="fas fa-search"></i>
-                      <input className="campo-busqueda-texto" type="text" placeholder="Buscar usuario..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((u) => (
-                      <div key={u.Id_Usuario} className="tarjeta-admin">
-                        <div className="tarjeta-admin__barra"></div>
-                        <div className="tarjeta-admin__cuerpo">
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                            <div className="menu-lateral__avatar-admin" style={{ width: '40px', height: '40px' }}>{u.Nombre ? u.Nombre[0] : 'U'}</div>
-                            <div>
-                              <div style={{ fontWeight: 700 }}>{u.Nombre} {u.Apellidos}</div>
-                              <span className={`etiqueta-rol ${u.Rol?.Nombre_Rol === 'admin' ? 'etiqueta-rol--administrador' : 'etiqueta-rol--cliente'}`}>
-                                {u.Rol?.Nombre_Rol || 'cliente'}
-                              </span>
-                            </div>
-                          </div>
-                          <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{u.Correo}</div>
-                          <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{u.Celular}</div>
-                        </div>
-                        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                          <button type="button" className="boton-accion" onClick={() => { setElementoEditable(u); setModalAbierto('usuario'); }} title="Editar Usuario"><i className="fas fa-pen"></i></button>
-                          {!esAuxiliar && <button type="button" className="boton-accion boton-accion--editar" onClick={() => cambiarRolUsuario(u.Id_Usuario, u.Rol?.Nombre_Rol)} title="Cambiar Rol"><i className="fas fa-user-shield"></i></button>}
-                          {esAdminGeneral && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => eliminarUsuario(u.Id_Usuario)} title="Eliminar Usuario"><i className="fas fa-trash"></i></button>}
-                          <button type="button" className={`boton-accion ${u.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleUsuario(u.Id_Usuario)} title={u.Activo === false ? 'Activar Usuario' : 'Desactivar Usuario'}><i className={`fas fa-${u.Activo === false ? 'user-check' : 'user-times'}`}></i></button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <VistaUsuarios
+                  items={itemsActuales}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  onEditar={(u) => { setElementoEditable(u); setModalAbierto('usuario'); }}
+                  onCambiarRol={cambiarRolUsuario}
+                  onEliminar={eliminarUsuario}
+                  onToggle={handleToggleUsuario}
+                  esAuxiliar={esAuxiliar}
+                  esAdminGeneral={esAdminGeneral}
+                />
               )}
 
               {vistaActiva === 'paquetes' && (
-                <div>
-                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <button type="button" className="boton-accion boton-accion--guardar" onClick={() => { setElementoEditable(null); setModalAbierto('paquete'); }}>
-                      <i className="fas fa-plus"></i> Nuevo Paquete
-                    </button>
-                    <div className="contenedor-campo-busqueda">
-                      <i className="fas fa-search"></i>
-                      <input className="campo-busqueda-texto" type="text" placeholder="Buscar paquete..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((p) => (
-                      <div key={p.Id_Paquete} className="tarjeta-admin">
-                        <div className="tarjeta-admin__barra"></div>
-                        <div className="tarjeta-admin__cuerpo">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{p.Nombre_Paquete}</div>
-                            <span className={p.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{p.Activo ? 'ACTIVO' : 'OCULTO'}</span>
-                          </div>
-                          <div style={{ color: 'var(--rojo)', fontWeight: 700, margin: '5px 0' }}>{formatearCOP(p.Precio_Paquete)}</div>
-                          <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{p.Descripcion_Paquete}</p>
-                        </div>
-                        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
-                          <button type="button" className="boton-accion" onClick={() => { setElementoEditable(p); setModalAbierto('paquete'); }}><i className="fas fa-pen"></i></button>
-                          <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleTogglePaquete(p.Id_Paquete)}><i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i></button>
-                          {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarPaquete(p.Id_Paquete)}><i className="fas fa-trash"></i></button>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <VistaPaquetes
+                  items={itemsActuales}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  onNuevo={() => { setElementoEditable(null); setModalAbierto('paquete'); }}
+                  onEditar={(p) => { setElementoEditable(p); setModalAbierto('paquete'); }}
+                  onToggle={handleTogglePaquete}
+                  onEliminar={handleEliminarPaquete}
+                  esAuxiliar={esAuxiliar}
+                />
               )}
 
               {vistaActiva === 'productos' && (
-                <div>
-                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <button type="button" className="boton-accion boton-accion--guardar" onClick={() => { setElementoEditable(null); setModalAbierto('producto'); }}>
-                      <i className="fas fa-plus"></i> Nuevo Producto
-                    </button>
-                    <div className="contenedor-campo-busqueda">
-                      <i className="fas fa-search"></i>
-                      <input className="campo-busqueda-texto" type="text" placeholder="Buscar producto..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((p) => (
-                      <div key={p.Id_Producto} className="tarjeta-admin">
-                        <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, var(--cian), var(--rojo))' }}></div>
-                        <div className="tarjeta-admin__cuerpo">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{p.Nombre_Producto}</div>
-                            <span className={p.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{p.Activo ? 'ACTIVO' : 'OCULTO'}</span>
-                          </div>
-                          <div style={{ color: 'var(--cian)', fontWeight: 700, margin: '5px 0' }}>{formatearCOP(p.Precio_Producto)}</div>
-                          <div style={{ fontSize: '0.8rem', color: '#ccc', margin: '8px 0' }}>Stock: <span style={{ color: '#fff' }}>{p.Stock || 0}</span></div>
-                          <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{p.Descripcion_Producto}</p>
-                        </div>
-                        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
-                          <button type="button" className="boton-accion" onClick={() => { setElementoEditable(p); setModalAbierto('producto'); }}><i className="fas fa-pen"></i></button>
-                          <button type="button" className={`boton-accion ${p.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleProducto(p.Id_Producto)}><i className={`fas fa-${p.Activo ? 'eye-slash' : 'eye'}`}></i></button>
-                          {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarProducto(p.Id_Producto)}><i className="fas fa-trash"></i></button>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <VistaProductos
+                  items={itemsActuales}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  onNuevo={() => { setElementoEditable(null); setModalAbierto('producto'); }}
+                  onEditar={(p) => { setElementoEditable(p); setModalAbierto('producto'); }}
+                  onToggle={handleToggleProducto}
+                  onEliminar={handleEliminarProducto}
+                  esAuxiliar={esAuxiliar}
+                />
               )}
 
               {vistaActiva === 'categorias' && (
-                <div>
-                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                    <button type="button" className="boton-accion boton-accion--guardar" onClick={() => { setElementoEditable(null); setModalAbierto('categoria'); }}>
-                      <i className="fas fa-plus"></i> Nueva Categoría
-                    </button>
-                    <div className="contenedor-campo-busqueda">
-                      <i className="fas fa-search"></i>
-                      <input className="campo-busqueda-texto" type="text" placeholder="Buscar categoría..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((c) => (
-                      <div key={c.Id_Categoria} className="tarjeta-admin">
-                        <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, #8A2BE2, #FF00FF)' }}></div>
-                        <div className="tarjeta-admin__cuerpo">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
-                            <span className={c.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{c.Activo ? 'ACTIVA' : 'OCULTA'}</span>
-                          </div>
-                          <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
-                        </div>
-                        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
-                          <button type="button" className="boton-accion" onClick={() => { setElementoEditable(c); setModalAbierto('categoria'); }}><i className="fas fa-pen"></i></button>
-                          <button type="button" className={`boton-accion ${c.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => handleToggleCategoria(c.Id_Categoria)}><i className={`fas fa-${c.Activo ? 'eye-slash' : 'eye'}`}></i></button>
-                          {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => handleEliminarCategoria(c.Id_Categoria)}><i className="fas fa-trash"></i></button>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <VistaCategorias
+                  items={itemsActuales}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  onNuevo={() => { setElementoEditable(null); setModalAbierto('categoria'); }}
+                  onEditar={(c) => { setElementoEditable(c); setModalAbierto('categoria'); }}
+                  onToggle={handleToggleCategoria}
+                  onEliminar={handleEliminarCategoria}
+                  esAuxiliar={esAuxiliar}
+                />
               )}
 
               {vistaActiva === 'solicitudes' && (
-                <div>
-                  <div className="barra-busqueda-filtros" style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="barra-pestanas" style={{ margin: 0 }}>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'paquetes' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('paquetes'); setFiltroEstadoSolicitud(''); }}>Citas</button>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'productos' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('productos'); setFiltroEstadoSolicitud(''); }}>Pedidos</button>
-                      <button type="button" className={`pestana-boton ${pestanaSolicitudes === 'personalizado' ? 'pestana-boton--activa' : ''}`} onClick={() => { setPestanaSolicitudes('personalizado'); setFiltroEstadoSolicitud(''); }}>Personalizado</button>
-                    </div>
-                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                      <div className="contenedor-campo-busqueda" style={{ flex: 1 }}>
-                        <i className="fas fa-search"></i>
-                        <input className="campo-busqueda-texto" type="text" placeholder="Buscar por ID, nombre o correo..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                      </div>
-                      <select style={{ padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }} value={filtroEstadoSolicitud} onChange={(e) => setFiltroEstadoSolicitud(e.target.value)}>
-                        <option value="" style={{ background: 'var(--bg-1)', color: '#fff' }}>Todos los estados</option>
-                        {opcionesEstado.map(e => <option key={e.value} value={e.value} style={{ background: 'var(--bg-1)', color: '#fff' }}>{e.label}</option>)}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((s) => {
-                      const id = s.Id_Reserva_Paquete || s.id || s.Id_Personalizado;
-                      const estado = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
-                      return (
-                        <div key={id} className="tarjeta-admin" style={{ borderTop: '3px solid var(--rojo)' }}>
-                          <div className="tarjeta-admin__cuerpo">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-                              <div>
-                                <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{s.Nombre_Completo || s.usuario?.Nombre || 'Cliente'}</div>
-                                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}><i className="fas fa-envelope"></i> {s.Correo || s.usuario?.Correo || '—'}</div>
-                                <div style={{ fontSize: '0.8rem', opacity: 0.7 }}><i className="fas fa-phone"></i> {s.Numero_Telefono || s.telefono || s.usuario?.Celular || '—'}</div>
-                              </div>
-                              <div style={{ background: 'rgba(255,8,68,0.1)', color: 'var(--rojo)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>#{id}</div>
-                            </div>
-
-                            <hr style={{ borderColor: 'rgba(255,255,255,0.05)', margin: '15px 0' }} />
-
-                            <div style={{ marginBottom: '20px' }}>
-                              {pestanaSolicitudes === 'paquetes' && <DetalleCita solicitud={s} />}
-                              {pestanaSolicitudes === 'productos' && <DetallePedidoProd solicitud={s} />}
-                              {pestanaSolicitudes === 'personalizado' && <DetallePersonalizado solicitud={s} />}
-                            </div>
-
-                            <label htmlFor={`estado-solicitud-${id}`} style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '5px', color: 'var(--rojo)', display: 'block' }}>ACTUALIZAR ESTADO:</label>
-                            <select 
-                              id={`estado-solicitud-${id}`}
-                              className="selector-estado-solicitud"
-                              value={estado} 
-                              onChange={(e) => handleCambiarEstadoSolicitud(id, e.target.value)}
-                              style={{ width: '100%', padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }}
-                            >
-                              {opcionesEstado.map(e => <option key={e.value} value={e.value} style={{ background: 'var(--bg-1)', color: '#fff' }}>{e.label}</option>)}
-                            </select>
-                            <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
-                              <button type="button" className="boton-accion" style={{ flex: 1 }} onClick={() => { setElementoEditable(s); setModalAbierto('solicitud'); }}><i className="fas fa-pen"></i> Editar</button>
-                              <button type="button" className={`boton-accion ${estado === 'cancelado' || estado === 'cancelada' ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{ flex: 1 }} onClick={() => handleToggleSolicitudEspecifica(id)}><i className="fas fa-ban"></i> {estado === 'cancelado' || estado === 'cancelada' ? 'Restaurar' : 'Cancelar'}</button>
-                              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" style={{ flex: 1 }} onClick={() => handleEliminarSolicitud(id)}><i className="fas fa-trash"></i> Eliminar</button>}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <VistaSolicitudes
+                  items={itemsActuales}
+                  pestanaSolicitudes={pestanaSolicitudes}
+                  setPestanaSolicitudes={setPestanaSolicitudes}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  filtroEstado={filtroEstadoSolicitud}
+                  setFiltroEstado={setFiltroEstadoSolicitud}
+                  opcionesEstado={opcionesEstado}
+                  onCambiarEstado={handleCambiarEstadoSolicitud}
+                  onEditar={(s) => { setElementoEditable(s); setModalAbierto('solicitud'); }}
+                  onToggle={handleToggleSolicitudEspecifica}
+                  onEliminar={handleEliminarSolicitud}
+                  esAuxiliar={esAuxiliar}
+                />
               )}
 
               {vistaActiva === 'opiniones' && (
-                <div>
-                  <div className="barra-busqueda-filtros" style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between' }}>
-                    <div className="contenedor-campo-busqueda" style={{ flex: 1 }}>
-                      <i className="fas fa-search"></i>
-                      <input className="campo-busqueda-texto" type="text" placeholder="Buscar por ID o nombre..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-                    </div>
-                    <select style={{ padding: '10px', background: 'var(--bg-1)', color: '#fff', border: '1px solid var(--borde)', borderRadius: '6px' }} value={filtroCalificacionOpinion} onChange={(e) => setFiltroCalificacionOpinion(e.target.value)}>
-                      <option value="">Todas las calificaciones</option>
-                      {[5, 4, 3, 2, 1].map(n => <option key={n} value={n.toString()}>{n} Estrellas</option>)}
-                    </select>
-                  </div>
-                  <div className="cuadricula-general">
-                    {itemsActuales.map((o) => (
-                      <div key={o.Id_Reseña} className="tarjeta-admin">
-                        <div className="tarjeta-admin__cuerpo">
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                            <div style={{ fontWeight: 700 }}>{o.Nombre_Usuario}</div>
-                            <div style={{ color: 'var(--rojo)' }}>{'★'.repeat(o.Calificacion)}</div>
-                          </div>
-                          <p style={{ fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.8 }}>"{o.Comentario}"</p>
-                        </div>
-                        <div style={{ padding: '0.8rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '5px' }}>
-                          <button type="button" className="boton-accion" onClick={() => { setElementoEditable(o); setModalAbierto('opinion'); }}><i className="fas fa-pen"></i></button>
-                          <button type="button" className={`boton-accion ${o.Activo === false ? 'boton-accion--activar' : 'boton-accion--desactivar'}`} onClick={() => handleToggleOpinion(o.Id_Reseña)}><i className={`fas fa-${o.Activo === false ? 'eye' : 'eye-slash'}`}></i></button>
-                          {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => {
-                            pedirConfirmacion('¿Borrar reseña?', 'Esta acción no se puede deshacer.', async () => {
-                              try {
-                                await eliminarOpinionAPI(o.Id_Reseña);
-                                showToast('Reseña eliminada');
-                                cargarDatos();
-                              } catch (e) { showToast(e.message, 'error'); }
-                            });
-                          }}><i className="fas fa-trash"></i> Eliminar</button>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <VistaOpiniones
+                  items={itemsActuales}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
+                  filtroCalificacion={filtroCalificacionOpinion}
+                  setFiltroCalificacion={setFiltroCalificacionOpinion}
+                  onEditar={(o) => { setElementoEditable(o); setModalAbierto('opinion'); }}
+                  onToggle={handleToggleOpinion}
+                  onEliminar={(id) => {
+                    pedirConfirmacion('¿Borrar reseña?', 'Esta acción no se puede deshacer.', async () => {
+                      try {
+                        await eliminarOpinionAPI(id);
+                        showToast('Reseña eliminada');
+                        cargarDatos();
+                      } catch (e) { showToast(e.message, 'error'); }
+                    });
+                  }}
+                  esAuxiliar={esAuxiliar}
+                />
               )}
             </>
           )}
