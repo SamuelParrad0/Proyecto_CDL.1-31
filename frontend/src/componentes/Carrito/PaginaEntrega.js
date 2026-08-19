@@ -254,7 +254,7 @@ export default function PaginaEntrega() {
 
       <div className="zona-boton-volver">
         <button type="button" className="boton-regresar-carrito" onClick={() => navigate('/carrito')}>
-          <i className="fas fa-arrow-left"></i> Volver al carrito
+          <i className="fas fa-arrow-left"></i>{' '}<span>Volver al carrito</span>
         </button>
       </div>
 
@@ -271,10 +271,10 @@ export default function PaginaEntrega() {
             {dirs.length > 0 && (
               <div className="grupo-botones-direccion">
                 <button type="button" className="boton-accion-direccion boton-eliminar-direccion" onClick={() => eliminarDir(seleccionado)}>
-                  <i className="fas fa-trash-alt"></i> Eliminar dirección
+                  <i className="fas fa-trash-alt"></i>{' '}<span>Eliminar dirección</span>
                 </button>
                 <button type="button" className="boton-accion-direccion boton-ver-detalle-direccion" onClick={() => setPanelVisible(p => !p)}>
-                  <i className="fas fa-eye"></i> {panelVisible ? 'Ocultar' : 'Ver completa'}
+                  <i className="fas fa-eye"></i>{' '}<span>{panelVisible ? 'Ocultar' : 'Ver completa'}</span>
                 </button>
               </div>
             )}
@@ -303,14 +303,14 @@ export default function PaginaEntrega() {
             )}
 
             <button type="button" className="boton-agregar-nueva-direccion" onClick={() => { setMostrarForm(p => !p); setDepAbierto(false); }}>
-              <i className="fas fa-plus"></i> {mostrarForm ? 'Cancelar' : 'Agregar otra dirección'}
+              <i className="fas fa-plus"></i>{' '}<span>{mostrarForm ? 'Cancelar' : 'Agregar otra dirección'}</span>
             </button>
 
             {mostrarForm && (
               <div className="formulario-nueva-direccion entrega-form-ampliado" style={{ display: 'block' }}>
                 <h4 className="titulo-formulario-direccion">
                   <i className="fas fa-map-marker-alt" style={{ color: '#ff0844', marginRight: '8px' }}></i>
-                  Nueva dirección
+                  <span>Nueva dirección</span>
                 </h4>
 
                 <div className="entrega-form-grid">
@@ -452,9 +452,9 @@ export default function PaginaEntrega() {
                     disabled={guardando}
                   >
                     {guardando ? (
-                      <><i className="fas fa-spinner fa-spin"></i> Guardando...</>
+                      <><i className="fas fa-spinner fa-spin"></i><span>Guardando...</span></>
                     ) : (
-                      <><i className="fas fa-map-marker-alt"></i> Guardar dirección</>
+                      <><i className="fas fa-map-marker-alt"></i><span>Guardar dirección</span></>
                     )}
                   </button>
                   <button type="button" className="boton-cancelar-nueva-dir" onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }}>
@@ -466,7 +466,7 @@ export default function PaginaEntrega() {
           </div>
 
           <button type="button" className="boton-continuar-entrega" onClick={continuar}>
-            Continuar al Pago <i className="fas fa-arrow-right"></i>
+            <span>Continuar al Pago</span>{' '}<i className="fas fa-arrow-right"></i>
           </button>
         </section>
 

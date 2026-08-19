@@ -45,7 +45,7 @@ export default function NavegacionPrincipal() {
         style={{ top: topNavbar }}
       >
         <Link className="nav-logotipo" to="/">
-          COMMUNICATING DESIGN{' '}<span>LION</span>
+          <span>COMMUNICATING DESIGN</span>{' '}<span>LION</span>
         </Link>
         <ul className="nav-enlaces">
           <li><Link to="/">Inicio</Link></li>
@@ -58,7 +58,7 @@ export default function NavegacionPrincipal() {
         </ul>
         <div className="nav-acciones">
           <Link className="nav-boton-carrito" to="/carrito" id="botonCarrito">
-            <i className="fas fa-shopping-cart"></i> Carrito
+            <i className="fas fa-shopping-cart"></i>{' '}<span>Carrito</span>
             <span className={`contadorCarrito${carrito.length > 0 ? ' visible' : ''}`} id="contadorCarrito">{carrito.length}</span>
           </Link>
           <Link className="nav-boton-perfil" to={rutaPerfil}>{sesionActiva ? 'Mi Perfil' : 'Iniciar Sesión'}</Link>
@@ -83,7 +83,7 @@ export default function NavegacionPrincipal() {
         <Link to="/opiniones" onClick={cerrarMenu}>Opiniones</Link>
         <div className="menu-movil-acciones">
           <Link className="nav-boton-carrito" to="/carrito" onClick={cerrarMenu}>
-            <i className="fas fa-shopping-cart"></i> Carrito
+            <i className="fas fa-shopping-cart"></i>{' '}<span>Carrito</span>
           </Link>
           <Link className="nav-boton-perfil" to={rutaPerfil} onClick={cerrarMenu}>{sesionActiva ? 'Mi Perfil' : 'Iniciar Sesión'}</Link>
         </div>
