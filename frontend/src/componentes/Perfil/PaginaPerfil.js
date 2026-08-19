@@ -833,9 +833,17 @@ export default function PaginaPerfil() {
         </div>
       )}
 
+      {/* ── MODAL EDICIÓN PREMIUM ── */}
       {modalEdicion && campoEdicion && (
-        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEdicion(false)}>
-          <div className="modal-caja-edicion-premium">
+        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex', position:'fixed', inset:0, zIndex:9999}}>
+          <button 
+            type="button" 
+            className="modal-backdrop-btn" 
+            onClick={() => setModalEdicion(false)}
+            aria-label="Cerrar modal"
+            style={{ position:'absolute', inset:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="modal-caja-edicion-premium" style={{ position:'relative', zIndex:1, margin:'auto' }}>
             <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalEdicion(false)}>×</button>
             
             <div className="modal-cabecera-premium">
@@ -874,9 +882,17 @@ export default function PaginaPerfil() {
         </div>
       )}
 
+      {/* ── MODAL EDITAR DIRECCIÓN ── */}
       {modalEditDir && (
-        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalEditDir(null)}>
-          <div className="modal-dir-caja">
+        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex', position:'fixed', inset:0, zIndex:9999}}>
+          <button 
+            type="button" 
+            className="modal-backdrop-btn" 
+            onClick={() => setModalEditDir(null)}
+            aria-label="Cerrar modal"
+            style={{ position:'absolute', inset:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="modal-dir-caja" style={{ position:'relative', zIndex:1, margin:'auto' }}>
             <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalEditDir(null)}>×</button>
 
             <div className="modal-cabecera-premium">
@@ -978,9 +994,17 @@ export default function PaginaPerfil() {
         </div>
       )}
 
+      {/* ── MODAL NUEVA DIRECCIÓN ── */}
       {modalDir && (
-        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&setModalDir(false)}>
-          <div className="modal-dir-caja">
+        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex', position:'fixed', inset:0, zIndex:9999}}>
+          <button 
+            type="button" 
+            className="modal-backdrop-btn" 
+            onClick={() => setModalDir(false)}
+            aria-label="Cerrar modal"
+            style={{ position:'absolute', inset:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="modal-dir-caja" style={{ position:'relative', zIndex:1, margin:'auto' }}>
             <button type="button" className="modal-btn-cerrar-premium" onClick={() => setModalDir(false)}>×</button>
 
             <div className="modal-cabecera-premium">
@@ -1083,9 +1107,17 @@ export default function PaginaPerfil() {
         </div>
       )}
 
+      {/* ── MODAL CONFIRMACIÓN ── */}
       {modalConfirm.open && (
-        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex'}} onClick={e=>e.target===e.currentTarget&&cerrarConfirm()}>
-          <div className="modal-caja-confirmacion confirm-box premium-card slide-up">
+        <div className="modal-fondo-oscuro glass-blur" style={{display:'flex', position:'fixed', inset:0, zIndex:9999}}>
+          <button 
+            type="button" 
+            className="modal-backdrop-btn" 
+            onClick={cerrarConfirm}
+            aria-label="Cerrar modal"
+            style={{ position:'absolute', inset:0, width:'100%', height:'100%', background:'transparent', border:'none', cursor:'default' }}
+          />
+          <div className="modal-caja-confirmacion confirm-box premium-card slide-up" style={{ position:'relative', zIndex:1, margin:'auto' }}>
             <div className="confirm-icon glow-text" style={{fontSize: '3rem', marginBottom: '15px'}}>{modalConfirm.icono}</div>
             <div className="modal-titulo-premium glow-text" style={{fontSize: '1.8rem', marginBottom: '10px'}}>{modalConfirm.titulo}</div>
             <div className="confirm-desc" dangerouslySetInnerHTML={{__html:modalConfirm.desc}}></div>
