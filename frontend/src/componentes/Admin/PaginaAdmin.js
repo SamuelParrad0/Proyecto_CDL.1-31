@@ -51,7 +51,7 @@ const normalizarRolWeb = (rol) => {
   return valor;
 };
 
-// --- FILTRADO DE DATOS (Helper externo para mantener la complejidad en < 5) ---
+// --- FILTRADO DE DATOS ---
 const obtenerDatosFiltrados = ({ vista, busqueda, usuarios, paquetes, productos, categorias, solicitudes, opiniones, filtroEstado, filtroCalificacion }) => {
   const text = (busqueda || '').toLowerCase();
   
@@ -73,22 +73,18 @@ const obtenerDatosFiltrados = ({ vista, busqueda, usuarios, paquetes, productos,
       const nom = (s.Nombre_Completo || s.usuario?.Nombre || '').toLowerCase();
       const corr = (s.Correo || s.usuario?.Correo || '').toLowerCase();
       const est = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
-      const coincideBusqueda = id.includes(text) || nom.includes(text) || corr.includes(text);
-      const coincideFiltro = !filtroEstado || est === filtroEstado;
-      return coincideBusqueda && coincideFiltro;
+      return (id.includes(text) || nom.includes(text) || corr.includes(text)) && (!filtroEstado || est === filtroEstado);
     });
   }
   if (vista === 'opiniones') {
     return opiniones.filter(o => {
-      const coincideBusqueda = String(o.Id_Reseña || '').includes(text) || (o.Nombre_Usuario || '').toLowerCase().includes(text);
-      const coincideFiltro = !filtroCalificacion || String(o.Calificacion) === filtroCalificacion;
-      return coincideBusqueda && coincideFiltro;
+      return (String(o.Id_Reseña || '').includes(text) || (o.Nombre_Usuario || '').toLowerCase().includes(text)) && (!filtroCalificacion || String(o.Calificacion) === filtroCalificacion);
     });
   }
   return [];
 };
 
-// --- COMPONENTES AUXILIARES DE DETALLE ---
+// --- DETALLES DE SOLICITUDES ---
 function DetalleCita({ solicitud }) {
   return (
     <div style={{ fontSize: '0.85rem' }}>
@@ -165,7 +161,7 @@ function DetallePersonalizado({ solicitud }) {
   );
 }
 
-// --- VISTAS ESPECÍFICAS ---
+// --- VISTAS PRINCIPALES ---
 function VistaUsuarios({ items, busqueda, setBusqueda, onEditar, onCambiarRol, onEliminar, onToggle, esAuxiliar, esAdminGeneral }) {
   return (
     <div>
@@ -297,7 +293,7 @@ function VistaCategorias({ items, busqueda, setBusqueda, onNuevo, onEditar, onTo
             <div className="tarjeta-admin__cuerpo">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
-                <span className={c.Activo ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{c.Activo ? 'ACTIVA' : 'OCULTA'}</span>
+                <span className="etiqueta-rol--cliente" style={{ fontSize: '9px' }}>{c.Activo ? 'ACTIVA' : 'OCULTA'}</span>
               </div>
               <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
             </div>
@@ -417,116 +413,130 @@ function VistaOpiniones({ items, busqueda, setBusqueda, filtroCalificacion, setF
   );
 }
 
-// --- MODALES DESACOPLADOS ---
-function ModalesAdmin({ modalAbierto, elementoEditable, setModalAbierto, onGuardarPaquete, onGuardarProducto, onGuardarCategoria, onGuardarUsuario, onGuardarSolicitud, onGuardarOpinion, categorias, pestanaSolicitudes }) {
-  if (!modalAbierto) return null;
-
+// --- SUBCOMPONENTES DE MODALES INDEPENDIENTES ---
+function ModalPaquete({ elementoEditable, onGuardar, onCerrar }) {
   return (
-    <>
-      {modalAbierto === 'paquete' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarPaquete}>
-            <div className="modal__titulo">{elementoEditable ? 'Editar' : 'Nuevo'} <span>Paquete</span></div>
-            <div className="modal__campo"><label htmlFor="paquete-nombre">Nombre del Paquete</label><input id="paquete-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Paquete} required /></div>
-            <div className="modal__campo"><label htmlFor="paquete-precio">Precio (COP)</label><input id="paquete-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Paquete} required /></div>
-            <div className="modal__campo"><label htmlFor="paquete-imagen">Imagen URL</label><input id="paquete-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Paquete} placeholder="https://..." /></div>
-            <div className="modal__campo"><label htmlFor="paquete-descripcion">Descripción</label><textarea id="paquete-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Paquete} rows={4} required></textarea></div>
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
-          </form>
-        </div>
-      )}
-
-      {modalAbierto === 'producto' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarProducto}>
-            <div className="modal__titulo" style={{ color: 'var(--cian)' }}>{elementoEditable ? 'Editar' : 'Nuevo'} <span>Producto</span></div>
-            <div className="modal__campo"><label htmlFor="producto-nombre">Nombre del Producto</label><input id="producto-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Producto} required /></div>
-            <div className="modal__campo"><label htmlFor="producto-precio">Precio (COP)</label><input id="producto-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Producto} required /></div>
-            <div className="modal__campo"><label htmlFor="producto-stock">Stock Disponible</label><input id="producto-stock" name="stock" type="number" min="0" defaultValue={elementoEditable?.Stock !== undefined ? elementoEditable.Stock : 0} required /></div>
-            <div className="modal__campo"><label htmlFor="producto-imagen">Imagen URL</label><input id="producto-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Producto} placeholder="https://..." /></div>
-            <div className="modal__campo"><label htmlFor="producto-categoria">Categoría</label><select id="producto-categoria" name="categoriaId" defaultValue={elementoEditable?.Id_Categoria} required><option value="">Selecciona una categoría</option>{categorias.map(c => <option key={c.Id_Categoria} value={c.Id_Categoria}>{c.Nombre_Categoria}</option>)}</select></div>
-            <div className="modal__campo"><label htmlFor="producto-descripcion">Descripción</label><textarea id="producto-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Producto} rows={4} required></textarea></div>
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar" style={{ background: 'var(--cian)', color: '#000' }}>Guardar</button></div>
-          </form>
-        </div>
-      )}
-
-      {modalAbierto === 'categoria' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarCategoria}>
-            <div className="modal__titulo" style={{ color: '#DDA0DD' }}>{elementoEditable ? 'Editar' : 'Nueva'} <span>Categoría</span></div>
-            <div className="modal__campo"><label htmlFor="categoria-nombre">Nombre de la Categoría</label><input id="categoria-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Categoria} required /></div>
-            <div className="modal__campo"><label htmlFor="categoria-descripcion">Descripción</label><textarea id="categoria-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Categoria} rows={3} placeholder="Opcional"></textarea></div>
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar" style={{ background: '#FF00FF', color: '#FFF' }}>Guardar</button></div>
-          </form>
-        </div>
-      )}
-
-      {modalAbierto === 'usuario' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarUsuario}>
-            <div className="modal__titulo">Editar <span>Usuario</span></div>
-            <div className="modal__campo"><label htmlFor="usuario-nombre">Nombre</label><input id="usuario-nombre" name="nombre" defaultValue={elementoEditable?.Nombre} required /></div>
-            <div className="modal__campo"><label htmlFor="usuario-apellidos">Apellidos</label><input id="usuario-apellidos" name="apellidos" defaultValue={elementoEditable?.Apellidos} /></div>
-            <div className="modal__campo"><label htmlFor="usuario-celular">Teléfono / Celular</label><input id="usuario-celular" name="celular" defaultValue={elementoEditable?.Celular} /></div>
-            <div className="modal__campo"><label htmlFor="usuario-correo">Correo Electrónico</label><input id="usuario-correo" name="correo" type="email" defaultValue={elementoEditable?.Correo} required /></div>
-            <div className="modal__campo"><label htmlFor="usuario-password">Nueva Contraseña</label><input id="usuario-password" name="contraseña" type="password" placeholder="••••••••" /></div>
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
-          </form>
-        </div>
-      )}
-
-      {modalAbierto === 'solicitud' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarSolicitud}>
-            <div className="modal__titulo">Editar <span>{pestanaSolicitudes === 'paquetes' ? 'Cita' : pestanaSolicitudes === 'productos' ? 'Pedido' : 'Personalizado'}</span></div>
-            {pestanaSolicitudes === 'paquetes' && (
-              <>
-                <div className="modal__campo"><label htmlFor="cita-nombre-completo">Nombre Completo</label><input id="cita-nombre-completo" name="Nombre_Completo" defaultValue={elementoEditable?.Nombre_Completo} /></div>
-                <div className="modal__campo"><label htmlFor="cita-correo">Correo</label><input id="cita-correo" name="Correo" type="email" defaultValue={elementoEditable?.Correo} /></div>
-                <div className="modal__campo"><label htmlFor="cita-telefono">Teléfono</label><input id="cita-telefono" name="Numero_Telefono" defaultValue={elementoEditable?.Numero_Telefono} /></div>
-                <div className="modal__campo"><label htmlFor="cita-tipo-evento">Tipo de Evento</label><input id="cita-tipo-evento" name="Tipo_Evento" defaultValue={elementoEditable?.Tipo_Evento} /></div>
-                <div className="modal__campo"><label htmlFor="cita-fecha-evento">Fecha del Evento</label><input id="cita-fecha-evento" name="Fecha_Evento" type="date" defaultValue={elementoEditable?.Fecha_Evento} /></div>
-                <div className="modal__campo"><label htmlFor="cita-invitados">Número de Invitados</label><input id="cita-invitados" name="Numero_Invitados" type="number" defaultValue={elementoEditable?.Numero_Invitados} /></div>
-                <div className="modal__campo"><label htmlFor="cita-info-adicional">Información Adicional</label><textarea id="cita-info-adicional" name="Informacion_Adicional" defaultValue={elementoEditable?.Informacion_Adicional} rows={3}></textarea></div>
-              </>
-            )}
-            {pestanaSolicitudes === 'productos' && (
-              <>
-                <div className="modal__campo"><label htmlFor="pedido-direccion-envio">Dirección de Envío</label><input id="pedido-direccion-envio" name="direccionEnvio" defaultValue={elementoEditable?.direccionEnvio} /></div>
-                <div className="modal__campo"><label htmlFor="pedido-notas">Notas</label><textarea id="pedido-notas" name="notas" defaultValue={elementoEditable?.notas} rows={3}></textarea></div>
-              </>
-            )}
-            {pestanaSolicitudes === 'personalizado' && (
-              <>
-                <div className="modal__campo"><label htmlFor="personalizado-destinatario">Destinatario</label><input id="personalizado-destinatario" name="Destinatario" defaultValue={elementoEditable?.Destinatario} /></div>
-                <div className="modal__campo"><label htmlFor="personalizado-descripcion-idea">Descripción de la Idea</label><textarea id="personalizado-descripcion-idea" name="Descripcion_Idea" defaultValue={elementoEditable?.Descripcion_Idea} rows={3}></textarea></div>
-                <div className="modal__campo"><label htmlFor="personalizado-elementos-esenciales">Elementos Esenciales</label><textarea id="personalizado-elementos-esenciales" name="Elementos_Esenciales" defaultValue={elementoEditable?.Elementos_Esenciales} rows={3}></textarea></div>
-                <div className="modal__campo"><label htmlFor="personalizado-prioridad">Prioridad</label><select id="personalizado-prioridad" name="Prioridad_Cliente" defaultValue={elementoEditable?.Prioridad_Cliente || 'normal'}><option value="baja">Baja</option><option value="normal">Normal</option><option value="alta">Alta</option></select></div>
-                <div className="modal__campo"><label htmlFor="personalizado-comentarios">Comentarios Adicionales</label><textarea id="personalizado-comentarios" name="Comentarios_Adicionales" defaultValue={elementoEditable?.Comentarios_Adicionales} rows={3}></textarea></div>
-              </>
-            )}
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
-          </form>
-        </div>
-      )}
-
-      {modalAbierto === 'opinion' && (
-        <div className="modal-fondo">
-          <form className="modal-caja" onSubmit={onGuardarOpinion}>
-            <div className="modal__titulo">Editar <span>Opinión</span></div>
-            <div className="modal__campo"><label htmlFor="opinion-nombre-usuario">Nombre del Usuario</label><input id="opinion-nombre-usuario" name="nombre" defaultValue={elementoEditable?.Nombre_Usuario} required /></div>
-            <div className="modal__campo"><label htmlFor="opinion-calificacion">Calificación (1-5)</label><select id="opinion-calificacion" name="calificacion" defaultValue={elementoEditable?.Calificacion} required><option value="5">5 ★★★★★</option><option value="4">4 ★★★★</option><option value="3">3 ★★★</option><option value="2">2 ★★</option><option value="1">1 ★</option></select></div>
-            <div className="modal__campo"><label htmlFor="opinion-comentario">Comentario</label><textarea id="opinion-comentario" name="comentario" defaultValue={elementoEditable?.Comentario} rows={4} required></textarea></div>
-            <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={() => setModalAbierto(null)}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
-          </form>
-        </div>
-      )}
-    </>
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo">{elementoEditable ? 'Editar' : 'Nuevo'} <span>Paquete</span></div>
+        <div className="modal__campo"><label htmlFor="paquete-nombre">Nombre del Paquete</label><input id="paquete-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Paquete} required /></div>
+        <div className="modal__campo"><label htmlFor="paquete-precio">Precio (COP)</label><input id="paquete-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Paquete} required /></div>
+        <div className="modal__campo"><label htmlFor="paquete-imagen">Imagen URL</label><input id="paquete-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Paquete} placeholder="https://..." /></div>
+        <div className="modal__campo"><label htmlFor="paquete-descripcion">Descripción</label><textarea id="paquete-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Paquete} rows={4} required></textarea></div>
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
+      </form>
+    </div>
   );
 }
 
-// --- COMPONENTE PRINCIPAL (Complejidad < 5) ---
+function ModalProducto({ elementoEditable, onGuardar, onCerrar, categorias }) {
+  return (
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo" style={{ color: 'var(--cian)' }}>{elementoEditable ? 'Editar' : 'Nuevo'} <span>Producto</span></div>
+        <div className="modal__campo"><label htmlFor="producto-nombre">Nombre del Producto</label><input id="producto-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Producto} required /></div>
+        <div className="modal__campo"><label htmlFor="producto-precio">Precio (COP)</label><input id="producto-precio" name="precio" type="number" defaultValue={elementoEditable?.Precio_Producto} required /></div>
+        <div className="modal__campo"><label htmlFor="producto-stock">Stock Disponible</label><input id="producto-stock" name="stock" type="number" min="0" defaultValue={elementoEditable?.Stock !== undefined ? elementoEditable.Stock : 0} required /></div>
+        <div className="modal__campo"><label htmlFor="producto-imagen">Imagen URL</label><input id="producto-imagen" name="imagen" defaultValue={elementoEditable?.Imagen_Producto} placeholder="https://..." /></div>
+        <div className="modal__campo"><label htmlFor="producto-categoria">Categoría</label><select id="producto-categoria" name="categoriaId" defaultValue={elementoEditable?.Id_Categoria} required><option value="">Selecciona una categoría</option>{categorias.map(c => <option key={c.Id_Categoria} value={c.Id_Categoria}>{c.Nombre_Categoria}</option>)}</select></div>
+        <div className="modal__campo"><label htmlFor="producto-descripcion">Descripción</label><textarea id="producto-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Producto} rows={4} required></textarea></div>
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar" style={{ background: 'var(--cian)', color: '#000' }}>Guardar</button></div>
+      </form>
+    </div>
+  );
+}
+
+function ModalCategoria({ elementoEditable, onGuardar, onCerrar }) {
+  return (
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo" style={{ color: '#DDA0DD' }}>{elementoEditable ? 'Editar' : 'Nueva'} <span>Categoría</span></div>
+        <div className="modal__campo"><label htmlFor="categoria-nombre">Nombre de la Categoría</label><input id="categoria-nombre" name="nombre" defaultValue={elementoEditable?.Nombre_Categoria} required /></div>
+        <div className="modal__campo"><label htmlFor="categoria-descripcion">Descripción</label><textarea id="categoria-descripcion" name="descripcion" defaultValue={elementoEditable?.Descripcion_Categoria} rows={3} placeholder="Opcional"></textarea></div>
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar" style={{ background: '#FF00FF', color: '#FFF' }}>Guardar</button></div>
+      </form>
+    </div>
+  );
+}
+
+function ModalUsuario({ elementoEditable, onGuardar, onCerrar }) {
+  return (
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo">Editar <span>Usuario</span></div>
+        <div className="modal__campo"><label htmlFor="usuario-nombre">Nombre</label><input id="usuario-nombre" name="nombre" defaultValue={elementoEditable?.Nombre} required /></div>
+        <div className="modal__campo"><label htmlFor="usuario-apellidos">Apellidos</label><input id="usuario-apellidos" name="apellidos" defaultValue={elementoEditable?.Apellidos} /></div>
+        <div className="modal__campo"><label htmlFor="usuario-celular">Teléfono / Celular</label><input id="usuario-celular" name="celular" defaultValue={elementoEditable?.Celular} /></div>
+        <div className="modal__campo"><label htmlFor="usuario-correo">Correo Electrónico</label><input id="usuario-correo" name="correo" type="email" defaultValue={elementoEditable?.Correo} required /></div>
+        <div className="modal__campo"><label htmlFor="usuario-password">Nueva Contraseña</label><input id="usuario-password" name="contraseña" type="password" placeholder="••••••••" /></div>
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
+      </form>
+    </div>
+  );
+}
+
+function ModalSolicitud({ elementoEditable, onGuardar, onCerrar, pestanaSolicitudes }) {
+  return (
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo">Editar <span>{pestanaSolicitudes === 'paquetes' ? 'Cita' : pestanaSolicitudes === 'productos' ? 'Pedido' : 'Personalizado'}</span></div>
+        {pestanaSolicitudes === 'paquetes' && (
+          <>
+            <div className="modal__campo"><label htmlFor="cita-nombre-completo">Nombre Completo</label><input id="cita-nombre-completo" name="Nombre_Completo" defaultValue={elementoEditable?.Nombre_Completo} /></div>
+            <div className="modal__campo"><label htmlFor="cita-correo">Correo</label><input id="cita-correo" name="Correo" type="email" defaultValue={elementoEditable?.Correo} /></div>
+            <div className="modal__campo"><label htmlFor="cita-telefono">Teléfono</label><input id="cita-telefono" name="Numero_Telefono" defaultValue={elementoEditable?.Numero_Telefono} /></div>
+            <div className="modal__campo"><label htmlFor="cita-tipo-evento">Tipo de Evento</label><input id="cita-tipo-evento" name="Tipo_Evento" defaultValue={elementoEditable?.Tipo_Evento} /></div>
+            <div className="modal__campo"><label htmlFor="cita-fecha-evento">Fecha del Evento</label><input id="cita-fecha-evento" name="Fecha_Evento" type="date" defaultValue={elementoEditable?.Fecha_Evento} /></div>
+            <div className="modal__campo"><label htmlFor="cita-invitados">Número de Invitados</label><input id="cita-invitados" name="Numero_Invitados" type="number" defaultValue={elementoEditable?.Numero_Invitados} /></div>
+            <div className="modal__campo"><label htmlFor="cita-info-adicional">Información Adicional</label><textarea id="cita-info-adicional" name="Informacion_Adicional" defaultValue={elementoEditable?.Informacion_Adicional} rows={3}></textarea></div>
+          </>
+        )}
+        {pestanaSolicitudes === 'productos' && (
+          <>
+            <div className="modal__campo"><label htmlFor="pedido-direccion-envio">Dirección de Envío</label><input id="pedido-direccion-envio" name="direccionEnvio" defaultValue={elementoEditable?.direccionEnvio} /></div>
+            <div className="modal__campo"><label htmlFor="pedido-notas">Notas</label><textarea id="pedido-notas" name="notas" defaultValue={elementoEditable?.notas} rows={3}></textarea></div>
+          </>
+        )}
+        {pestanaSolicitudes === 'personalizado' && (
+          <>
+            <div className="modal__campo"><label htmlFor="personalizado-destinatario">Destinatario</label><input id="personalizado-destinatario" name="Destinatario" defaultValue={elementoEditable?.Destinatario} /></div>
+            <div className="modal__campo"><label htmlFor="personalizado-descripcion-idea">Descripción de la Idea</label><textarea id="personalizado-descripcion-idea" name="Descripcion_Idea" defaultValue={elementoEditable?.Descripcion_Idea} rows={3}></textarea></div>
+            <div className="modal__campo"><label htmlFor="personalizado-elementos-esenciales">Elementos Esenciales</label><textarea id="personalizado-elementos-esenciales" name="Elementos_Esenciales" defaultValue={elementoEditable?.Elementos_Esenciales} rows={3}></textarea></div>
+            <div className="modal__campo"><label htmlFor="personalizado-prioridad">Prioridad</label><select id="personalizado-prioridad" name="Prioridad_Cliente" defaultValue={elementoEditable?.Prioridad_Cliente || 'normal'}><option value="baja">Baja</option><option value="normal">Normal</option><option value="alta">Alta</option></select></div>
+            <div className="modal__campo"><label htmlFor="personalizado-comentarios">Comentarios Adicionales</label><textarea id="personalizado-comentarios" name="Comentarios_Adicionales" defaultValue={elementoEditable?.Comentarios_Adicionales} rows={3}></textarea></div>
+          </>
+        )}
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
+      </form>
+    </div>
+  );
+}
+
+function ModalOpinion({ elementoEditable, onGuardar, onCerrar }) {
+  return (
+    <div className="modal-fondo">
+      <form className="modal-caja" onSubmit={onGuardar}>
+        <div className="modal__titulo">Editar <span>Opinión</span></div>
+        <div className="modal__campo"><label htmlFor="opinion-nombre-usuario">Nombre del Usuario</label><input id="opinion-nombre-usuario" name="nombre" defaultValue={elementoEditable?.Nombre_Usuario} required /></div>
+        <div className="modal__campo"><label htmlFor="opinion-calificacion">Calificación (1-5)</label><select id="opinion-calificacion" name="calificacion" defaultValue={elementoEditable?.Calificacion} required><option value="5">5 ★★★★★</option><option value="4">4 ★★★★</option><option value="3">3 ★★★</option><option value="2">2 ★★</option><option value="1">1 ★</option></select></div>
+        <div className="modal__campo"><label htmlFor="opinion-comentario">Comentario</label><textarea id="opinion-comentario" name="comentario" defaultValue={elementoEditable?.Comentario} rows={4} required></textarea></div>
+        <div className="modal__fila-acciones"><button type="button" className="boton-accion" onClick={onCerrar}>Cancelar</button><button type="submit" className="boton-accion boton-accion--guardar">Guardar Cambios</button></div>
+      </form>
+    </div>
+  );
+}
+
+function ModalesAdmin({ modalAbierto, elementoEditable, onCerrar, onGuardarPaquete, onGuardarProducto, onGuardarCategoria, onGuardarUsuario, onGuardarSolicitud, onGuardarOpinion, categorias, pestanaSolicitudes }) {
+  if (modalAbierto === 'paquete') return <ModalPaquete elementoEditable={elementoEditable} onGuardar={onGuardarPaquete} onCerrar={onCerrar} />;
+  if (modalAbierto === 'producto') return <ModalProducto elementoEditable={elementoEditable} onGuardar={onGuardarProducto} onCerrar={onCerrar} categorias={categorias} />;
+  if (modalAbierto === 'categoria') return <ModalCategoria elementoEditable={elementoEditable} onGuardar={onGuardarCategoria} onCerrar={onCerrar} />;
+  if (modalAbierto === 'usuario') return <ModalUsuario elementoEditable={elementoEditable} onGuardar={onGuardarUsuario} onCerrar={onCerrar} />;
+  if (modalAbierto === 'solicitud') return <ModalSolicitud elementoEditable={elementoEditable} onGuardar={onGuardarSolicitud} onCerrar={onCerrar} pestanaSolicitudes={pestanaSolicitudes} />;
+  if (modalAbierto === 'opinion') return <ModalOpinion elementoEditable={elementoEditable} onGuardar={onGuardarOpinion} onCerrar={onCerrar} />;
+  return null;
+}
+
+// --- COMPONENTE PRINCIPAL (Complejidad < 4) ---
 const PaginaAdmin = () => {
   const navigate = useNavigate();
   const [userLocal] = useState(getUsuarioLocal());
@@ -987,7 +997,7 @@ const PaginaAdmin = () => {
       <ModalesAdmin
         modalAbierto={modalAbierto}
         elementoEditable={elementoEditable}
-        setModalAbierto={setModalAbierto}
+        onCerrar={() => setModalAbierto(null)}
         onGuardarPaquete={handleGuardarPaquete}
         onGuardarProducto={handleGuardarProducto}
         onGuardarCategoria={handleGuardarCategoria}
