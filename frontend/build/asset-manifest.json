@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/static/css/main.c3d1a1a1.css",
-    "main.js": "/static/js/main.d3dd0535.js",
+    "main.js": "/static/js/main.fa1c135f.js",
     "static/media/Fondo1.png": "/static/media/Fondo1.3249b7fd088b015d172a.png",
     "static/media/FondoLogin.png": "/static/media/FondoLogin.dd0b760857e3b6fcfb9f.png",
     "index.html": "/index.html",
     "main.c3d1a1a1.css.map": "/static/css/main.c3d1a1a1.css.map",
-    "main.d3dd0535.js.map": "/static/js/main.d3dd0535.js.map"
+    "main.fa1c135f.js.map": "/static/js/main.fa1c135f.js.map"
   },
   "entrypoints": [
     "static/css/main.c3d1a1a1.css",
-    "static/js/main.d3dd0535.js"
+    "static/js/main.fa1c135f.js"
   ]
 }

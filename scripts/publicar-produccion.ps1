@@ -82,6 +82,6 @@ finally {
 
 Write-Host ''
 Write-Host "Publicacion terminada: http://$PublicIp/"
-Write-Host "Prueba del backend a traves de IIS: http://$PublicIp/"
+Write-Host "Prueba de la aplicacion a traves del gateway Node: http://$PublicIp/"
 Write-Host "El backend permanece interno en 127.0.0.1:$BackendPort."
 Write-Host 'Nota: configura el NAT/security group del proveedor para permitir TCP 80 y usa HTTPS antes de manejar credenciales reales.'

@@ -14,7 +14,7 @@ const CART_LOCAL_KEY = 'cdl_carrito_items';
 
 export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState([]);
-  const [, setCargando] = useState(false);
+  const [cargando, setCargando] = useState(false);
 
   const guardarEnLocal = useCallback((items) => {
     const resumen = items.map(item => ({
@@ -103,6 +103,20 @@ export function CarritoProvider({ children }) {
     }
   }, []);
 
+  const obtenerCarritoConClientes = useCallback(() => {
+    let clientesGuardados = {};
+    try {
+      clientesGuardados = JSON.parse(localStorage.getItem('cdl_clientes_carrito') || '{}');
+    } catch (error) {
+      console.error('Error al leer datos de clientes del carrito:', error);
+    }
+
+    return carrito.map((item) => ({
+      ...item,
+      cliente: item.cliente || clientesGuardados[item.Id_Producto] || null
+    }));
+  }, [carrito]);
+
   const totalItems = useMemo(() => {
     return carrito.reduce((acc, item) => acc + (Number(item.Cantidad_Productos) || 1), 0);
   }, [carrito]);
@@ -117,9 +131,23 @@ export function CarritoProvider({ children }) {
     eliminarItem,
     vaciarCarrito,
     actualizarCantidad,
+    sincronizar,
+    cargando,
+    obtenerCarritoConClientes,
     totalItems,
     totalPrecio
-  }), [carrito, agregarItem, eliminarItem, vaciarCarrito, actualizarCantidad, totalItems, totalPrecio]);
+  }), [
+    carrito,
+    agregarItem,
+    eliminarItem,
+    vaciarCarrito,
+    actualizarCantidad,
+    sincronizar,
+    cargando,
+    obtenerCarritoConClientes,
+    totalItems,
+    totalPrecio
+  ]);
 
   return (
     <CarritoContexto.Provider value={valorContexto}>
