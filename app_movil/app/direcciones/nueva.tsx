@@ -24,7 +24,7 @@ export default function NuevaDireccionScreen() {
   const [residenciaLaboral, setResidenciaLaboral] = useState('Residencia');
   
   const [cargando, setCargando] = useState(false);
-  const [cargandoDatos, setCargandoDatos] = useState(!!editarId);
+  const [cargandoDatos, setCargandoDatos] = useState(Boolean(editarId));
 
   useEffect(() => {
     if (editarId) {
@@ -34,10 +34,8 @@ export default function NuevaDireccionScreen() {
 
   const cargarDireccion = async () => {
     try {
-      // Como no hay endpoint individual de dirección en nuestro mockup de backend original,
-      // tenemos que obtener la lista y filtrar
       const direcciones = await servicioDirecciones.obtenerMisDirecciones();
-      const dir = direcciones.find(d => d.Id_Direccion.toString() === editarId.toString());
+      const dir = direcciones.find(d => d.Id_Direccion.toString() === editarId?.toString());
       
       if (dir) {
         setNombreCompleto(dir.Nombre_Completo);
@@ -54,6 +52,7 @@ export default function NuevaDireccionScreen() {
         router.back();
       }
     } catch (error) {
+      console.error('Error al cargar la dirección:', error);
       Alert.alert('Error', 'No se pudo cargar la dirección');
       router.back();
     } finally {
@@ -88,8 +87,9 @@ export default function NuevaDireccionScreen() {
         await servicioDirecciones.crearDireccion(datos);
         Alert.alert('Éxito', 'Dirección creada correctamente', [{ text: 'OK', onPress: () => router.back() }]);
       }
-    } catch (error) {
-      Alert.alert('Error', error.message || 'No se pudo guardar la dirección');
+    } catch (error: any) {
+      console.error('Error al guardar dirección:', error);
+      Alert.alert('Error', error?.message || 'No se pudo guardar la dirección');
       setCargando(false);
     }
   };

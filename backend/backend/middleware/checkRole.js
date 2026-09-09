@@ -1,49 +1,51 @@
+const jwt = require('jsonwebtoken');
+const { Usuario, Rol } = require('../models');
 const { normalizarRol } = require('../utils/roles');
 
-const esAdministrador = (req, res, next) => {
-  if (!req.usuario) {
-    return res.status(401).json({ ok: false, mensaje: 'No autorizado' });
-  }
-  const rol = normalizarRol(req.usuarioRol || (req.usuario.Rol && req.usuario.Rol.Nombre_Rol));
-  if (rol !== 'admin') {
-    return res.status(403).json({ ok: false, mensaje: 'Acceso denegado. Se requiere rol administrador' });
-  }
-  next();
-};
+const verificarToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader?.split(' ')[1];
 
-const esCliente = (req, res, next) => {
-  if (!req.usuario) {
-    return res.status(401).json({ ok: false, mensaje: 'No autorizado' });
-  }
-  const rol = normalizarRol(req.usuarioRol || (req.usuario.Rol && req.usuario.Rol.Nombre_Rol));
-  if (rol !== 'cliente') {
-    return res.status(403).json({ ok: false, mensaje: 'Acceso denegado. Solo para clientes' });
-  }
-  next();
-};
-
-const esAdminOAuxiliar = (req, res, next) => {
-  if (!req.usuario) {
-    return res.status(401).json({ ok: false, mensaje: 'No autorizado' });
-  }
-  const rol = normalizarRol(req.usuarioRol || (req.usuario.Rol && req.usuario.Rol.Nombre_Rol));
-  if (!['admin', 'auxiliar'].includes(rol)) {
-    return res.status(403).json({ ok: false, mensaje: 'Acceso denegado. Se requiere administrador o auxiliar' });
-  }
-  next();
-};
-
-const tieneRol = (rolesPermitidos) => {
-  return (req, res, next) => {
-    if (!req.usuario) {
-      return res.status(401).json({ ok: false, mensaje: 'No autorizado' });
+    if (!token) {
+      return res.status(401).json({
+        ok: false,
+        mensaje: 'Acceso denegado. Token no proporcionado'
+      });
     }
-    const rol = normalizarRol(req.usuarioRol || (req.usuario.Rol && req.usuario.Rol.Nombre_Rol));
-    if (!rolesPermitidos.map(r => normalizarRol(r)).includes(rol)) {
-      return res.status(403).json({ ok: false, mensaje: `Acceso denegado. Roles permitidos: ${rolesPermitidos.join(', ')}` });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const usuario = await Usuario.scope('withPassword').findByPk(decoded.id, {
+      attributes: { exclude: ['Contraseña'] },
+      include: {
+        model: Rol,
+        as: 'Rol',
+        attributes: ['Nombre_Rol']
+      }
+    });
+
+    if (!usuario) {
+      return res.status(401).json({
+        ok: false,
+        mensaje: 'Token inválido o usuario no encontrado'
+      });
     }
+
+    // Adjuntar datos al request
+    req.usuario = usuario;
+    req.usuarioId = usuario.Id_Usuario;
+    req.usuarioRol = normalizarRol(usuario.Rol ? usuario.Rol.Nombre_Rol : null);
+
     next();
-  };
+
+  } catch (error) {
+    console.error('Error al verificar token:', error);
+    return res.status(401).json({
+      ok: false,
+      mensaje: 'Token inválido o expirado'
+    });
+  }
 };
 
-module.exports = { esAdministrador, esCliente, esAdminOAuxiliar, tieneRol };
+module.exports = { verificarToken };

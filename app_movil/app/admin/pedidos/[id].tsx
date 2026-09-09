@@ -24,7 +24,7 @@ type Pedido = {
   detalles?: Detalle[];
 };
 
-export default function AdminPedidoDetalleScreen() {
+export default function AdminPedidoDetalleScreen(_props: Readonly<Record<string, never>>) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { esAdmin, esAuxiliar, estaAutenticado } = useContext(AuthContext) as any;
@@ -106,8 +106,8 @@ export default function AdminPedidoDetalleScreen() {
 
       <ThemedText style={styles.sectionTitle}>Productos:</ThemedText>
 
-      {pedido.detalles?.map((det: Detalle) => {
-        const itemKey = `${det.producto?.nombre || 'prod'}-${det.cantidad}-${det.precio}`;
+      {pedido.detalles?.map((det: Detalle, idx: number) => {
+        const itemKey = `${det.producto?.nombre || 'prod'}-${det.cantidad}-${det.precio}-${idx}`;
         return (
           <View key={itemKey} style={styles.detalleRow}>
             <ThemedText>{det.producto?.nombre} x{det.cantidad}</ThemedText>

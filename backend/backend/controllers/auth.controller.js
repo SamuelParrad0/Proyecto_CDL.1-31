@@ -4,7 +4,7 @@ const { normalizarRol } = require('../utils/roles');
 
 // ==========================================
 // REGISTRO DE USUARIO
-// ==========================================   ggg
+// ==========================================
 const registrar = async (req, res) => {
   try {
     const { nombre, apellidos, correo, contraseña, celular } = req.body;
@@ -164,6 +164,7 @@ const obtenerPerfil = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Error al obtener perfil:', error);
     res.status(500).json({
       ok: false,
       mensaje: 'Error al obtener el perfil',
@@ -187,6 +188,7 @@ const listarUsuarios = async (req, res) => {
 
     res.json(usuarios);
   } catch (error) {
+    console.error('Error al obtener usuarios:', error);
     res.status(500).json({ mensaje: 'Error al obtener usuarios' });
   }
 };
@@ -210,6 +212,7 @@ const obtenerUsuarioId = async (req, res) => {
 
     res.json(usuario);
   } catch (error) {
+    console.error('Error al obtener usuario por id:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al obtener usuario' });
   }
 };
@@ -243,6 +246,7 @@ const editarUsuarioAdmin = async (req, res) => {
     await usuario.save();
     res.json({ ok: true, mensaje: 'Usuario editado correctamente', usuario: usuario.toJSON() });
   } catch (error) {
+    console.error('Error al editar usuario:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al editar usuario' });
   }
 };
@@ -267,6 +271,7 @@ const toggleUsuario = async (req, res) => {
       usuario 
     });
   } catch (error) {
+    console.error('Error al cambiar estado del usuario:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al cambiar estado del usuario' });
   }
 };
@@ -303,7 +308,7 @@ const eliminarUsuario = async (req, res) => {
     res.json({ ok: true, mensaje: 'Usuario eliminado correctamente' });
 
   } catch (error) {
-    console.error(error);
+    console.error('Error al eliminar usuario:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al eliminar usuario' });
   }
 };
@@ -360,7 +365,7 @@ const actualizarPerfil = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('Error al actualizar el perfil:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al actualizar el perfil' });
   }
 };
@@ -461,6 +466,7 @@ const cambiarRol = async (req, res) => {
 
     res.json({ ok: true, mensaje: `Rol cambiado a ${nuevoRol}` });
   } catch (error) {
+    console.error('Error al cambiar rol:', error);
     res.status(500).json({ ok: false, mensaje: 'Error al cambiar rol' });
   }
 };
