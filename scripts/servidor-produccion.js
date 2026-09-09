@@ -22,15 +22,18 @@ const mimeTypes = {
   '.woff2': 'font/woff2'
 };
 
-function sanitizePath(rawUrl) {
-  try {
-    const parsed = new URL(String(rawUrl || '/'), 'http://127.0.0.1');
-    // Forzar codificación y normalización de ruta
-    const safePathname = path.posix.normalize(parsed.pathname);
-    return `${safePathname}${parsed.search}`;
-  } catch {
-    return '/';
-  }
+// Validador estricto para cortar la propagación de datos inseguros
+function getValidatedPath(rawUrl) {
+  if (typeof rawUrl !== 'string') return '/';
+  
+  // Limitar a caracteres válidos en URLs relativas para mitigar inyección
+  const sanitized = rawUrl.replace(/[^\w\-.~:/?#[\]@!$&'()*+,;=]/g, '');
+  const urlObj = new URL(sanitized || '/', 'http://127.0.0.1');
+  const normalizedPath = path.posix.normalize(urlObj.pathname);
+
+  // Asegurar que la ruta siempre inicie con /
+  const safePath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
+  return `${safePath}${urlObj.search}`;
 }
 
 function serveFile(req, res, requestedPath) {
@@ -60,9 +63,8 @@ function serveFile(req, res, requestedPath) {
 }
 
 function proxyToBackend(req, res) {
-  const safePath = sanitizePath(req.url);
+  const safePath = getValidatedPath(req.url);
 
-  // Cabeceras seguras contra prototype pollution
   const safeHeaders = Object.create(null);
   for (const [key, value] of Object.entries(req.headers)) {
     if (key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
@@ -71,29 +73,24 @@ function proxyToBackend(req, res) {
   }
   safeHeaders.host = `127.0.0.1:${backendPort}`;
 
-  const proxyRequest = http.request({
+  const requestOptions = {
     hostname: '127.0.0.1',
     port: backendPort,
-    path: safePath,
+    path: encodeURI(safePath),
     method: req.method,
     headers: safeHeaders
-  }, (proxyResponse) => {
-    // Eliminar 'location' para erradicar la alerta de Open Redirect
+  };
+
+  const proxyRequest = http.request(requestOptions, (proxyResponse) => {
     const responseHeaders = Object.create(null);
     for (const [key, value] of Object.entries(proxyResponse.headers)) {
+      // Ignorar 'location' para prevenir la vulnerabilidad de Open Redirect
       if (key.toLowerCase() !== 'location') {
         responseHeaders[key] = value;
       }
     }
 
-    // Si el backend envió redirección, responder con ruta relativa segura o 200
-    const statusCode = proxyResponse.statusCode || 502;
-    if (statusCode >= 300 && statusCode < 400 && proxyResponse.headers.location) {
-      const safeRedirect = sanitizePath(proxyResponse.headers.location);
-      responseHeaders.location = safeRedirect;
-    }
-
-    res.writeHead(statusCode, responseHeaders);
+    res.writeHead(proxyResponse.statusCode || 502, responseHeaders);
     proxyResponse.pipe(res);
   });
 
@@ -110,7 +107,7 @@ if (!fs.existsSync(path.join(buildRoot, 'index.html'))) {
 }
 
 http.createServer((req, res) => {
-  const safeUrl = sanitizePath(req.url);
+  const safeUrl = getValidatedPath(req.url);
 
   if (safeUrl.startsWith('/api/') || safeUrl === '/api' || safeUrl.startsWith('/uploads/')) {
     proxyToBackend(req, res);
