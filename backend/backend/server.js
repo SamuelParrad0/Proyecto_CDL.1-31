@@ -10,9 +10,14 @@ const { normalizarBody } = require('./middleware/normalizarBody');
 const app = express();
 app.disable('x-powered-by');
 
+const originsPermitidos = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 // Middlewares
 app.use(cors({
-  origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL : true,
+  origin: originsPermitidos.length > 0 ? originsPermitidos : true,
   credentials: true
 }));
 app.use(express.json());

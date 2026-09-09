@@ -51,6 +51,8 @@ const normalizarRolWeb = (rol) => {
   return valor;
 };
 
+const estaActivo = (valor) => valor === true || valor === 1 || valor === '1' || String(valor).toLowerCase() === 'true';
+
 // --- FILTRADO DE DATOS ---
 const obtenerDatosFiltrados = ({ vista, busqueda, usuarios, paquetes, productos, categorias, solicitudes, opiniones, filtroEstado, filtroCalificacion }) => {
   const text = (busqueda || '').toLowerCase();
@@ -289,19 +291,26 @@ function VistaCategorias({ items, busqueda, setBusqueda, onNuevo, onEditar, onTo
       <div className="cuadricula-general">
         {items.map((c) => (
           <div key={c.Id_Categoria} className="tarjeta-admin">
+            {(() => {
+              const categoriaActiva = estaActivo(c.Activo);
+              return (
+                <>
             <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, #8A2BE2, #FF00FF)' }}></div>
             <div className="tarjeta-admin__cuerpo">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
-                <span className="etiqueta-rol--cliente" style={{ fontSize: '9px' }}>{c.Activo ? 'ACTIVA' : 'OCULTA'}</span>
+                <span className={categoriaActiva ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{categoriaActiva ? 'ACTIVA' : 'OCULTA'}</span>
               </div>
               <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
             </div>
             <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
               <button type="button" className="boton-accion" onClick={() => onEditar(c)}><i className="fas fa-pen"></i></button>
-              <button type="button" className={`boton-accion ${c.Activo ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(c.Id_Categoria)}><i className={`fas fa-${c.Activo ? 'eye-slash' : 'eye'}`}></i></button>
+              <button type="button" className={`boton-accion ${categoriaActiva ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(c.Id_Categoria)} title={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'} aria-label={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'}><i className={`fas fa-${categoriaActiva ? 'eye-slash' : 'eye'}`}></i></button>
               {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(c.Id_Categoria)}><i className="fas fa-trash"></i></button>}
             </div>
+                </>
+              );
+            })()}
           </div>
         ))}
       </div>
@@ -699,9 +708,14 @@ const PaginaAdmin = () => {
 
   const handleToggleCategoria = async (id) => {
     try {
-      await toggleCategoriaAPI(id);
+      const respuesta = await toggleCategoriaAPI(id);
+      if (respuesta.categoria) {
+        setCategorias((actuales) => actuales.map((categoria) => (
+          categoria.Id_Categoria === respuesta.categoria.Id_Categoria ? respuesta.categoria : categoria
+        )));
+      }
       showToast('Estado de la categoría actualizado');
-      cargarDatos();
+      if (!respuesta.categoria) await cargarDatos();
     } catch (e) { showToast(e.message, 'error'); }
   };
 
