@@ -49,14 +49,39 @@ function serveFile(req, res, requestedPath) {
 }
 
 function proxyToBackend(req, res) {
+  // 1. Sanitizar la ruta para evitar SSRF / URL Injection (L52)
+  const parsedUrl = new URL(req.url, 'http://127.0.0.1');
+  const safePath = `${parsedUrl.pathname}${parsedUrl.search}`;
+
+  // 2. Prevenir Prototype Pollution copiando únicamente cabeceras seguras (L59)
+  const safeHeaders = Object.create(null);
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
+      safeHeaders[key] = value;
+    }
+  }
+  safeHeaders.host = `127.0.0.1:${backendPort}`;
+
   const proxyRequest = http.request({
     hostname: '127.0.0.1',
     port: backendPort,
-    path: req.url,
+    path: safePath,
     method: req.method,
-    headers: { ...req.headers, host: `127.0.0.1:${backendPort}` }
+    headers: safeHeaders
   }, (proxyResponse) => {
-    res.writeHead(proxyResponse.statusCode || 502, proxyResponse.headers);
+    // 3. Prevenir Open Redirect validando el header 'location' (L59)
+    const responseHeaders = { ...proxyResponse.headers };
+    if (responseHeaders.location) {
+      try {
+        const redirectUrl = new URL(responseHeaders.location, 'http://127.0.0.1');
+        // Forzar a que la redirección se mantenga dentro del dominio local/relativo
+        responseHeaders.location = `${redirectUrl.pathname}${redirectUrl.search}`;
+      } catch {
+        delete responseHeaders.location;
+      }
+    }
+
+    res.writeHead(proxyResponse.statusCode || 502, responseHeaders);
     proxyResponse.pipe(res);
   });
 
@@ -64,6 +89,7 @@ function proxyToBackend(req, res) {
     if (!res.headersSent) res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({ ok: false, mensaje: 'Backend no disponible' }));
   });
+
   req.pipe(proxyRequest);
 }
 
