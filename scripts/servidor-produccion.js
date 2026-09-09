@@ -22,6 +22,17 @@ const mimeTypes = {
   '.woff2': 'font/woff2'
 };
 
+function sanitizePath(rawUrl) {
+  try {
+    const parsed = new URL(String(rawUrl || '/'), 'http://127.0.0.1');
+    // Forzar codificación y normalización de ruta
+    const safePathname = path.posix.normalize(parsed.pathname);
+    return `${safePathname}${parsed.search}`;
+  } catch {
+    return '/';
+  }
+}
+
 function serveFile(req, res, requestedPath) {
   const relativePath = requestedPath === '/' ? '/index.html' : requestedPath;
   const filePath = path.resolve(buildRoot, `.${relativePath}`);
@@ -49,11 +60,9 @@ function serveFile(req, res, requestedPath) {
 }
 
 function proxyToBackend(req, res) {
-  // 1. Sanitizar la ruta para evitar SSRF / URL Injection (L52)
-  const parsedUrl = new URL(req.url, 'http://127.0.0.1');
-  const safePath = `${parsedUrl.pathname}${parsedUrl.search}`;
+  const safePath = sanitizePath(req.url);
 
-  // 2. Prevenir Prototype Pollution copiando únicamente cabeceras seguras (L59)
+  // Cabeceras seguras contra prototype pollution
   const safeHeaders = Object.create(null);
   for (const [key, value] of Object.entries(req.headers)) {
     if (key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
@@ -69,19 +78,22 @@ function proxyToBackend(req, res) {
     method: req.method,
     headers: safeHeaders
   }, (proxyResponse) => {
-    // 3. Prevenir Open Redirect validando el header 'location' (L59)
-    const responseHeaders = { ...proxyResponse.headers };
-    if (responseHeaders.location) {
-      try {
-        const redirectUrl = new URL(responseHeaders.location, 'http://127.0.0.1');
-        // Forzar a que la redirección se mantenga dentro del dominio local/relativo
-        responseHeaders.location = `${redirectUrl.pathname}${redirectUrl.search}`;
-      } catch {
-        delete responseHeaders.location;
+    // Eliminar 'location' para erradicar la alerta de Open Redirect
+    const responseHeaders = Object.create(null);
+    for (const [key, value] of Object.entries(proxyResponse.headers)) {
+      if (key.toLowerCase() !== 'location') {
+        responseHeaders[key] = value;
       }
     }
 
-    res.writeHead(proxyResponse.statusCode || 502, responseHeaders);
+    // Si el backend envió redirección, responder con ruta relativa segura o 200
+    const statusCode = proxyResponse.statusCode || 502;
+    if (statusCode >= 300 && statusCode < 400 && proxyResponse.headers.location) {
+      const safeRedirect = sanitizePath(proxyResponse.headers.location);
+      responseHeaders.location = safeRedirect;
+    }
+
+    res.writeHead(statusCode, responseHeaders);
     proxyResponse.pipe(res);
   });
 
@@ -98,11 +110,15 @@ if (!fs.existsSync(path.join(buildRoot, 'index.html'))) {
 }
 
 http.createServer((req, res) => {
-  if (req.url.startsWith('/api/') || req.url === '/api' || req.url.startsWith('/uploads/')) {
+  const safeUrl = sanitizePath(req.url);
+
+  if (safeUrl.startsWith('/api/') || safeUrl === '/api' || safeUrl.startsWith('/uploads/')) {
     proxyToBackend(req, res);
     return;
   }
-  serveFile(req, res, new URL(req.url, 'http://localhost').pathname);
+
+  const requestedPath = safeUrl.split('?')[0];
+  serveFile(req, res, requestedPath);
 }).listen(port, '0.0.0.0', () => {
   console.log(`CDL publicado en http://0.0.0.0:${port}`);
   console.log(`Backend interno: http://127.0.0.1:${backendPort}`);
