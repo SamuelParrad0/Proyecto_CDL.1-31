@@ -38,6 +38,12 @@ const ESTADOS_PERSONAL = [
   { value: 'cancelado', label: 'Cancelado', color: '#ef4444' }
 ];
 
+const MAPA_ESTADOS = {
+  paquetes: ESTADOS_PAQUETE,
+  productos: ESTADOS_PRODUCTO,
+  personalizado: ESTADOS_PERSONAL
+};
+
 const formatearCOP = (valor) => {
   if (valor === undefined || valor === null) return '$ 0';
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(valor);
@@ -289,30 +295,26 @@ function VistaCategorias({ items, busqueda, setBusqueda, onNuevo, onEditar, onTo
         </div>
       </div>
       <div className="cuadricula-general">
-        {items.map((c) => (
-          <div key={c.Id_Categoria} className="tarjeta-admin">
-            {(() => {
-              const categoriaActiva = estaActivo(c.Activo);
-              return (
-                <>
-            <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, #8A2BE2, #FF00FF)' }}></div>
-            <div className="tarjeta-admin__cuerpo">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
-                <span className={categoriaActiva ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{categoriaActiva ? 'ACTIVA' : 'OCULTA'}</span>
+        {items.map((c) => {
+          const categoriaActiva = estaActivo(c.Activo);
+          return (
+            <div key={c.Id_Categoria} className="tarjeta-admin">
+              <div className="tarjeta-admin__barra" style={{ background: 'linear-gradient(90deg, #8A2BE2, #FF00FF)' }}></div>
+              <div className="tarjeta-admin__cuerpo">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ fontFamily: 'Bebas Neue', fontSize: '1.5rem' }}>{c.Nombre_Categoria}</div>
+                  <span className={categoriaActiva ? 'etiqueta-rol--cliente' : 'etiqueta-rol--administrador'} style={{ fontSize: '9px' }}>{categoriaActiva ? 'ACTIVA' : 'OCULTA'}</span>
+                </div>
+                <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
               </div>
-              <p style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '10px' }}>{c.Descripcion_Categoria || 'Sin descripción'}</p>
+              <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
+                <button type="button" className="boton-accion" onClick={() => onEditar(c)}><i className="fas fa-pen"></i></button>
+                <button type="button" className={`boton-accion ${categoriaActiva ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(c.Id_Categoria)} title={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'} aria-label={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'}><i className={`fas fa-${categoriaActiva ? 'eye-slash' : 'eye'}`}></i></button>
+                {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(c.Id_Categoria)}><i className="fas fa-trash"></i></button>}
+              </div>
             </div>
-            <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', display: 'flex', gap: '10px' }}>
-              <button type="button" className="boton-accion" onClick={() => onEditar(c)}><i className="fas fa-pen"></i></button>
-              <button type="button" className={`boton-accion ${categoriaActiva ? 'boton-accion--desactivar' : 'boton-accion--activar'}`} onClick={() => onToggle(c.Id_Categoria)} title={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'} aria-label={categoriaActiva ? 'Desactivar categoría' : 'Activar categoría'}><i className={`fas fa-${categoriaActiva ? 'eye-slash' : 'eye'}`}></i></button>
-              {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" onClick={() => onEliminar(c.Id_Categoria)}><i className="fas fa-trash"></i></button>}
-            </div>
-                </>
-              );
-            })()}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -343,6 +345,7 @@ function VistaSolicitudes({ items, pestanaSolicitudes, setPestanaSolicitudes, bu
         {items.map((s) => {
           const id = s.Id_Reserva_Paquete || s.id || s.Id_Personalizado;
           const estado = s.Estado_Reserva_Paquete || s.estado || s.Estado_Personalizado;
+          const esCancelado = estado === 'cancelado' || estado === 'cancelada';
           return (
             <div key={id} className="tarjeta-admin" style={{ borderTop: '3px solid var(--rojo)' }}>
               <div className="tarjeta-admin__cuerpo">
@@ -375,7 +378,7 @@ function VistaSolicitudes({ items, pestanaSolicitudes, setPestanaSolicitudes, bu
                 </select>
                 <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
                   <button type="button" className="boton-accion" style={{ flex: 1 }} onClick={() => onEditar(s)}><i className="fas fa-pen"></i> Editar</button>
-                  <button type="button" className={`boton-accion ${estado === 'cancelado' || estado === 'cancelada' ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{ flex: 1 }} onClick={() => onToggle(id)}><i className="fas fa-ban"></i> {estado === 'cancelado' || estado === 'cancelada' ? 'Restaurar' : 'Cancelar'}</button>
+                  <button type="button" className={`boton-accion ${esCancelado ? 'boton-accion--activar' : 'boton-accion--eliminar'}`} style={{ flex: 1 }} onClick={() => onToggle(id)}><i className="fas fa-ban"></i> {esCancelado ? 'Restaurar' : 'Cancelar'}</button>
                   {!esAuxiliar && <button type="button" className="boton-accion boton-accion--eliminar" style={{ flex: 1 }} onClick={() => onEliminar(id)}><i className="fas fa-trash"></i> Eliminar</button>}
                 </div>
               </div>
@@ -485,10 +488,17 @@ function ModalUsuario({ elementoEditable, onGuardar, onCerrar }) {
 }
 
 function ModalSolicitud({ elementoEditable, onGuardar, onCerrar, pestanaSolicitudes }) {
+  let tituloModal = 'Personalizado';
+  if (pestanaSolicitudes === 'paquetes') {
+    tituloModal = 'Cita';
+  } else if (pestanaSolicitudes === 'productos') {
+    tituloModal = 'Pedido';
+  }
+
   return (
     <div className="modal-fondo">
       <form className="modal-caja" onSubmit={onGuardar}>
-        <div className="modal__titulo">Editar <span>{pestanaSolicitudes === 'paquetes' ? 'Cita' : pestanaSolicitudes === 'productos' ? 'Pedido' : 'Personalizado'}</span></div>
+        <div className="modal__titulo">Editar <span>{tituloModal}</span></div>
         {pestanaSolicitudes === 'paquetes' && (
           <>
             <div className="modal__campo"><label htmlFor="cita-nombre-completo">Nombre Completo</label><input id="cita-nombre-completo" name="Nombre_Completo" defaultValue={elementoEditable?.Nombre_Completo} /></div>
@@ -545,7 +555,102 @@ function ModalesAdmin({ modalAbierto, elementoEditable, onCerrar, onGuardarPaque
   return null;
 }
 
-// --- COMPONENTE PRINCIPAL (Complejidad < 4) ---
+// --- RENDERIZADOR DE VISTAS DESACOPLADO (Reduce Complejidad Cognitiva) ---
+function ContenidoVistaAdmin(props) {
+  const { vistaActiva, items, busqueda, setBusqueda, handlers, esAuxiliar, esAdminGeneral, pestanaSolicitudes, setPestanaSolicitudes, filtroEstado, setFiltroEstado, opcionesEstado, filtroCalificacion, setFiltroCalificacion } = props;
+
+  switch (vistaActiva) {
+    case 'usuarios':
+      return (
+        <VistaUsuarios
+          items={items}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          onEditar={handlers.onEditarUsuario}
+          onCambiarRol={handlers.onCambiarRol}
+          onEliminar={handlers.onEliminarUsuario}
+          onToggle={handlers.onToggleUsuario}
+          esAuxiliar={esAuxiliar}
+          esAdminGeneral={esAdminGeneral}
+        />
+      );
+    case 'paquetes':
+      return (
+        <VistaPaquetes
+          items={items}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          onNuevo={handlers.onNuevoPaquete}
+          onEditar={handlers.onEditarPaquete}
+          onToggle={handlers.onTogglePaquete}
+          onEliminar={handlers.onEliminarPaquete}
+          esAuxiliar={esAuxiliar}
+        />
+      );
+    case 'productos':
+      return (
+        <VistaProductos
+          items={items}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          onNuevo={handlers.onNuevoProducto}
+          onEditar={handlers.onEditarProducto}
+          onToggle={handlers.onToggleProducto}
+          onEliminar={handlers.onEliminarProducto}
+          esAuxiliar={esAuxiliar}
+        />
+      );
+    case 'categorias':
+      return (
+        <VistaCategorias
+          items={items}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          onNuevo={handlers.onNuevoCategoria}
+          onEditar={handlers.onEditarCategoria}
+          onToggle={handlers.onToggleCategoria}
+          onEliminar={handlers.onEliminarCategoria}
+          esAuxiliar={esAuxiliar}
+        />
+      );
+    case 'solicitudes':
+      return (
+        <VistaSolicitudes
+          items={items}
+          pestanaSolicitudes={pestanaSolicitudes}
+          setPestanaSolicitudes={setPestanaSolicitudes}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          filtroEstado={filtroEstado}
+          setFiltroEstado={setFiltroEstado}
+          opcionesEstado={opcionesEstado}
+          onCambiarEstado={handlers.onCambiarEstadoSolicitud}
+          onEditar={handlers.onEditarSolicitud}
+          onToggle={handlers.onToggleSolicitud}
+          onEliminar={handlers.onEliminarSolicitud}
+          esAuxiliar={esAuxiliar}
+        />
+      );
+    case 'opiniones':
+      return (
+        <VistaOpiniones
+          items={items}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+          filtroCalificacion={filtroCalificacion}
+          setFiltroCalificacion={setFiltroCalificacion}
+          onEditar={handlers.onEditarOpinion}
+          onToggle={handlers.onToggleOpinion}
+          onEliminar={handlers.onEliminarOpinion}
+          esAuxiliar={esAuxiliar}
+        />
+      );
+    default:
+      return null;
+  }
+}
+
+// --- COMPONENTE PRINCIPAL ---
 const PaginaAdmin = () => {
   const navigate = useNavigate();
   const [userLocal] = useState(getUsuarioLocal());
@@ -583,15 +688,26 @@ const PaginaAdmin = () => {
   const cargarDatos = useCallback(async () => {
     setCargando(true);
     try {
-      if (vistaActiva === 'usuarios') setUsuarios(await listarUsuariosAPI());
-      else if (vistaActiva === 'productos') {
+      if (vistaActiva === 'usuarios') {
+        const u = await listarUsuariosAPI();
+        setUsuarios(u);
+      } else if (vistaActiva === 'productos') {
         const [resProd, resCat] = await Promise.all([listarProductosAdminAPI(), obtenerCategoriasAPI()]);
         setProductos(resProd);
         setCategorias(resCat);
-      } else if (vistaActiva === 'categorias') setCategorias(await listarCategoriasAdminAPI());
-      else if (vistaActiva === 'paquetes') setPaquetes(await obtenerPaquetesAPI());
-      else if (vistaActiva === 'opiniones') setOpiniones(await obtenerOpinionesAPI());
-      else if (vistaActiva === 'solicitudes') setSolicitudes(await obtenerTodasLasSolicitudesAPI(pestanaSolicitudes));
+      } else if (vistaActiva === 'categorias') {
+        const c = await listarCategoriasAdminAPI();
+        setCategorias(c);
+      } else if (vistaActiva === 'paquetes') {
+        const p = await obtenerPaquetesAPI();
+        setPaquetes(p);
+      } else if (vistaActiva === 'opiniones') {
+        const o = await obtenerOpinionesAPI();
+        setOpiniones(o);
+      } else if (vistaActiva === 'solicitudes') {
+        const s = await obtenerTodasLasSolicitudesAPI(pestanaSolicitudes);
+        setSolicitudes(s);
+      }
     } catch (error) {
       setToast({ visible: true, mensaje: error.message, tipo: 'error' });
     } finally {
@@ -843,8 +959,42 @@ const PaginaAdmin = () => {
     filtroCalificacion: filtroCalificacionOpinion
   });
 
-  const opcionesEstado = pestanaSolicitudes === 'paquetes' ? ESTADOS_PAQUETE : pestanaSolicitudes === 'productos' ? ESTADOS_PRODUCTO : ESTADOS_PERSONAL;
+  const opcionesEstado = MAPA_ESTADOS[pestanaSolicitudes] || ESTADOS_PERSONAL;
   const primeraLetraAdmin = userLocal?.Nombre ? userLocal.Nombre.charAt(0) : 'A';
+
+  const handlersVistas = {
+    onEditarUsuario: (u) => { setElementoEditable(u); setModalAbierto('usuario'); },
+    onCambiarRol: cambiarRolUsuario,
+    onEliminarUsuario: eliminarUsuario,
+    onToggleUsuario: handleToggleUsuario,
+    onNuevoPaquete: () => { setElementoEditable(null); setModalAbierto('paquete'); },
+    onEditarPaquete: (p) => { setElementoEditable(p); setModalAbierto('paquete'); },
+    onTogglePaquete: handleTogglePaquete,
+    onEliminarPaquete: handleEliminarPaquete,
+    onNuevoProducto: () => { setElementoEditable(null); setModalAbierto('producto'); },
+    onEditarProducto: (p) => { setElementoEditable(p); setModalAbierto('producto'); },
+    onToggleProducto: handleToggleProducto,
+    onEliminarProducto: handleEliminarProducto,
+    onNuevoCategoria: () => { setElementoEditable(null); setModalAbierto('categoria'); },
+    onEditarCategoria: (c) => { setElementoEditable(c); setModalAbierto('categoria'); },
+    onToggleCategoria: handleToggleCategoria,
+    onEliminarCategoria: handleEliminarCategoria,
+    onCambiarEstadoSolicitud: handleCambiarEstadoSolicitud,
+    onEditarSolicitud: (s) => { setElementoEditable(s); setModalAbierto('solicitud'); },
+    onToggleSolicitud: handleToggleSolicitudEspecifica,
+    onEliminarSolicitud: handleEliminarSolicitud,
+    onEditarOpinion: (o) => { setElementoEditable(o); setModalAbierto('opinion'); },
+    onToggleOpinion: handleToggleOpinion,
+    onEliminarOpinion: (id) => {
+      pedirConfirmacion('¿Borrar reseña?', 'Esta acción no se puede deshacer.', async () => {
+        try {
+          await eliminarOpinionAPI(id);
+          showToast('Reseña eliminada');
+          cargarDatos();
+        } catch (e) { showToast(e.message, 'error'); }
+      });
+    }
+  };
 
   return (
     <div className="pagina-admin-root">
@@ -910,100 +1060,22 @@ const PaginaAdmin = () => {
               <p style={{ marginTop: '1rem', fontFamily: 'Rajdhani' }}>Sincronizando con base de datos...</p>
             </div>
           ) : (
-            <>
-              {vistaActiva === 'usuarios' && (
-                <VistaUsuarios
-                  items={itemsActuales}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  onEditar={(u) => { setElementoEditable(u); setModalAbierto('usuario'); }}
-                  onCambiarRol={cambiarRolUsuario}
-                  onEliminar={eliminarUsuario}
-                  onToggle={handleToggleUsuario}
-                  esAuxiliar={esAuxiliar}
-                  esAdminGeneral={esAdminGeneral}
-                />
-              )}
-
-              {vistaActiva === 'paquetes' && (
-                <VistaPaquetes
-                  items={itemsActuales}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  onNuevo={() => { setElementoEditable(null); setModalAbierto('paquete'); }}
-                  onEditar={(p) => { setElementoEditable(p); setModalAbierto('paquete'); }}
-                  onToggle={handleTogglePaquete}
-                  onEliminar={handleEliminarPaquete}
-                  esAuxiliar={esAuxiliar}
-                />
-              )}
-
-              {vistaActiva === 'productos' && (
-                <VistaProductos
-                  items={itemsActuales}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  onNuevo={() => { setElementoEditable(null); setModalAbierto('producto'); }}
-                  onEditar={(p) => { setElementoEditable(p); setModalAbierto('producto'); }}
-                  onToggle={handleToggleProducto}
-                  onEliminar={handleEliminarProducto}
-                  esAuxiliar={esAuxiliar}
-                />
-              )}
-
-              {vistaActiva === 'categorias' && (
-                <VistaCategorias
-                  items={itemsActuales}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  onNuevo={() => { setElementoEditable(null); setModalAbierto('categoria'); }}
-                  onEditar={(c) => { setElementoEditable(c); setModalAbierto('categoria'); }}
-                  onToggle={handleToggleCategoria}
-                  onEliminar={handleEliminarCategoria}
-                  esAuxiliar={esAuxiliar}
-                />
-              )}
-
-              {vistaActiva === 'solicitudes' && (
-                <VistaSolicitudes
-                  items={itemsActuales}
-                  pestanaSolicitudes={pestanaSolicitudes}
-                  setPestanaSolicitudes={setPestanaSolicitudes}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  filtroEstado={filtroEstadoSolicitud}
-                  setFiltroEstado={setFiltroEstadoSolicitud}
-                  opcionesEstado={opcionesEstado}
-                  onCambiarEstado={handleCambiarEstadoSolicitud}
-                  onEditar={(s) => { setElementoEditable(s); setModalAbierto('solicitud'); }}
-                  onToggle={handleToggleSolicitudEspecifica}
-                  onEliminar={handleEliminarSolicitud}
-                  esAuxiliar={esAuxiliar}
-                />
-              )}
-
-              {vistaActiva === 'opiniones' && (
-                <VistaOpiniones
-                  items={itemsActuales}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                  filtroCalificacion={filtroCalificacionOpinion}
-                  setFiltroCalificacion={setFiltroCalificacionOpinion}
-                  onEditar={(o) => { setElementoEditable(o); setModalAbierto('opinion'); }}
-                  onToggle={handleToggleOpinion}
-                  onEliminar={(id) => {
-                    pedirConfirmacion('¿Borrar reseña?', 'Esta acción no se puede deshacer.', async () => {
-                      try {
-                        await eliminarOpinionAPI(id);
-                        showToast('Reseña eliminada');
-                        cargarDatos();
-                      } catch (e) { showToast(e.message, 'error'); }
-                    });
-                  }}
-                  esAuxiliar={esAuxiliar}
-                />
-              )}
-            </>
+            <ContenidoVistaAdmin
+              vistaActiva={vistaActiva}
+              items={itemsActuales}
+              busqueda={busqueda}
+              setBusqueda={setBusqueda}
+              handlers={handlersVistas}
+              esAuxiliar={esAuxiliar}
+              esAdminGeneral={esAdminGeneral}
+              pestanaSolicitudes={pestanaSolicitudes}
+              setPestanaSolicitudes={setPestanaSolicitudes}
+              filtroEstado={filtroEstadoSolicitud}
+              setFiltroEstado={setFiltroEstadoSolicitud}
+              opcionesEstado={opcionesEstado}
+              filtroCalificacion={filtroCalificacionOpinion}
+              setFiltroCalificacion={setFiltroCalificacionOpinion}
+            />
           )}
         </div>
       </main>
@@ -1046,12 +1118,32 @@ const PaginaAdmin = () => {
               <button type="button" className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
               {dialogo.opciones ? (
                 dialogo.opciones.map((op) => (
-                  <button type="button" key={op} className="boton-accion boton-accion--editar" onClick={async () => { if (dialogo.onSelect) await dialogo.onSelect(op); else if (dialogo.onConfirm) await dialogo.onConfirm(op); }}>
+                  <button 
+                    type="button" 
+                    key={op} 
+                    className="boton-accion boton-accion--editar" 
+                    onClick={async () => { 
+                      if (dialogo.onSelect) {
+                        await dialogo.onSelect(op);
+                      } else if (dialogo.onConfirm) {
+                        await dialogo.onConfirm(op);
+                      }
+                    }}
+                  >
                     {op.toUpperCase()}
                   </button>
                 ))
               ) : (
-                <button type="button" className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} onClick={() => { if (dialogo.onConfirm) dialogo.onConfirm(); setDialogo({ ...dialogo, abierto: false }); }}>
+                <button 
+                  type="button" 
+                  className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} 
+                  onClick={() => { 
+                    if (dialogo.onConfirm) {
+                      dialogo.onConfirm();
+                    }
+                    setDialogo({ ...dialogo, abierto: false }); 
+                  }}
+                >
                   Proceder
                 </button>
               )}
