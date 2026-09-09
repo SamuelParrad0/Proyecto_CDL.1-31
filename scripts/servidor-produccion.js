@@ -22,18 +22,10 @@ const mimeTypes = {
   '.woff2': 'font/woff2'
 };
 
-// Validador estricto para cortar la propagación de datos inseguros
-function getValidatedPath(rawUrl) {
-  if (typeof rawUrl !== 'string') return '/';
-  
-  // Limitar a caracteres válidos en URLs relativas para mitigar inyección
-  const sanitized = rawUrl.replace(/[^\w\-.~:/?#[\]@!$&'()*+,;=]/g, '');
-  const urlObj = new URL(sanitized || '/', 'http://127.0.0.1');
-  const normalizedPath = path.posix.normalize(urlObj.pathname);
+const ALLOWED_PREFIXES = ['/api/', '/uploads/'];
 
-  // Asegurar que la ruta siempre inicie con /
-  const safePath = normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
-  return `${safePath}${urlObj.search}`;
+function isAllowedProxyRoute(pathname) {
+  return pathname === '/api' || ALLOWED_PREFIXES.some(prefix => pathname.startsWith(prefix));
 }
 
 function serveFile(req, res, requestedPath) {
@@ -62,8 +54,12 @@ function serveFile(req, res, requestedPath) {
   });
 }
 
-function proxyToBackend(req, res) {
-  const safePath = getValidatedPath(req.url);
+function proxyToBackend(req, res, incomingUrl) {
+  // Construir la URL anclada rígidamente al host del backend
+  const targetUrl = new URL('http://127.0.0.1');
+  targetUrl.port = String(backendPort);
+  targetUrl.pathname = incomingUrl.pathname;
+  targetUrl.search = incomingUrl.search;
 
   const safeHeaders = Object.create(null);
   for (const [key, value] of Object.entries(req.headers)) {
@@ -73,18 +69,13 @@ function proxyToBackend(req, res) {
   }
   safeHeaders.host = `127.0.0.1:${backendPort}`;
 
-  const requestOptions = {
-    hostname: '127.0.0.1',
-    port: backendPort,
-    path: encodeURI(safePath),
+  // Se pasa targetUrl directamente como primer parámetro a http.request
+  const proxyRequest = http.request(targetUrl, {
     method: req.method,
     headers: safeHeaders
-  };
-
-  const proxyRequest = http.request(requestOptions, (proxyResponse) => {
+  }, (proxyResponse) => {
     const responseHeaders = Object.create(null);
     for (const [key, value] of Object.entries(proxyResponse.headers)) {
-      // Ignorar 'location' para prevenir la vulnerabilidad de Open Redirect
       if (key.toLowerCase() !== 'location') {
         responseHeaders[key] = value;
       }
@@ -107,15 +98,15 @@ if (!fs.existsSync(path.join(buildRoot, 'index.html'))) {
 }
 
 http.createServer((req, res) => {
-  const safeUrl = getValidatedPath(req.url);
+  // Parsear la URL de entrada una sola vez de forma controlada
+  const parsedIncomingUrl = new URL(req.url || '/', 'http://127.0.0.1');
 
-  if (safeUrl.startsWith('/api/') || safeUrl === '/api' || safeUrl.startsWith('/uploads/')) {
-    proxyToBackend(req, res);
+  if (isAllowedProxyRoute(parsedIncomingUrl.pathname)) {
+    proxyToBackend(req, res, parsedIncomingUrl);
     return;
   }
 
-  const requestedPath = safeUrl.split('?')[0];
-  serveFile(req, res, requestedPath);
+  serveFile(req, res, parsedIncomingUrl.pathname);
 }).listen(port, '0.0.0.0', () => {
   console.log(`CDL publicado en http://0.0.0.0:${port}`);
   console.log(`Backend interno: http://127.0.0.1:${backendPort}`);
