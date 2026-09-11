@@ -128,7 +128,7 @@ export default function PaginaPortafolio() {
                   <div className="tarjeta-nombre">{p.nombre.replace('Paquete ', '')}</div>
                   <p className="tarjeta-descripcion">{p.descripcion}</p>
                   <div className="tarjeta-beneficios">
-                    {p.beneficios.map((b, j) => <span key={j} className="beneficio-pastilla">{b}</span>)}
+                    {p.beneficios.map((beneficio) => <span key={beneficio} className="beneficio-pastilla">{beneficio}</span>)}
                     <span className="beneficio-pastilla entrega">{p.entrega}</span>
                   </div>
                   <div className="tarjeta-pie">

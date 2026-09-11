@@ -226,8 +226,8 @@ export default function PaginaPago() {
         <aside className="resumen-pago">
           <h2 className="titulo-resumen-pago">Resumen del Pedido</h2>
           <div id="productosResumen">
-            {carritoLocal.map((item, i) => (
-              <div key={i} className="producto-item-resumen">
+            {carritoLocal.map((item) => (
+              <div key={item.id || item.productoId || item.nombre} className="producto-item-resumen">
                 <span className="producto-nombre-resumen">{item.nombre || 'Producto'}</span>
                 <span className="producto-precio-resumen">{formatearPrecio(Number(item.precio) || Number(item.precioTotal) || 0)}</span>
               </div>

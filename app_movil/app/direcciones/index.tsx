@@ -115,6 +115,35 @@ export default function MisDireccionesScreen() {
     );
   };
 
+  let contenidoPrincipal;
+  if (cargando && !refrescando) {
+    contenidoPrincipal = (
+      <View style={styles.cargandoContenedor}>
+        <ActivityIndicator size="large" color={Tema.dark.tint} />
+      </View>
+    );
+  } else if (direcciones.length === 0) {
+    contenidoPrincipal = (
+      <View style={styles.vacioContenedor}>
+        <IconSymbol name="map.fill" size={80} color={Tema.dark.borderRed} />
+        <Text style={styles.vacioTitulo}>No tienes direcciones</Text>
+        <Text style={styles.vacioSubtitulo}>Agrega una dirección para recibir tus pedidos físicos.</Text>
+      </View>
+    );
+  } else {
+    contenidoPrincipal = (
+      <FlatList
+        data={direcciones}
+        renderItem={renderDireccion}
+        keyExtractor={(item) => String(item.Id_Direccion)}
+        contentContainerStyle={styles.lista}
+        refreshControl={
+          <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
+        }
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
@@ -127,27 +156,7 @@ export default function MisDireccionesScreen() {
         </View>
       </View>
 
-      {cargando && !refrescando ? (
-        <View style={styles.cargandoContenedor}>
-          <ActivityIndicator size="large" color={Tema.dark.tint} />
-        </View>
-      ) : direcciones.length === 0 ? (
-        <View style={styles.vacioContenedor}>
-          <IconSymbol name="map.fill" size={80} color={Tema.dark.borderRed} />
-          <Text style={styles.vacioTitulo}>No tienes direcciones</Text>
-          <Text style={styles.vacioSubtitulo}>Agrega una dirección para recibir tus pedidos físicos.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={direcciones}
-          renderItem={renderDireccion}
-          keyExtractor={(item) => String(item.Id_Direccion)}
-          contentContainerStyle={styles.lista}
-          refreshControl={
-            <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
-          }
-        />
-      )}
+      {contenidoPrincipal}
 
       <View style={styles.footer}>
         <TouchableOpacity 

@@ -33,8 +33,8 @@
 
   /* Texto */
   --text-primary:   #eae8f2;
-  --text-secondary: #8484a8;
-  --text-muted:     #3c3c58;
+  --text-secondary: #b7b7d0;
+  --text-muted:     #9292aa;
 
   /* Animaciones */
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -2318,7 +2318,7 @@ body::after {
   padding: 1rem;
   border-radius: 10px;
   text-align: center;
-  color: rgba(255,80,80,0.9);
+  color: #ff9b9b;
   font-size: 0.88rem;
   margin-bottom: 1.1rem;
 }

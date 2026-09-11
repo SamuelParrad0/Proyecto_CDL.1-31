@@ -63,6 +63,77 @@ export default function PaginaCarrito() {
   const subtotal = carrito.reduce((s, item) => s + calcularPrecioItem(item), 0);
   const iva = subtotal * 0.10;
   const total = subtotal + iva;
+  let contenidoCarrito;
+  if (cargando) {
+    contenidoCarrito = (
+      <div className="aviso-carrito-vacio">
+        <div className="emoji-carrito-vacio">⏳</div>
+        <h3>Cargando carrito...</h3>
+      </div>
+    );
+  } else if (!carrito.length) {
+    contenidoCarrito = (
+      <div className="aviso-carrito-vacio">
+        <div className="emoji-carrito-vacio">🛒</div>
+        <h3>Tu carrito está vacío</h3>
+        <p style={{ color: 'var(--texto-secundario)', margin: '10px 0' }}>Aún no has seleccionado ningún producto o paquete</p>
+        <button type="button" onClick={() => navigate('/')}>Ir a Productos</button>
+      </div>
+    );
+  } else {
+    contenidoCarrito = carritoConClientes.map((item) => (
+      <div key={item.Id_Carrito || item.productoId} className="tarjeta-producto-carrito" style={{ marginBottom: '20px' }}>
+        <div className="imagen-miniatura-producto">
+          <img src={obtenerImagenProducto(item.producto)} alt={item.producto?.Nombre_Producto}
+            onError={e => { e.target.src = 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=200&q=80'; }} />
+        </div>
+        <div className="datos-texto-producto">
+          <div>
+            <h3 className="titulo-nombre-producto">{item.producto?.Nombre_Producto}</h3>
+            <div className="precio-unitario-producto">{formatearPrecio(item.producto?.Precio_Producto || 0)}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}>
+              <button type="button"
+                onClick={() => {
+                  if (item.Cantidad_Productos > 1) actualizarCantidad(item.Id_Carrito, item.Cantidad_Productos - 1);
+                  else eliminarItem(item.Id_Carrito);
+                }}
+                style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', paddingBottom: '2px' }}
+              >-</button>
+              <input
+                type="number"
+                value={item.Cantidad_Productos || 1}
+                min="1"
+                max={item.producto?.Stock || 1}
+                onChange={(e) => handleCambioCantidad(item.Id_Carrito, e.target.value, item.producto?.Stock || 1)}
+                style={{ width: '40px', background: 'transparent', border: 'none', color: '#fff', fontSize: '1rem', fontWeight: 'bold', textAlign: 'center', outline: 'none' }}
+              />
+              <button type="button"
+                disabled={(item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1)}
+                onClick={() => actualizarCantidad(item.Id_Carrito, (item.Cantidad_Productos || 1) + 1)}
+                style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', width: '28px', height: '28px', borderRadius: '4px', cursor: (item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', paddingBottom: '2px', opacity: (item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1) ? 0.3 : 1 }}
+              >+</button>
+            </div>
+          </div>
+          {(item.cliente || usuario) && (
+            <div className="bloque-info-cliente">
+              <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Cliente:</span><span className="valor-dato-cliente">{item.cliente?.nombreCompleto || (usuario ? `${usuario.Nombre} ${usuario.Apellidos || ''}`.trim() : 'N/A')}</span></div>
+              <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Teléfono:</span><span className="valor-dato-cliente">{item.cliente?.telefono || usuario?.Celular || 'N/A'}</span></div>
+              {(item.cliente?.correoElectronico || usuario?.Correo) && <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Correo:</span><span className="valor-dato-cliente">{item.cliente?.correoElectronico || usuario?.Correo}</span></div>}
+              {item.cliente?.nombreDestinatario && <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Destinatario:</span><span className="valor-dato-cliente">{item.cliente.nombreDestinatario}</span></div>}
+            </div>
+          )}
+          {item.personalizacion && <div className="bloque-texto-personalizacion"><strong>Personalización:</strong><br />{item.personalizacion}</div>}
+          <div style={{ marginTop: '15px' }}>
+            <button type="button" onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              onFocus={e => { e.currentTarget.style.background = 'rgba(255,8,68,0.15)'; }}
+              onBlur={e => { e.currentTarget.style.background = 'transparent'; }}>
+              🗑️ Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    ));
+  }
 
   const procederAlPago = () => {
     if (!carrito.length) { alert('⚠️ No hay productos en el carrito'); return; }
@@ -112,104 +183,7 @@ export default function PaginaCarrito() {
             <h1>Mi Carrito</h1>
           </div>
           <div id="listaProductosCarrito" className="contenedor-productos-renderizados">
-            {cargando ? (
-              <div className="aviso-carrito-vacio">
-                <div className="emoji-carrito-vacio">⏳</div>
-                <h3>Cargando carrito...</h3>
-              </div>
-            ) : !carrito.length ? (
-              <div className="aviso-carrito-vacio">
-                <div className="emoji-carrito-vacio">🛒</div>
-                <h3>Tu carrito está vacío</h3>
-                <p style={{ color: 'var(--texto-secundario)', margin: '10px 0' }}>Aún no has seleccionado ningún producto o paquete</p>
-                <button type="button" onClick={() => navigate('/')}>Ir a Productos</button>
-              </div>
-            ) : (
-              carritoConClientes.map((item) => (
-                <div key={item.Id_Carrito || item.productoId} className="tarjeta-producto-carrito" style={{ marginBottom: '20px' }}>
-                  <div className="imagen-miniatura-producto">
-                    <img src={obtenerImagenProducto(item.producto)} alt={item.producto?.Nombre_Producto}
-                      onError={e => { e.target.src = 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=200&q=80'; }} />
-                  </div>
-                  <div className="datos-texto-producto">
-                    <div>
-                      <h3 className="titulo-nombre-producto">{item.producto?.Nombre_Producto}</h3>
-                      <div className="precio-unitario-producto">{formatearPrecio(item.producto?.Precio_Producto || 0)}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}>
-                        <button type="button" 
-                          onClick={() => {
-                            if (item.Cantidad_Productos > 1) {
-                              actualizarCantidad(item.Id_Carrito, item.Cantidad_Productos - 1);
-                            } else {
-                              eliminarItem(item.Id_Carrito);
-                            }
-                          }}
-                          style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', paddingBottom: '2px' }}
-                        >-</button>
-                        <input 
-                          type="number"
-                          value={item.Cantidad_Productos || 1}
-                          min="1"
-                          max={item.producto?.Stock || 1}
-                          onChange={(e) => handleCambioCantidad(item.Id_Carrito, e.target.value, item.producto?.Stock || 1)}
-                          style={{ 
-                            width: '40px', 
-                            background: 'transparent', 
-                            border: 'none', 
-                            color: '#fff', 
-                            fontSize: '1rem', 
-                            fontWeight: 'bold', 
-                            textAlign: 'center',
-                            outline: 'none'
-                          }}
-                        />
-                        <button type="button" 
-                          disabled={(item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1)}
-                          onClick={() => actualizarCantidad(item.Id_Carrito, (item.Cantidad_Productos || 1) + 1)}
-                          style={{ 
-                            background: 'rgba(255,255,255,0.1)', 
-                            color: '#fff', 
-                            border: 'none', 
-                            width: '28px', 
-                            height: '28px', 
-                            borderRadius: '4px', 
-                            cursor: (item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1) ? 'not-allowed' : 'pointer', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            fontSize: '1.2rem', 
-                            paddingBottom: '2px',
-                            opacity: (item.Cantidad_Productos || 1) >= (item.producto?.Stock || 1) ? 0.3 : 1
-                          }}
-                        >+</button>
-                      </div>
-                    </div>
-                    {(item.cliente || usuario) && (
-                      <div className="bloque-info-cliente">
-                        <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Cliente:</span><span className="valor-dato-cliente">{item.cliente?.nombreCompleto || (usuario ? `${usuario.Nombre} ${usuario.Apellidos || ''}`.trim() : 'N/A')}</span></div>
-                        <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Teléfono:</span><span className="valor-dato-cliente">{item.cliente?.telefono || usuario?.Celular || 'N/A'}</span></div>
-                        {(item.cliente?.correoElectronico || usuario?.Correo) && (
-                          <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Correo:</span><span className="valor-dato-cliente">{item.cliente?.correoElectronico || usuario?.Correo}</span></div>
-                        )}
-                        {item.cliente?.nombreDestinatario && (
-                          <div className="fila-campo-cliente"><span className="etiqueta-dato-cliente">Destinatario:</span><span className="valor-dato-cliente">{item.cliente.nombreDestinatario}</span></div>
-                        )}
-                      </div>
-                    )}
-                    {item.personalizacion && (
-                      <div className="bloque-texto-personalizacion"><strong>Personalización:</strong><br />{item.personalizacion}</div>
-                    )}
-                    <div style={{ marginTop: '15px' }}>
-                      <button type="button" onClick={() => eliminarItem(item.Id_Carrito)} style={{ background: 'transparent', border: '1px solid rgba(255,8,68,0.4)', color: '#ff0844', padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                        onFocus={e => { e.currentTarget.style.background = 'rgba(255,8,68,0.15)'; }}
-                        onBlur={e => { e.currentTarget.style.background = 'transparent'; }}>
-                        🗑️ Eliminar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+            {contenidoCarrito}
           </div>
         </section>
 

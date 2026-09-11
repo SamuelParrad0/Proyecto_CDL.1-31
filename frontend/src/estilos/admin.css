@@ -20,8 +20,8 @@
   --borde-suave:       rgba(255,255,255,0.07);
   --borde-fuerte:      rgba(255,255,255,0.11);
   --texto-primario:    #eae8f4;
-  --texto-secundario:  #8484aa;
-  --texto-tenue:       #3c3c5a;
+  --texto-secundario:  #b8b8d0;
+  --texto-tenue:       #8585a0;
   --transicion:        all 0.3s cubic-bezier(0.4,0,0.2,1);
   --ancho-menu:        252px;
   --radio-borde:       14px;

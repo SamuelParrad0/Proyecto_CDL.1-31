@@ -572,8 +572,8 @@ export default function PaginaPerfil() {
                 {!(compras[cat]||[]).length ? (
                   <p className="historial-mensaje-vacio">No hay registros en esta categoría.</p>
                 ) : (
-                  (compras[cat]||[]).map((it, i) => (
-                    <div key={i} className="historial-tarjeta">
+                  (compras[cat]||[]).map((it) => (
+                    <div key={it.id} className="historial-tarjeta">
                       <div className="historial-tarjeta-encabezado">
                         <div><div className="historial-id-pedido">{it.id}</div><div className="historial-nombre-pedido">{it.nombre}</div></div>
                         <div className="historial-estado-badge" style={{ backgroundColor: getEstadoInfo(it.estado).color + '20', color: getEstadoInfo(it.estado).color, borderColor: getEstadoInfo(it.estado).color, borderWidth: 1, borderStyle: 'solid' }}>{getEstadoInfo(it.estado).label}</div>
@@ -611,8 +611,8 @@ export default function PaginaPerfil() {
                 {!(solicitudes[cat]||[]).length ? (
                   <p className="historial-mensaje-vacio">No hay registros en esta categoría.</p>
                 ) : (
-                  (solicitudes[cat]||[]).map((it, i) => (
-                    <div key={i} className="historial-tarjeta" style={{borderTop: '3px solid var(--rojo)', padding:'20px', flexDirection:'column', alignItems:'stretch'}}>
+                  (solicitudes[cat]||[]).map((it) => (
+                    <div key={it.id} className="historial-tarjeta" style={{borderTop: '3px solid var(--rojo)', padding:'20px', flexDirection:'column', alignItems:'stretch'}}>
                       
                       <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'15px', width:'100%'}}>
                         <div>

@@ -113,6 +113,41 @@ export default function MisCitasScreen() {
     );
   };
 
+  let contenidoPrincipal;
+  if (cargando && !refrescando) {
+    contenidoPrincipal = (
+      <View style={styles.cargandoContenedor}>
+        <ActivityIndicator size="large" color={Tema.dark.tint} />
+      </View>
+    );
+  } else if (citas.length === 0) {
+    contenidoPrincipal = (
+      <View style={styles.vacioContenedor}>
+        <IconSymbol name="calendar.badge.exclamationmark" size={80} color={Tema.dark.borderRed} />
+        <Text style={styles.vacioTitulo}>No tienes citas</Text>
+        <Text style={styles.vacioSubtitulo}>Aún no has reservado ningún paquete fotográfico.</Text>
+        <TouchableOpacity
+          style={styles.botonExplorar}
+          onPress={() => router.push('/paquetes')}
+        >
+          <Text style={styles.botonExplorarTexto}>VER PAQUETES</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  } else {
+    contenidoPrincipal = (
+      <FlatList
+        data={citas}
+        renderItem={renderCita}
+        keyExtractor={(item) => String(item.Id_Reserva_Paquete)}
+        contentContainerStyle={styles.lista}
+        refreshControl={
+          <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
+        }
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
@@ -120,33 +155,7 @@ export default function MisCitasScreen() {
         <Text style={styles.subtitulo}>Historial de reservas de paquetes fotográficos.</Text>
       </View>
 
-      {cargando && !refrescando ? (
-        <View style={styles.cargandoContenedor}>
-          <ActivityIndicator size="large" color={Tema.dark.tint} />
-        </View>
-      ) : citas.length === 0 ? (
-        <View style={styles.vacioContenedor}>
-          <IconSymbol name="calendar.badge.exclamationmark" size={80} color={Tema.dark.borderRed} />
-          <Text style={styles.vacioTitulo}>No tienes citas</Text>
-          <Text style={styles.vacioSubtitulo}>Aún no has reservado ningún paquete fotográfico.</Text>
-          <TouchableOpacity 
-            style={styles.botonExplorar}
-            onPress={() => router.push('/paquetes')}
-          >
-            <Text style={styles.botonExplorarTexto}>VER PAQUETES</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <FlatList
-          data={citas}
-          renderItem={renderCita}
-          keyExtractor={(item) => String(item.Id_Reserva_Paquete)}
-          contentContainerStyle={styles.lista}
-          refreshControl={
-            <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
-          }
-        />
-      )}
+      {contenidoPrincipal}
     </SafeAreaView>
   );
 }

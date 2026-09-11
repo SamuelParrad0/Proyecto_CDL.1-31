@@ -100,6 +100,35 @@ export default function MisSolicitudesScreen() {
     );
   };
 
+  let contenidoPrincipal;
+  if (cargando && !refrescando) {
+    contenidoPrincipal = (
+      <View style={styles.cargandoContenedor}>
+        <ActivityIndicator size="large" color={Tema.dark.tint} />
+      </View>
+    );
+  } else if (solicitudes.length === 0) {
+    contenidoPrincipal = (
+      <View style={styles.vacioContenedor}>
+        <IconSymbol name="wand.and.stars" size={80} color={Tema.dark.borderRed} />
+        <Text style={styles.vacioTitulo}>No tienes solicitudes</Text>
+        <Text style={styles.vacioSubtitulo}>Aún no has solicitado ningún proyecto personalizado.</Text>
+      </View>
+    );
+  } else {
+    contenidoPrincipal = (
+      <FlatList
+        data={solicitudes}
+        renderItem={renderSolicitud}
+        keyExtractor={(item) => String(item.Id_Personalizado)}
+        contentContainerStyle={styles.lista}
+        refreshControl={
+          <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
+        }
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
@@ -107,27 +136,7 @@ export default function MisSolicitudesScreen() {
         <Text style={styles.subtitulo}>Proyectos personalizados y regalos a medida.</Text>
       </View>
 
-      {cargando && !refrescando ? (
-        <View style={styles.cargandoContenedor}>
-          <ActivityIndicator size="large" color={Tema.dark.tint} />
-        </View>
-      ) : solicitudes.length === 0 ? (
-        <View style={styles.vacioContenedor}>
-          <IconSymbol name="wand.and.stars" size={80} color={Tema.dark.borderRed} />
-          <Text style={styles.vacioTitulo}>No tienes solicitudes</Text>
-          <Text style={styles.vacioSubtitulo}>Aún no has solicitado ningún proyecto personalizado.</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={solicitudes}
-          renderItem={renderSolicitud}
-          keyExtractor={(item) => String(item.Id_Personalizado)}
-          contentContainerStyle={styles.lista}
-          refreshControl={
-            <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
-          }
-        />
-      )}
+      {contenidoPrincipal}
 
       <View style={styles.footer}>
         <TouchableOpacity

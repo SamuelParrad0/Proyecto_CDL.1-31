@@ -45,6 +45,10 @@ export default function PaginaOpiniones() {
     } catch { mostrarToast('⚠️ Error al publicar opinión'); }
   };
 
+  let colorContador = 'var(--text-muted)';
+  if (contadorTexto > 450) colorContador = 'var(--red)';
+  else if (contadorTexto > 350) colorContador = '#ffaa00';
+
   return (
     <div>
       <BarraEntrega mostrarToast={mostrarToast} />
@@ -59,7 +63,7 @@ export default function PaginaOpiniones() {
           </div>
           <div className="reseñas-cuadricula">
             {reseñas.map((r, i) => (
-              <div key={i} className="tarjeta-reseña animar-entrada" style={{ transitionDelay: `${i * 0.07}s` }}>
+              <div key={`${r.nombre}-${r.fecha}-${r.texto}`} className="tarjeta-reseña animar-entrada" style={{ transitionDelay: `${i * 0.07}s` }}>
                 <div className="reseña-encabezado">
                   <div className="reseña-avatar" style={{ background: `linear-gradient(135deg,${r.color[0]},${r.color[1]})` }}>{r.iniciales}</div>
                   <div>
@@ -105,7 +109,7 @@ export default function PaginaOpiniones() {
               <label htmlFor="opinion-texto-comentario">Tu Opinión</label>
               <textarea id="opinion-texto-comentario" rows={4} placeholder="Cuéntanos sobre tu experiencia..." maxLength={500} value={formReseña.texto}
                 onChange={e => { setFormReseña(f => ({ ...f, texto: e.target.value })); setContadorTexto(e.target.value.length); }} />
-              <div className="contadorCaracteres" style={{ color: contadorTexto > 450 ? 'var(--red)' : contadorTexto > 350 ? '#ffaa00' : 'var(--text-muted)' }}>{contadorTexto} / 500</div>
+              <div className="contadorCaracteres" style={{ color: colorContador }}>{contadorTexto} / 500</div>
             </div>
             <button type="button" className="boton-enviar-formulario" onClick={enviarReseña}>Enviar Opinión</button>
           </div>

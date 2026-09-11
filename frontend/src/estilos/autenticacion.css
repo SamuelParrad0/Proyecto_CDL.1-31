@@ -37,7 +37,7 @@
   border: 1px solid rgba(255, 8, 68, 0.35);
   border-left: 3px solid #ff0844;
   border-radius: 10px;
-  color: #ff6688;
+  color: #ff9ab0;
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
@@ -137,7 +137,7 @@
 .titulo-formulario {
   font-family: 'Bebas Neue', cursive;
   font-weight: 400;
-  color: #ff0844;
+  color: #ff8fa8;
   letter-spacing: 10px;
   font-size: 3.2rem;
   text-transform: uppercase;
@@ -195,7 +195,7 @@
 .pestana-navegacion:has(ins) {
   background: rgba(255, 8, 68, 0.12);
   border: 1px solid rgba(255, 8, 68, 0.3);
-  color: #ff0844;
+  color: #ff8fa8;
 }
 
 .pestana-navegacion ins {
@@ -412,7 +412,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: #ff6688;
+  color: #ff9ab0;
   text-align: center;
 }
 

@@ -544,8 +544,8 @@
   white-space: nowrap; flex-shrink: 0;
 }
 
-.estado-entregado  { background: rgba(0,200,80,0.12);  border: 1px solid rgba(0,200,80,0.35);  color: #00c850; }
-.estado-en-proceso { background: rgba(255,180,0,0.12); border: 1px solid rgba(255,180,0,0.35); color: #ffb400; }
+.estado-entregado  { background: rgba(0,200,80,0.12);  border: 1px solid rgba(0,200,80,0.35);  color: #55e889; }
+.estado-en-proceso { background: rgba(255,180,0,0.12); border: 1px solid rgba(255,180,0,0.35); color: #ffd166; }
 .estado-pendiente  { background: rgba(0,217,255,0.10); border: 1px solid rgba(0,217,255,0.30); color: var(--cyan); }
 .estado-cancelado  { background: rgba(255,8,68,0.10);  border: 1px solid var(--border-red);    color: var(--red); }
 
@@ -855,7 +855,7 @@
 .sol-prioridad-media {
   background: rgba(255,180,0,0.10);
   border: 1px solid rgba(255,180,0,0.3);
-  color: #ffb400;
+  color: #ffd166;
 }
 
 .sol-prioridad-normal, .sol-prioridad-baja {

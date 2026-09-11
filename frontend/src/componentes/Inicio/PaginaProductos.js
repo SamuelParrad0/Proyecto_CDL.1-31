@@ -27,6 +27,12 @@ const obtenerImagenProducto = (producto) => {
   return 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=700&q=80';
 };
 
+const obtenerEstadoStock = (stock) => {
+  if (stock <= 0) return { color: '#ff0844', fondo: 'rgba(255,8,68,0.1)', etiqueta: 'Agotado', etiquetaModal: '🚫 Agotado' };
+  if (stock <= 5) return { color: '#f59e0b', fondo: 'rgba(245,158,11,0.1)', etiqueta: `¡Últimas ${stock} uds!`, etiquetaModal: `⚠️ ¡Últimas ${stock} unidades!` };
+  return { color: '#22c55e', fondo: 'rgba(34,197,94,0.1)', etiqueta: `${stock} uds`, etiquetaModal: `✅ ${stock} disponibles` };
+};
+
 export default function PaginaProductos() {
   const { toastMensaje, toastVisible, mostrarToast } = useToast();
   const { agregarItem } = useCarrito();
@@ -66,7 +72,10 @@ export default function PaginaProductos() {
   };
 
   const cerrarModalProducto = () => { setModalProductoAbierto(false); document.body.style.overflow = ''; setProductoActivo(null); };
-  const navImagenProducto = (d) => { if (!productoActivo) return; setIndiceImagenProducto(prev => (prev + d + productoActivo.imagenes.length) % productoActivo.imagenes.length); };
+  const navImagenProducto = (d) => {
+    if (!productoActivo) return;
+    setIndiceImagenProducto(prev => (prev + d + productoActivo.imagenes.length) % productoActivo.imagenes.length);
+  };
 
   const pedirProductoDirecto = async (id) => {
     const prod = productosAPI.find(p => p.Id_Producto === id);
@@ -180,8 +189,8 @@ export default function PaginaProductos() {
                           <div className="producto-nombre">{p.Nombre_Producto}</div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '0.8rem' }}>
                             <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Disponible:</span>
-                            <span style={{ fontWeight: 700, color: p.Stock <= 0 ? '#ff0844' : p.Stock <= 5 ? '#f59e0b' : '#22c55e', background: p.Stock <= 0 ? 'rgba(255,8,68,0.1)' : p.Stock <= 5 ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)', padding: '2px 10px', borderRadius: '20px', fontSize: '0.75rem' }}>
-                              {p.Stock <= 0 ? 'Agotado' : p.Stock <= 5 ? `¡Últimas ${p.Stock} uds!` : `${p.Stock} uds`}
+                            <span style={{ fontWeight: 700, color: obtenerEstadoStock(p.Stock).color, background: obtenerEstadoStock(p.Stock).fondo, padding: '2px 10px', borderRadius: '20px', fontSize: '0.75rem' }}>
+                              {obtenerEstadoStock(p.Stock).etiqueta}
                             </span>
                           </div>
                           <button type="button" className="producto-boton-agregar" style={{ width: '100%', borderRadius: '50px', opacity: p.Stock <= 0 ? 0.5 : 1, cursor: p.Stock <= 0 ? 'not-allowed' : 'pointer' }} onClick={(e) => { e.stopPropagation(); pedirProductoDirecto(p.Id_Producto); }} disabled={enviandoPedido || p.Stock <= 0}>
@@ -216,8 +225,8 @@ export default function PaginaProductos() {
                   <div className="modal-precio-producto">${productoActivo.precio.toLocaleString('es-CO')}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Stock:</span>
-                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: productoActivo.Stock <= 0 ? '#ff0844' : productoActivo.Stock <= 5 ? '#f59e0b' : '#22c55e', background: productoActivo.Stock <= 0 ? 'rgba(255,8,68,0.1)' : productoActivo.Stock <= 5 ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)', padding: '3px 12px', borderRadius: '20px' }}>
-                      {productoActivo.Stock <= 0 ? '🚫 Agotado' : productoActivo.Stock <= 5 ? `⚠️ ¡Últimas ${productoActivo.Stock} unidades!` : `✅ ${productoActivo.Stock} disponibles`}
+                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: obtenerEstadoStock(productoActivo.Stock).color, background: obtenerEstadoStock(productoActivo.Stock).fondo, padding: '3px 12px', borderRadius: '20px' }}>
+                      {obtenerEstadoStock(productoActivo.Stock).etiquetaModal}
                     </span>
                   </div>
                   <div className="modal-miniaturas">

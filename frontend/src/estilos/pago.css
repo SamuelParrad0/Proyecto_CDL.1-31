@@ -19,8 +19,8 @@
     --border:     rgba(255, 255, 255, 0.055);
     --border-red: rgba(255, 8, 68, 0.18);
     --text-primary:   #eae8f2;
-    --text-secondary: #8484a8;
-    --text-muted:     #3c3c58;
+    --text-secondary: #b7b7d0;
+    --text-muted:     #9292aa;
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition:  all 0.38s var(--ease-smooth);
@@ -687,7 +687,7 @@
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #22c55e;
+    color: #86efac;
 }
 
 .seguridad-pago i {

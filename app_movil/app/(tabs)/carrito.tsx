@@ -33,6 +33,11 @@ const obtenerImagenProducto = (producto: any) => {
 const formatPrecio = (precio: number | string) => Number(precio).toLocaleString('es-CO');
 
 function ItemCarritoRow({ item, onActualizar, onEliminar }: { item: any; onActualizar: (id: any, cant: number) => void; onEliminar: (item: any) => void }) {
+  const disminuirCantidad = () => {
+    if (item.cantidad > 1) onActualizar(item.id, item.cantidad - 1);
+    else onEliminar(item);
+  };
+
   return (
     <View style={styles.itemCarrito}>
       <View style={styles.imagenPlaceholder}>
@@ -46,7 +51,7 @@ function ItemCarritoRow({ item, onActualizar, onEliminar }: { item: any; onActua
             <Text style={{ color: Tema.dark.textSecondary, fontSize: 13, marginRight: 8 }}>Cantidad:</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 4 }}>
               <TouchableOpacity 
-                onPress={() => item.cantidad > 1 ? onActualizar(item.id, item.cantidad - 1) : onEliminar(item)}
+                onPress={disminuirCantidad}
                 style={{ paddingHorizontal: 12, paddingVertical: 4 }}
               >
                 <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>-</Text>
