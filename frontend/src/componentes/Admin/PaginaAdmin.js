@@ -555,6 +555,56 @@ function ModalesAdmin({ modalAbierto, elementoEditable, onCerrar, onGuardarPaque
   return null;
 }
 
+function DialogoConfirmacionAdmin({ dialogo, setDialogo }) {
+  if (!dialogo.abierto) return null;
+
+  const esInformativo = dialogo.variante === 'info';
+  const cerrarDialogo = () => setDialogo({ ...dialogo, abierto: false });
+  const seleccionarOpcion = async (opcion) => {
+    if (dialogo.onSelect) await dialogo.onSelect(opcion);
+    else if (dialogo.onConfirm) await dialogo.onConfirm(opcion);
+  };
+  const confirmar = () => {
+    if (dialogo.onConfirm) dialogo.onConfirm();
+    cerrarDialogo();
+  };
+
+  return (
+    <div className="dialogo-fondo dialogo-fondo--abierto">
+      <div className={`dialogo-caja ${esInformativo ? 'dialogo-caja--variante-info' : ''}`}>
+        <div className={`dialogo__icono-central ${esInformativo ? 'dialogo__icono-central--info' : ''}`}>
+          <i className={`fas ${esInformativo ? 'fa-info-circle' : 'fa-exclamation-triangle'}`}></i>
+        </div>
+        <div className="dialogo__titulo">{dialogo.titulo}</div>
+        <p className="dialogo__mensaje">{dialogo.mensaje}</p>
+        <div className="dialogo__fila-botones">
+          <button type="button" className="boton-accion" onClick={cerrarDialogo}>Cancelar</button>
+          {dialogo.opciones ? (
+            dialogo.opciones.map((opcion) => (
+              <button
+                type="button"
+                key={opcion}
+                className="boton-accion boton-accion--editar"
+                onClick={() => seleccionarOpcion(opcion)}
+              >
+                {opcion.toUpperCase()}
+              </button>
+            ))
+          ) : (
+            <button
+              type="button"
+              className={`boton-accion ${esInformativo ? 'boton-accion--editar' : 'boton-accion--eliminar'}`}
+              onClick={confirmar}
+            >
+              Proceder
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- RENDERIZADOR DE VISTAS DESACOPLADO (Reduce Complejidad Cognitiva) ---
 function ContenidoVistaAdmin(props) {
   const { vistaActiva, items, busqueda, setBusqueda, handlers, esAuxiliar, esAdminGeneral, pestanaSolicitudes, setPestanaSolicitudes, filtroEstado, setFiltroEstado, opcionesEstado, filtroCalificacion, setFiltroCalificacion } = props;
@@ -1106,51 +1156,7 @@ const PaginaAdmin = () => {
         </div>
       )}
 
-      {dialogo.abierto && (
-        <div className="dialogo-fondo dialogo-fondo--abierto">
-          <div className={`dialogo-caja ${dialogo.variante === 'info' ? 'dialogo-caja--variante-info' : ''}`}>
-            <div className={`dialogo__icono-central ${dialogo.variante === 'info' ? 'dialogo__icono-central--info' : ''}`}>
-              <i className={`fas ${dialogo.variante === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle'}`}></i>
-            </div>
-            <div className="dialogo__titulo">{dialogo.titulo}</div>
-            <p className="dialogo__mensaje">{dialogo.mensaje}</p>
-            <div className="dialogo__fila-botones">
-              <button type="button" className="boton-accion" onClick={() => setDialogo({ ...dialogo, abierto: false })}>Cancelar</button>
-              {dialogo.opciones ? (
-                dialogo.opciones.map((op) => (
-                  <button 
-                    type="button" 
-                    key={op} 
-                    className="boton-accion boton-accion--editar" 
-                    onClick={async () => { 
-                      if (dialogo.onSelect) {
-                        await dialogo.onSelect(op);
-                      } else if (dialogo.onConfirm) {
-                        await dialogo.onConfirm(op);
-                      }
-                    }}
-                  >
-                    {op.toUpperCase()}
-                  </button>
-                ))
-              ) : (
-                <button 
-                  type="button" 
-                  className={`boton-accion ${dialogo.variante === 'info' ? 'boton-accion--editar' : 'boton-accion--eliminar'}`} 
-                  onClick={() => { 
-                    if (dialogo.onConfirm) {
-                      dialogo.onConfirm();
-                    }
-                    setDialogo({ ...dialogo, abierto: false }); 
-                  }}
-                >
-                  Proceder
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <DialogoConfirmacionAdmin dialogo={dialogo} setDialogo={setDialogo} />
     </div>
   );
 };
