@@ -32,7 +32,7 @@ const obtenerImagenProducto = (producto: any) => {
 
 const formatPrecio = (precio: number | string) => Number(precio).toLocaleString('es-CO');
 
-function ItemCarritoRow({ item, onActualizar, onEliminar }: { item: any; onActualizar: (id: any, cant: number) => void; onEliminar: (item: any) => void }) {
+function ItemCarritoRow({ item, onActualizar, onEliminar }: Readonly<{ item: any; onActualizar: (id: any, cant: number) => void; onEliminar: (item: any) => void }>) {
   const disminuirCantidad = () => {
     if (item.cantidad > 1) onActualizar(item.id, item.cantidad - 1);
     else onEliminar(item);
@@ -541,6 +541,37 @@ export default function CarritoScreen() {
     }
   };
 
+  let contenidoCarrito;
+  if (cargando) {
+    contenidoCarrito = <View style={styles.cargandoContenedor}><ActivityIndicator size="large" color={Tema.dark.tint} /></View>;
+  } else if (items.length === 0) {
+    contenidoCarrito = (
+      <View style={styles.vacioContenedor}>
+        <IconSymbol name="cart" size={80} color={Tema.dark.borderRed} />
+        <Text style={styles.vacioTitulo}>Tu carrito está vacío</Text>
+        <Text style={styles.vacioSubtitulo}>¡Explora nuestros productos y encuentra el detalle perfecto!</Text>
+        <TouchableOpacity style={styles.botonExplorar} onPress={() => router.push('/(tabs)')}>
+          <Text style={styles.botonExplorarTexto}>IR A LA TIENDA</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  } else {
+    contenidoCarrito = (
+      <>
+        <FlatList data={items} renderItem={({ item }) => <ItemCarritoRow item={item} onActualizar={actualizarCantidad} onEliminar={confirmarEliminacionItem} />} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.lista} />
+        <View style={styles.footer}>
+          <View style={styles.totalContenedor}>
+            <Text style={styles.totalTexto}>Total:</Text>
+            <Text style={styles.totalMonto}>${formatPrecio(totalPrecio)}</Text>
+          </View>
+          <TouchableOpacity style={styles.botonComprar} onPress={procesarCompra}>
+            <Text style={styles.botonComprarTexto}>CONTINUAR COMPRA  →</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <View style={styles.header}>
@@ -556,42 +587,7 @@ export default function CarritoScreen() {
         )}
       </View>
 
-      {cargando ? (
-        <View style={styles.cargandoContenedor}><ActivityIndicator size="large" color={Tema.dark.tint} /></View>
-      ) : items.length === 0 ? (
-        <View style={styles.vacioContenedor}>
-          <IconSymbol name="cart" size={80} color={Tema.dark.borderRed} />
-          <Text style={styles.vacioTitulo}>Tu carrito está vacío</Text>
-          <Text style={styles.vacioSubtitulo}>¡Explora nuestros productos y encuentra el detalle perfecto!</Text>
-          <TouchableOpacity style={styles.botonExplorar} onPress={() => router.push('/(tabs)')}>
-            <Text style={styles.botonExplorarTexto}>IR A LA TIENDA</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={items}
-            renderItem={({ item }) => (
-              <ItemCarritoRow 
-                item={item} 
-                onActualizar={actualizarCantidad} 
-                onEliminar={confirmarEliminacionItem} 
-              />
-            )}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.lista}
-          />
-          <View style={styles.footer}>
-            <View style={styles.totalContenedor}>
-              <Text style={styles.totalTexto}>Total:</Text>
-              <Text style={styles.totalMonto}>${formatPrecio(totalPrecio)}</Text>
-            </View>
-            <TouchableOpacity style={styles.botonComprar} onPress={procesarCompra}>
-              <Text style={styles.botonComprarTexto}>CONTINUAR COMPRA  →</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
+      {contenidoCarrito}
 
       <Modal animationType="fade" transparent visible={modalCheckoutVisible} onRequestClose={() => setModalCheckoutVisible(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>

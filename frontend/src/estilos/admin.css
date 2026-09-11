@@ -98,11 +98,11 @@
 }
 .menu-lateral__enlace:hover {
   color: #fff;
-  background: rgba(255,255,255,0.04);
+  background: #1c1c2e;
 }
 .menu-lateral__enlace--activo {
   color: #fff;
-  background: linear-gradient(135deg, rgba(255,8,68,0.18) 0%, rgba(255,8,68,0.07) 100%);
+  background: #24121b;
   border-color: var(--rojo-borde);
   box-shadow: 0 2px 16px rgba(255,8,68,0.10);
 }

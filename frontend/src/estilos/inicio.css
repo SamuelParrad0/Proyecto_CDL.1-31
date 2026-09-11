@@ -320,7 +320,7 @@ body::after {
   transition: background 0.2s, color 0.2s;
 }
 .departamento-opcion:last-child { border-bottom: none; }
-.departamento-opcion:hover { background: rgba(255,8,68,0.10); color: #fff; }
+.departamento-opcion:hover { background: #3a0d1a; color: #fff; }
 
 #entregaDepartamentoLista::-webkit-scrollbar       { width: 4px; }
 #entregaDepartamentoLista::-webkit-scrollbar-thumb { background: var(--red); border-radius: 4px; }
@@ -1099,7 +1099,7 @@ body::after {
 .paquete-fila:hover .nodo-circulo {
   border-color: var(--red);
   color: #fff;
-  background: rgba(255,8,68,0.15);
+  background: #32101d;
   box-shadow: 0 0 30px var(--red-glow);
   transform: scale(1.1);
 }
@@ -1894,7 +1894,7 @@ body::after {
 
 .producto-boton-agregar {
   flex: 1;
-  background: linear-gradient(135deg, var(--red), #ff6b9d);
+  background: #a5002a;
   color: #fff;
   border: none;
   padding: 15px 10px;
@@ -2085,7 +2085,7 @@ body::after {
 
 .modal-boton-pedir {
   width: 100%;
-  background: linear-gradient(135deg, var(--red), #ff6b9d);
+  background: #a5002a;
   color: #fff;
   border: none;
   padding: 18px 45px;
@@ -2313,12 +2313,12 @@ body::after {
 .campo-checkbox span   { color: #e0e0e0; font-weight: 500; font-size: 0.88rem; }
 
 .aviso-anonimo {
-  background: linear-gradient(135deg, rgba(255,0,0,0.06), rgba(255,50,50,0.06));
+  background: #32101d;
   border: 2px dashed var(--red-mid);
   padding: 1rem;
   border-radius: 10px;
   text-align: center;
-  color: #ff9b9b;
+  color: #ffffff;
   font-size: 0.88rem;
   margin-bottom: 1.1rem;
 }

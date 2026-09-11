@@ -33,11 +33,11 @@
   width: 100%;
   max-width: 420px;
   padding: 14px 20px;
-  background: rgba(255, 8, 68, 0.07);
+  background: #161625;
   border: 1px solid rgba(255, 8, 68, 0.35);
   border-left: 3px solid #ff0844;
   border-radius: 10px;
-  color: #ff9ab0;
+  color: #ffffff;
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
@@ -188,14 +188,14 @@
 
 .pestana-navegacion:hover:not(:has(ins)) {
   color: #eae8f2;
-  background: rgba(255, 255, 255, 0.05);
+  background: #1c1c2e;
   transform: none;
 }
 
 .pestana-navegacion:has(ins) {
-  background: rgba(255, 8, 68, 0.12);
+  background: #24121b;
   border: 1px solid rgba(255, 8, 68, 0.3);
-  color: #ff8fa8;
+  color: #ffffff;
 }
 
 .pestana-navegacion ins {
@@ -248,7 +248,7 @@
   border: 1px solid rgba(255, 255, 255, 0.35) !important;
   width: 100%;
   padding: 12px 42px 12px 14px;
-  background: rgba(255, 255, 255, 0.12) !important;
+  background: #161625 !important;
   color: #ffffff !important;
   border-radius: 10px;
   font-family: 'DM Sans', sans-serif;
@@ -300,7 +300,7 @@
 
 .campo-formulario__icono:hover {
   color: #ff0844;
-  background: rgba(255, 8, 68, 0.1);
+  background: #161625;
 }
 
 .campo-formulario__contenedor-con-icono:focus-within .campo-formulario__icono {
@@ -356,7 +356,7 @@
   padding: 13px 20px;
   border-radius: 10px;
   cursor: pointer;
-  background: linear-gradient(135deg, #ff0844 0%, #cc0033 100%);
+  background: #a5002a;
   color: #fff;
   font-family: 'Rajdhani', sans-serif;
   font-weight: 800;
@@ -405,14 +405,14 @@
 .auth-error {
   width: 100%;
   padding: 10px 14px;
-  background: rgba(255, 8, 68, 0.08);
+  background: #161625;
   border: 1px solid rgba(255, 8, 68, 0.25);
   border-radius: 8px;
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: #ff9ab0;
+  color: #ffffff;
   text-align: center;
 }
 
