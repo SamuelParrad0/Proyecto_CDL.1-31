@@ -12,7 +12,7 @@
 import { useEffect, useState, useContext } from 'react';
 //importar componentes 
 
-import {  Alert, Button, ScrollView, StyleSheet, TextInput, Text, View } from "react-native";
+import { Alert, Button, ScrollView, StyleSheet, TextInput, Text } from "react-native";
 // lee los parametros para obtener el id del pedido
 import { useLocalSearchParams, useRouter } from "expo-router"; // nagacion y parametros de ruta
 import clienteApi from '@/src/api/clienteApi';
@@ -85,7 +85,7 @@ export default function AdminProductoForm() {
     const [ imagen, setImagen ] = useState(producto?.imagen ?? '');
     const [ categorias, setCategorias ] = useState<any[]>([]);
     const [ subcategorias, setSubcategorias ] = useState<any[]>([]);
-    const [ loading, SetLoading ] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { esAdmin, esAuxiliar, estaAutenticado } = useContext(AuthContext) as any;
 
     useEffect(() => {
@@ -127,7 +127,7 @@ export default function AdminProductoForm() {
             return; // detiene la ejecucion si hacer la peticion http
         }
 
-        SetLoading(true); // deshabilita el boton durante la peticion 
+        setLoading(true); // deshabilita el boton durante la peticion
         try {
             // construye el objeto de datos convirtiendo precio, stock y las IDs a numerico
             const data = {
@@ -154,7 +154,7 @@ export default function AdminProductoForm() {
             // si la peticion falla muestra el error al usuario
             Alert.alert('Error', 'No se pudo guardar el producto');
         } finally {
-            SetLoading(false); // vuelve a habilitar el boton 
+            setLoading(false); // vuelve a habilitar el boton
         }
     }
 

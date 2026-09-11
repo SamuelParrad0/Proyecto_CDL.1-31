@@ -92,6 +92,7 @@ export default function AdminCitasScreen() {
       Alert.alert('Éxito', 'Cita actualizada correctamente');
       cargarCitas();
     } catch (error) {
+      console.error('Error al editar la cita:', error);
       Alert.alert('Error', 'No se pudo editar la cita');
     } finally {
       setSaving(false);

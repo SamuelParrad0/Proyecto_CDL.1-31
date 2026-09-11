@@ -14,7 +14,7 @@ const MAPEO_ESTADOS = {
 };
 
 const ajustarStockPorEstado = async (detalles, estadoAnterior, nuevoEstado) => {
-  if (!detalles || !detalles.length) return;
+  if (!detalles?.length) return;
 
   const esCancelacion = estadoAnterior !== 'cancelado' && nuevoEstado === 'cancelado';
   const esRestauracion = estadoAnterior === 'cancelado' && nuevoEstado !== 'cancelado';
@@ -93,7 +93,7 @@ const crearPedido = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(400).json({ ok: false, mensaje: error.message });
+    res.status(400).json({ ok: false, mensaje: error?.message });
   }
 };
 

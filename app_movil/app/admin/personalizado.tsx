@@ -59,6 +59,7 @@ export default function AdminPersonalizadoScreen() {
       await cargarSolicitudes();
       Alert.alert('Éxito', `Estado actualizado correctamente`);
     } catch (error) {
+      console.error('Error al actualizar el estado de la solicitud:', error);
       Alert.alert('Error', 'No se pudo actualizar el estado');
       setCargando(false);
     }
@@ -105,6 +106,7 @@ export default function AdminPersonalizadoScreen() {
       Alert.alert('Éxito', 'Solicitud actualizada correctamente');
       cargarSolicitudes();
     } catch (error) {
+      console.error('Error al editar la solicitud:', error);
       Alert.alert('Error', 'No se pudo editar la solicitud');
     } finally {
       setSaving(false);

@@ -8,11 +8,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── IMPORTACIONES ────────────────────────────────────────────────────────────
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useContext } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native'; // Hook que dispara un callback al enfocar la pantalla.
-import { useCallback, useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthContext } from '@/src/contexto/ContextoAuth';

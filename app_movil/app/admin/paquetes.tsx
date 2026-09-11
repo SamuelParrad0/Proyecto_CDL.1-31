@@ -105,6 +105,7 @@ export default function AdminPaquetesScreen() {
       );
       await togglePaquete(id);
     } catch (error) {
+      console.error('Error al cambiar el estado del paquete:', error);
       setPaquetes(current => 
         current.map(p => p.Id_Paquete === id ? { ...p, Activo: estadoActual } : p)
       );

@@ -57,7 +57,6 @@ export default function PaginaPerfil() {
   const [dirs, setDirs] = useState([]);
   const [compras] = useState({ productos:[], paquetes:[], personalizado:[] });
   const [solicitudes, setSolicitudes] = useState({ productos:[], paquetes:[], personalizado:[] });
-  const [, setCargando] = useState(true);
   const [tabCompras, setTabCompras] = useState('productos');
   const [tabSolicitudes, setTabSolicitudes] = useState('productos');
   const [toast, setToast] = useState({ msg:'', visible:false, warn:false });
@@ -77,7 +76,6 @@ export default function PaginaPerfil() {
 
     const cargarDatos = async () => {
       try {
-        setCargando(true);
         const results = await Promise.allSettled([
           obtenerPerfilAPI(),
           obtenerDireccionesAPI(),
@@ -94,7 +92,7 @@ export default function PaginaPerfil() {
         const r = rRes.status === 'fulfilled' ? rRes.value : [];
         const p = pRes.status === 'fulfilled' ? pRes.value : [];
         
-        const dataUsuario = u.usuario && u.usuario.Nombre ? u.usuario : getUsuarioLocal() || {};
+        const dataUsuario = u.usuario?.Nombre ? u.usuario : getUsuarioLocal() || {};
         const rolUsuario = String(dataUsuario.Rol?.Nombre_Rol || dataUsuario.rol || 'cliente')
           .trim()
           .toLowerCase();
@@ -153,8 +151,6 @@ export default function PaginaPerfil() {
       } catch (error) {
         console.error('Error al cargar perfil:', error);
         if (error.message.includes('token')) logoutAPI();
-      } finally {
-        setCargando(false);
       }
     };
 

@@ -24,12 +24,12 @@ export default function PaginaFactura() {
   const [fecha] = useState(() => new Date().toLocaleDateString('es-ES', { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' }));
 
   useEffect(() => {
-    if (!datosFactura || !datosFactura.items || !datosFactura.items.length) {
+    if (!datosFactura?.items?.length) {
       navigate('/');
     }
   }, [datosFactura, navigate]);
 
-  if (!datosFactura || !datosFactura.items || !datosFactura.items.length) return null;
+  if (!datosFactura?.items?.length) return null;
 
   const carrito = datosFactura.items;
   const subtotal = datosFactura.subtotal || carrito.reduce((s, i) => s + (Number(i.precio) || Number(i.precioTotal) || 0), 0);

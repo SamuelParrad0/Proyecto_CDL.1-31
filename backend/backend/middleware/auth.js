@@ -5,7 +5,7 @@ const { normalizarRol } = require('../utils/roles');
 const verificarToken = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = authHeader?.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({
@@ -35,11 +35,12 @@ const verificarToken = async (req, res, next) => {
     // Adjuntar datos al request
     req.usuario = usuario;
     req.usuarioId = usuario.Id_Usuario;
-    req.usuarioRol = normalizarRol(usuario.Rol ? usuario.Rol.Nombre_Rol : null);
+    req.usuarioRol = normalizarRol(usuario.Rol?.Nombre_Rol);
 
     next();
 
   } catch (error) {
+    console.error('Error al verificar el token:', error);
     return res.status(401).json({
       ok: false,
       mensaje: 'Token inválido o expirado'

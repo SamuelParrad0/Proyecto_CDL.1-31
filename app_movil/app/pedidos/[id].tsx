@@ -280,7 +280,7 @@ export default function PedidoDetalleScreen() {
 }
 
 // ── COMPONENTE InfoRow ─────────────────────────────────────────────────────────
-function InfoRow({ icono, label, value }: { icono: any; label: string; value: string }) {
+function InfoRow({ icono, label, value }: Readonly<{ icono: any; label: string; value: string }>) {
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoIconContainer}>

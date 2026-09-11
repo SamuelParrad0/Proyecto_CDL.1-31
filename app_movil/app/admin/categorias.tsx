@@ -101,6 +101,7 @@ export default function AdminCategoriasScreen() {
       Alert.alert('Éxito', 'Categoría editada con éxito.');
       fetchCategorias();
     } catch (error: unknown) {
+      console.error('Error al editar la categoría:', error);
       Alert.alert('Error', 'No se pudo editar la categoría.');
     } finally {
       setSaving(false);
@@ -115,6 +116,7 @@ export default function AdminCategoriasScreen() {
       );
       await toggleCategoria(id);
     } catch (error) {
+      console.error('Error al cambiar el estado de la categoría:', error);
       setCategorias(current => 
         current.map(c => c.Id_Categoria === id ? { ...c, Activo: estadoActual } : c)
       );
