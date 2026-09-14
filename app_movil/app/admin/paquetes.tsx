@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Image, Switch, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Image, Switch, Modal, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
 import { AuthContext } from '@/src/contexto/ContextoAuth';
 import servicioPaquetes from '@/src/servicios/servicioPaquetes';
 import { crearPaquete, editarPaquete, togglePaquete } from '@/src/servicios/servicioAdmin';
 import servicioCatalogo from '@/src/servicios/servicioCatalogo';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { AdminCatalogList } from '@/components/admin-catalog-list';
 
 export default function AdminPaquetesScreen() {
   const router = useRouter();
@@ -160,62 +160,22 @@ export default function AdminPaquetesScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.botonVolver} onPress={() => router.back()}>
-          <IconSymbol name="chevron.left" size={24} color={Tema.dark.text} />
-        </TouchableOpacity>
-        <View style={styles.headerTextContainer}>
-          <Text style={styles.titulo}>Gestión de <Text style={styles.textoDorado}>Paquetes</Text></Text>
-          <Text style={styles.subtitulo}>{paquetes.length} paquetes registrados</Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.botonAgregarHeader}
-          onPress={() => abrirModal()}
-        >
-          <IconSymbol name="plus" size={24} color={Tema.dark.tint} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <IconSymbol name="magnifyingglass" size={20} color={Tema.dark.textSecondary} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar paquete por nombre..."
-          placeholderTextColor={Tema.dark.textSecondary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <IconSymbol name="xmark.circle.fill" size={20} color={Tema.dark.textSecondary} />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {cargando && !refrescando ? (
-        <View style={styles.cargandoContenedor}>
-          <ActivityIndicator size="large" color={Tema.dark.tint} />
-        </View>
-      ) : (
-        <FlatList
-          data={paquetesFiltrados}
-          renderItem={renderPaquete}
-          keyExtractor={(item) => item.Id_Paquete.toString()}
-          contentContainerStyle={styles.lista}
-          refreshControl={
-            <RefreshControl refreshing={refrescando} onRefresh={onRefresh} tintColor={Tema.dark.tint} />
-          }
-          ListEmptyComponent={
-            <View style={{ alignItems: 'center', marginTop: Espaciado.xl }}>
-              <Text style={{ color: Tema.dark.textSecondary }}>
-                {searchQuery ? 'No se encontraron paquetes coincidentes.' : 'No hay paquetes registrados.'}
-              </Text>
-            </View>
-          }
-        />
-      )}
-
+    <AdminCatalogList
+      titulo="Paquetes"
+      cantidad={paquetes.length}
+      placeholder="Buscar paquete por nombre..."
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      onBack={() => router.back()}
+      onAdd={() => abrirModal()}
+      cargando={cargando}
+      refrescando={refrescando}
+      onRefresh={onRefresh}
+      data={paquetesFiltrados}
+      renderItem={renderPaquete}
+      keyExtractor={(item) => item.Id_Paquete.toString()}
+      emptyText="No hay paquetes registrados."
+    >
       {/* Modal Formulario */}
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
@@ -280,8 +240,7 @@ export default function AdminPaquetesScreen() {
           </View>
         </View>
       </Modal>
-
-    </SafeAreaView>
+    </AdminCatalogList>
   );
 }
 
