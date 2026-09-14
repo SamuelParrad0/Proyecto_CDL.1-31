@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Tema, Espaciado, RadioBorde } from '@/constants/tema';
@@ -28,7 +28,7 @@ export function CampoTextoFormulario({ label, value, onChangeText, placeholder, 
     <View style={[styles.inputGroup, containerStyle]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput style={inputStyle} placeholder={placeholder} placeholderTextColor={Tema.dark.textSecondary} value={value} onChangeText={onChangeText} keyboardType={keyboardType} autoCapitalize={autoCapitalize} multiline={multiline} numberOfLines={numberOfLines} textAlignVertical={multiline ? 'top' : undefined} />
-      {helperText && <Text style={styles.ayudaTexto}>{helperText}</Text>}
+      {Boolean(helperText) && <Text style={styles.ayudaTexto}>{helperText}</Text>}
     </View>
   );
 }
